@@ -1,0 +1,47 @@
+REFERENCES : 
+
+	* http://wiki.ros.org/rosserial_arduino/Tutorials/Arduino%20IDE%20Setup
+	* http://wiki.ros.org/rosserial_arduino/Tutorials/Hello%20World
+
+INSTALLATION WORKFLOW :
+
+	* $ sudo apt-get install ros-kinetic-rosserial-arduino
+	* $ sudo apt-get install ros-kinetic-rosserial
+	* Clone rosserial in the catkin workspace (<ws>) from a github repository
+	
+		$ cd <ws>/src
+		$ git clone https://github.com/ros-drivers/rosserial.git
+		$ cd <ws>
+		$ catkin_make
+
+	* Install ros_lib into arduino environment
+
+		$ cd <sketchbook>/libraries
+		$ rm -rf ros_lib
+		$ rosrun rosserial_arduino make_libraries.py .
+
+ROSSERIAL COMMUNICATION HOST/ARDUINO WORKFLOW :
+
+	* $ roscore
+	* Compile and Deploy the sketch in the Arduino Board
+	* Enable the communication between host-arduino through the target serial port
+		
+		$ rosrun rosserial_python serial_node.py /dev/ttyACM0
+	
+
+FAQS :
+
+	* How to check the scketchbook location ?
+
+		In the Arduino IDE browse File/Preferences and check the sketchbook location (/home/user/Arduino in Ubuntu)
+
+	* How to check if the installation was fine ?
+
+		In the Arduino IDE browse File/Examples and check if ros_lib is present
+
+	* How to check which is the target serial port ?
+
+		In the Arduino IDE browse Tools/Port to check the target port (i.e. ttyACMx in Ubuntu)
+	
+	
+
