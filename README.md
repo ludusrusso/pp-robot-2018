@@ -16,7 +16,7 @@
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributiong](#contributing)
+- [Contributing](#contributing)
 - [History](#history)
 - [Credits](#credits)
 - [License](#license)
