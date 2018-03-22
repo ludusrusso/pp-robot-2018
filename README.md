@@ -14,12 +14,12 @@
 *Further information about installation, usage and contribution method will be introduced after initial steps of development.*
 
 ## Table of Contents
-- [Installation](#Installation)
-- [Usage](#Usage)
-- [Contributiong](#Contributing)
-- [History](#History)
-- [Credits](#Credits)
-- [License](#License)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributiong](#contributing)
+- [History](#history)
+- [Credits](#credits)
+- [License](#license)
 
 
 ## Installation
