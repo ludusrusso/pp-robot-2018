@@ -1,0 +1,201 @@
+REFERENCES :
+
+    http://www.html.it/pag/63925/container-come-ambienti-isolati/
+
+
+---------------------- CONTAINERS VS VIRTUAL_MACHINES -----------------------
+
+* A CONTAINER is an abstraction at the app layer. Multiple containers can run
+    on the same machine sharing the same OS Kernel. They take less space (MBs)
+    and start almost immediately.
+
+* A VM is an abstraction of the physical hw. Bigger images since each VM includes
+    also the code of the operating system (GBs), and they are slower to boot.
+
+---------------------------- IMAGE VS CONTAINER ------------------------------
+
+* An Image is static, it is a photography of the system at a certain instant
+  (it is like a Class in an object oriented language).
+  Stack of only readable (RO) layers.
+
+* A Container is the instance of the image after having worked on it
+  (it is like an Object instantiated from that Class).
+  Same stack of layers (RO), but with a writable (RW) layer on top.
+  Surposing all these layers, the final content of the container is obtained.
+
+------------------------------- IMAGE LAYERS --------------------------------
+
+* An Image can be composed by different layers, which superposed compose the
+target image.
+Layers are immutable (cannot be modified, only readable) and can be shared by
+multiple images (if more than one image contains the same layer, the disk
+occupation will consists in the size of the single layer). Called IMAGE LAYERS
+
+* When a container is instantiated, a new single writable layer is created on
+top of all other layers. All modifications to the container are saved within
+this layer. Called CONTAINER LAYER
+
+-------------------------------- FILE SYSTEM --------------------------------
+
+* From a file system p.o.w. each container is completely isolated from the
+  main file system and the file systems of each other container.
+
+    EX : If i create a folder (mkdir dir) in a container than i put it in background
+          and i run another container, i will not able to see the 'dir' created
+          in the other container.
+
+* HOW TO SHARE FILES BETWEEN HOST AND A CONTAINER ?
+
+    The solution is to use a -- DATA VOLUME --
+    I can bridge in this way the container filesystem with the file system of
+    of the underlying operating system.
+
+    To create a data volume is necessary to pass the flag -v to the command
+    'docker run' and specifying a local path (optional, but recommended) and
+    a container path.
+
+      $ docker run -it -v /home/edospi20/Desktop/Data_Volume/:/var ubuntu /bin/bash
+
+--------------------------------- NETWORKING ---------------------------------
+
+If the container is running over a VM there is no direct way to communicate
+with the HTTP demon, which is blind within its container.
+We need so to know the ip address of the virtual machine :
+
+    $ docker-machine ip
+    192.168.99.100
+
+We cannot directly access to that address (http://192.168.99.100), but it is
+required to map to a VM port the port from which the HTTP demon answer :
+
+    $ docker run -d -p 8088:80 httpd:2.4
+
+      The web server httpd:2.4 downloaded from the repository is made run in
+      a background container and with -p option all calls done on port 8088
+      of the virtual machine (the standard 192.168.99.100) are mapped to port
+      80  of the container.
+      Now pointing to http://192.168.99.100:8088: we will have the container
+      answering correctly.
+
+------------------------------ USEFUL COMMANDS -------------------------------
+
+$ docker images
+
+  REPOSITORY      TAG      IMAGE ID            CREATED          SIZE
+  hello-world     latest   c54a2cc56cbb        3 months ago     1.848 kB
+
+    Show images present on our PC.
+    REPOSITORY = Container of correlated images (i.e. container of the differ-
+    ent versions of hello-world).
+    TAG = A version of the image (i.e. hello-world:latest, hello-world:ciao are
+    two different version belonging to the same image repository-cathegory)
+
+$ docker pull redis:3.0.0
+
+    3.0.0: Pulling from library/redis
+
+    193224d99eda: Pull complete
+    a3ed95caeb02: Pull complete
+    5d614b26c26f: Pull complete
+    8274a6625da0: Pull complete
+    86d9ae0920b7: Pull complete
+    f4f11f46a20e: Pull complete
+    c3192ae156a0: Pull complete
+    317cb6aa0b20: Pull complete
+    a1a961e320bc: Pull complete
+    Digest: sha256:06ce8790b8f63ad1ee9eec1aec5513c34331a350f66a370572405cb15508ecdc
+    Status: Downloaded newer image for redis:3.0.0
+
+    To download an image from the web.
+    Each Pull Complete identify a different layer composing the overall image.
+    Digest = Encrypted content identifying the image. It is a unique ID to
+    identify the image (can be substituted to the format repository:tag)
+
+      $ docker pull redis@sha256:06ce8790b8f63ad1ee...370572405cb15508ecdc
+
+    If a layer is Already Present this means that it has been downloaded when
+    pulling a previous image.
+
+$ docker ps -a
+
+    CONTAINER ID    IMAGE          COMMAND   CREATED          STATUS   PORTS   NAMES
+    c3849603f184    hello-world    "/hello"  3 weeks ago      Exited           trusting_bell
+    0017d2a0b9d1    hello-world    "/hello"  6 seconds ago    Exited           boring_turing
+
+    Shows both active and inactive (-a option) containers.
+
+    CONTAINER ID = id of the Container Layer.
+
+$ docker run --name hello_html_it hello-world
+
+    To run a container starting from image hello-world:latest (default) and
+    naming it hello_html_it. Without --name a random name is choosen.
+
+    $ docker run -d hello-world (useful for web servers)
+
+      b4ec94bf57023778c0ad191e4626f563cd86edfbb893cb701172e676462fe063
+
+      -d = Container is executed in background
+
+    $ docker logs b4ec9
+
+      To show the output produced in background by the container.
+      b4ec = starting value of the hash identifying the container.
+
+$ docker run -it ubuntu /bin/bash
+
+    root@996fc96427ff:/# ls
+    bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+
+    To run executables (/bin/bash program) from a container (Ubuntu = ContainerID = 996fc96427ff)
+
+    -it = Redirect standard channels of a container, giving the impression to
+          work within it.
+
+          $ root@996fc96427ff:/# exit
+
+            exit command will terminate the interactive mode and so the container
+            will be stopped, since no process is contained in it.
+
+          $ CTRL + P + Q
+
+            In order to terminate the interactive mode only.
+            This command does not arrest the container which can be reattached
+            with the following command:
+
+              $ docker attach 113e7c
+
+                  root@113e7c31aae9:/#
+
+$ docker run -it -v /home/edospi20/Desktop/Data_Volume/:/var ubuntu /bin/bash
+
+  root@b4afd75514bd:/# touch html_it.log
+
+  To create a data volume shared btw the container and the host.
+  In this way each file added to the path /var within the container (i.e.
+  html_it.log) will be visible in our Ubuntu at path /home/edospi20/Desktop/Data_Volume
+  and viceversa.
+
+$ docker rm 113e7c
+
+  To remove the container (Container Layer) created at the execution of the
+  command 'docker run'. All sub-Image_Layers are preserved in our hard disk.
+
+  $ docker rm --force 113e7c
+
+    To remove a container already in execution.
+
+$ docker start 113e7c31aae9
+
+    To start a previously stopped container ($ docker stop 113e7c31aae9).
+    Needs a 'docker attach' to be brought back to the interactive mode.
+
+$ docker top 113e7c31aae9
+
+    PID                USER             COMMAND
+    15635              root             /bin/bash
+
+    To check the container active processes without entering in it.
+    The PID instead of being '1' (father process) as if launching the command 'ps'
+    within the bash console run in the container, is the real PID assigned to the
+    process by the underlying OS.
