@@ -1,7 +1,7 @@
 <h1 align="center">pp-robot-2018</h1>
 
 <div align="center">
-  <strong>Robot arena application</strong>
+  <strong>LaserBot Battle</strong>
 </div>
 <div align="center">
   A <a href="http://www.ros.org">ROS</a> based application for wirelessly controlling robots and let them fight with laser.
@@ -24,11 +24,11 @@
 
 ## Installation
 
-TODO
+TODO (Add the proccesses to install all the needed stable components to run the application : Ros, Ros_serial_arduino, Docker, Robot Components, Ubuntu version...)
 
 ## Usage
 
-TODO
+TODO (Describe the commands to move the robots and make them fighting)
 
 ## Contributing
 
