@@ -77,6 +77,201 @@ required to map to a VM port the port from which the HTTP demon answer :
       Now pointing to http://192.168.99.100:8088: we will have the container
       answering correctly.
 
+-------------------------------- DOCKERFILE ----------------------------------
+
+It is a textual file used to modify the original images (templates) to create
+our customized images. Group of instructions used to define a Docker Image.
+The Docker Engine will be in charge of validating the Dockerfile and generating
+the new image starting from it.
+In general this is the file which is loaded in github such that having a compact
+way to reconstruct a customized image in a unique file.
+
+              ------------ DOCKERFILE INSTRUCTIONS -----------
+
+* FROM *
+
+    It allows to specify the Base Image from where to start to create the
+    customized one.
+    We have 3 possibilities, as if working from command line :
+
+      FROM <image_name>
+      FROM <image_name>:<tag>
+      FROM <image_name>@<hash>
+
+* ENV *
+
+    To set environmental variables valid for the whole execution context of
+    a Dockerfile.
+
+      ENV <key>=<value>
+
+    Within the Dockerfile, in order to recover the value of the variable the
+    character $ is used (i.e. $key).
+
+* RUN *
+
+    To execute commands in the image we are going to generate (i.e. install a
+    package). Two formats can be used :
+
+      # shell form (uses OS shell facilities)
+      RUN <comando> <parametro1> ... <parametroN>
+
+      # exec form (uses OS primitives only)
+      RUN ["<comando>", "<parametro1>", ... , "<parametroN>"]
+
+    NOTE_THAT : Each RUN command generate a new image layer wrapping the
+                modifications introduced by the command itself. Thus, the father
+                image remains untouched.
+
+                => It is good practice to collapse correlated commands within
+                    the same RUN instruction.
+
+* ADD and COPY *
+
+    Used to move files and directory from the build context (local host path, where
+    the Dockerfile is) to the Filesystem of the created image.
+    Two ways to use command ADD :
+
+      # shell form
+      ADD <src> <dest>
+
+      # exec form
+      ADD ["<src>", "<dest>"]
+
+    The <dest> path can be absolute or relative w.r.t. the current working
+    directory (WORKDIR). More than one <src> path can be specified and this can
+    be : file, directory or URL addresses.
+
+    COPY instruction has the same effect of ADD, but it provides no support
+    for remote files or archives. Anyway using COPY is preferable if it is
+    not required to work with remote files and archives.
+
+* ENTRYPOINT *
+
+    It allows to execute a command within the container as soon as it is started.
+    The difference w.r.t. RUN is that in this case the effects of the instruction
+    affects the container itself and not the image generating it.
+
+      # shell form
+      ENTRYPOINT <comando> <parametro_1> ... <parametro_n>
+
+      # exec form
+      ENTRYPOINT ["<comando>", "<parametro_1>", ..., "<parametro_n>"]
+
+    Using the ENTRYPOINT instruction the last part of the command 'docker run'
+    will be not a command anymore, but a parameter to pass to the command
+    expressed in the ENTRYPOINT.
+
+      EX:
+        #Dockerfile (suppose that it generate the image with name 'htmlit')
+          FROM ubuntu:precise
+          ENTRYPOINT ["ls"]
+
+        #Command line
+          $ docker run htmlit -a -l
+            => -a -l are the options passed to the command 'ls'.
+
+          $ docker run entrypoint <comand>
+            => This will overwrite the behavior of the ENTRYPOINT instruction
+                in the docker file.
+
+* CMD *
+
+    It has effect on the Container and does not modify the image, like as
+    the ENTRYPOINT instruction. It has two different behaviors if :
+
+      - ENTRYPOINT instruction is not present
+
+        It allows to execute a command within the container as soon as it is started.
+        The command specified after CMD is automatically overwritten if in
+        the command line another command is specified :
+
+            $ docker run htmlit whoami
+
+          # shell form
+          CMD <comando> <parametro_1> ... <parametro_n>
+
+          # exec form
+          CMD ["<comando>", "<parametro_1>", ..., "<parametro_n>"]
+
+      - ENTRYPOINT instruction is present
+
+          It allows to provide default parameters to the command expressed
+          in the directive ENTRYPOINT
+
+            # exec form (in this case the only possible option)
+            CMD ["<parametro_1>", ..., "<parametro_n>"]
+
+          In this way the command ENTRYPOINT will not be overwrittable anymore (unless
+          the flag 'entrypoint' is used in the command 'docker run'). All default
+          parameters specified in CMD are kept overwrittable.
+
+    One CMD instruction only is admitted in a Dockerfile => Only the last CMD
+    is taken into consideration.
+
+* WORKDIR *
+
+    To set the working directory within the Container, wherein the successive
+    instructions will have effect.
+
+        # absolute path
+        WORKDIR /path1/path2
+
+        # relative path (relative to the previous WORKDIR instruction - root is the default)
+        WORKDIR path1/path2
+
+* LABEL *
+
+    Used to add metadata to our image, not directly linked to the definition
+    of the image itself.
+
+        LABEL "<chiave>"="<valore>" ...
+
+    Can indicate a version number or an image description and stuffs like that.
+    LABEL create a new layer => Better to collapse correlated info.
+
+* EXPOSE *
+
+    To declare on which ports the Container is listening.
+
+        EXPOSE <porta_1> [<porta_n>]
+
+    When the container is started we can use the -P parameter to expose the
+    ports declared in the attribute EXPOSE on random ports. With respect to
+    -p parameter, now we have not to choose both the container and the host
+    port.
+    To know on which port the port exposed in the dockerfile has been mapped, it
+    is possible to use the instruction :
+
+        $ docker port <exposed port> <container name | container id>
+
+        EX : If in the dockerfile we have exposed 4444 port and the container
+              name is htmlit the command will be :
+
+                  $ docker port 4444 htmlit
+
+* VOLUME *
+
+    To make the Host FS communicating with the Container FS.
+    This instruction allows to specify a path within the Container FS
+
+        VOLUME ["/www"]
+
+    When the Container is started it is possible to specify which local path is
+    associated with the path '/www' defined in the container.
+
+
+------------------------------ BUILDING IMAGES -------------------------------
+
+Starting from the Dockerfile a command is used to generate the target image.
+
+    $ docker build [OPT ...] <build context>
+      Refers to the command section below for major details.
+
+Once the instruction is executed the new image can be found locally within
+the PC together with all the other ones and it is possible to see it with
+the command 'docker images' or 'docker image ls' as usual.
+
 ------------------------------ USEFUL COMMANDS -------------------------------
 
 $ docker images
@@ -199,3 +394,18 @@ $ docker top 113e7c31aae9
     The PID instead of being '1' (father process) as if launching the command 'ps'
     within the bash console run in the container, is the real PID assigned to the
     process by the underlying OS.
+
+$ docker build [OPT ...] <build context>
+
+    <build context> = Provides the relative context to the build engine.
+                      i.e. : The COPY instruction within the Dockerfile has
+                              a mandatory relative path, so the context has to
+                              be know for the relative path to be solved.
+
+    -t = Option to assign a tag to out image
+    -f = Where to recover the Dockerfile if this is not present in the <build context>
+
+        EX :
+
+            $ docker build -t esempio_1:v1 .
+            . = build context
