@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 #packages for ROS
 RUN apt-get update && apt-get install -y ros-kinetic-ros-core
 RUN apt-get install -y ros-kinetic-rosserial ros-kinetic-rosbridge-server
-RUN apt-get install -y ros-kinetic-rosserial-arduino vim nano
+RUN apt-get install -y ros-kinetic-rosserial-arduino ros-kinetic-rosserial-python vim nano
 
 # setup entrypoint
 COPY ./entrypoint.sh /
