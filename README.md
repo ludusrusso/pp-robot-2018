@@ -1,10 +1,10 @@
-<h1 align="center">pp-robot-2018</h1>
+<h1 align="center">LaserBot Battle</h1>
 
 <div align="center">
-  <strong>LaserBot Battle</strong>
+  <strong></strong>
 </div>
 <div align="center">
-  A <a href="http://www.ros.org">ROS</a> based application for wirelessly controlling robots and let them fight with laser.
+  A <a href="http://www.ros.org">ROS</a> based application for wirelessly controlling robots and let them fight with lasers.
 </div>
 
 <br />
@@ -15,6 +15,9 @@
 
 ## Table of Contents
 - [Installation](#installation)
+    - [Web Server](#web-server)
+    - [Raspberry](#raspberry)
+    - [Arduino](#arduino)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [History](#history)
@@ -24,7 +27,16 @@
 
 ## Installation
 
-TODO (Add the proccesses to install all the needed stable components to run the application : Ros, Ros_serial_arduino, Docker, Robot Components, Ubuntu version...)
+  ### Web Server
+  TODO (  - Provide to the user a Docker image with all the necessary ROS components intalled to be run by the web server, such that allowing the communication with robots.  
+          - Provide to the user the installation commands for ROS.
+          In this way the user can choose one of the two options.)
+
+  ### Raspberry 
+  TODO (  - Provide the Docker image to be loaded to the raspberry containing ubuntu 16.04 and other ROS packages)
+
+  ### Arduino 
+  TODO (  - Provide the Sketch to be loaded to Arduino Board containing the Robot application to be run)
 
 ## Usage
 
