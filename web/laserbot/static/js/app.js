@@ -1,40 +1,20 @@
-/*! AdminLTE 2.0.1 app.js
- * ======================
- * Main JS application file for AdminLTE v2. This file
- * should be included in all pages. It controls some layout
- * options and implements exclusive AdminLTE plugins.
- *
- * @Author  Almsaeed Studio
- * @Support <http://www.almsaeedstudio.com>
- * @Email   <support@almsaeedstudio.com>
- * @version 2.0
- * @license MIT <http://opensource.org/licenses/MIT>
- */
+/*! app.js */
 
 //Make sure jQuery has been loaded before app.js
 if (typeof jQuery === "undefined") {
-  throw new Error("AdminLTE requires jQuery");
+  throw new Error("This website requires jQuery");
 }
 
 'use strict';
 
-/* AdminLTE
- *
- * @type Object
- * @description $.AdminLTE is the main object for the template's app.
- *				It's used for implementing functions and options related
- *				to the template. Keeping everything wrapped in an object
- *				prevents conflict with other plugins and is a better
- *				way to organize our code.
- */
-$.AdminLTE = {};
+$.app = {};
 
 /* --------------------
- * - AdminLTE Options -
+ * - Website Options -
  * --------------------
  * Modify these options to suit your implementation
  */
-$.AdminLTE.options = {
+$.app.options = {
   //Add slimscroll to navbar menus
   //This requires you to load the slimscroll plugin
   //in every page before app.js
@@ -55,7 +35,7 @@ $.AdminLTE.options = {
   //Enable Fast Click. Fastclick.js creates a more
   //native touch ecperience with touch devices. If you
   //choose to enable the plugin, make sure you load the script 
-  //before AdminLTE's app.js
+  //before website app.js
   enableFastclick: true,
   //Box Widget Plugin. Enable this plugin
   //to allow boxes to be collapsed and/or removed
@@ -101,19 +81,19 @@ $.AdminLTE.options = {
 /* ------------------
  * - Implementation -
  * ------------------
- * The next block of code implements AdminLTE's
+ * The next block of code implements website
  * functions and plugins as specified by the
  * options above.
  */
 $(function () {
   //Easy access to options
-  var o = $.AdminLTE.options;
+  var o = $.app.options;
 
   //Activate the layout maker
-  $.AdminLTE.layout.activate();
+  $.app.layout.activate();
 
   //Enable sidebar tree view controls
-  $.AdminLTE.tree('.sidebar');
+  $.app.tree('.sidebar');
 
   //Add slimscroll to navbar dropdown
   if (o.navbarMenuSlimscroll && typeof $.fn.slimscroll != 'undefined') {
@@ -126,7 +106,7 @@ $(function () {
 
   //Activate sidebar push menu
   if (o.sidebarPushMenu) {
-    $.AdminLTE.pushMenu(o.sidebarToggleSelector);
+    $.app.pushMenu(o.sidebarToggleSelector);
   }
 
   //Activate Bootstrap tooltip
@@ -136,7 +116,7 @@ $(function () {
 
   //Activate box widget
   if (o.enableBoxWidget) {
-    $.AdminLTE.boxWidget.activate();
+    $.app.boxWidget.activate();
   }
   
   if(o.enableFastclick && typeof FastClick != 'undefined') {
@@ -159,9 +139,9 @@ $(function () {
 });
 
 /* ----------------------
- * - AdminLTE Functions -
+ * - Website Functions -
  * ----------------------
- * All AdminLTE functions are implemented below.
+ * All functions are implemented below.
  */
 
 /* prepareLayout
@@ -169,11 +149,11 @@ $(function () {
  * Fixes the layout height in case min-height fails.
  *
  * @type Object
- * @usage $.AdminLTE.layout.activate()
- *        $.AdminLTE.layout.fix()
- *        $.AdminLTE.layout.fixSidebar()
+ * @usage $.app.layout.activate()
+ *        $.app.layout.fix()
+ *        $.app.layout.fixSidebar()
  */
-$.AdminLTE.layout = {
+$.app.layout = {
   activate: function () {
     var _this = this;
     _this.fix();
@@ -211,7 +191,7 @@ $.AdminLTE.layout = {
       console.error("Error: the fixed layout requires the slimscroll plugin!");
     }
     //Enable slimscroll for fixed layout
-    if ($.AdminLTE.options.sidebarSlimScroll) {
+    if ($.app.options.sidebarSlimScroll) {
       if (typeof $.fn.slimScroll != 'undefined') {
         //Distroy if it exists
         $(".sidebar").slimScroll({destroy: true}).height("auto");
@@ -231,9 +211,9 @@ $.AdminLTE.layout = {
  * Adds the push menu functionality to the sidebar.
  *
  * @type Function
- * @usage: $.AdminLTE.pushMenu("[data-toggle='offcanvas']")
+ * @usage: $.app.pushMenu("[data-toggle='offcanvas']")
  */
-$.AdminLTE.pushMenu = function (toggleBtn) {
+$.app.pushMenu = function (toggleBtn) {
   //Enable sidebar toggle
   $(toggleBtn).click(function (e) {
     e.preventDefault();
@@ -256,9 +236,9 @@ $.AdminLTE.pushMenu = function (toggleBtn) {
  * tree view menu.
  *
  * @type Function
- * @Usage: $.AdminLTE.tree('.sidebar')
+ * @Usage: $.app.tree('.sidebar')
  */
-$.AdminLTE.tree = function (menu) {
+$.app.tree = function (menu) {
   $("li a", $(menu)).click(function (e) {
     //Get the clicked link and the next element
     var $this = $(this);
@@ -304,12 +284,12 @@ $.AdminLTE.tree = function (menu) {
  * removing boxes from the screen.
  *
  * @type Object
- * @usage $.AdminLTE.boxWidget.activate()
- *								Set all of your option in the main $.AdminLTE.options object
+ * @usage $.app.boxWidget.activate()
+ *								Set all of your option in the main $.app.options object
  */
-$.AdminLTE.boxWidget = {
+$.app.boxWidget = {
   activate: function () {
-    var o = $.AdminLTE.options;
+    var o = $.app.options;
     var _this = this;
     //Listen for collapse event triggers
     $(o.boxWidgetOptions.boxWidgetSelectors.collapse).click(function (e) {
@@ -347,7 +327,7 @@ $.AdminLTE.boxWidget = {
     var box = element.parents(".box").first();
     box.slideUp();
   },
-  options: $.AdminLTE.options.boxWidgetOptions
+  options: $.app.options.boxWidgetOptions
 };
 
 /* ------------------
