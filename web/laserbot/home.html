@@ -77,10 +77,10 @@
                   <!-- Menu Footer-->
                   <li class="user-footer">
                     <div class="pull-left">
-                      <a href="#" class="btn btn-default btn-flat">Profile</a>
+                      <a  class="btn btn-default btn-flat">Profile</a>
                     </div>
                     <div class="pull-right">
-                      <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                      <a href="#" class="btn btn-default btn-flat" onclick="userSignOut()">Sign out</a>
                     </div>
                   </li>
                 </ul>
@@ -270,15 +270,27 @@
 
 
 
-    <script >
+    <script>
 
       //Spawn username in all username classes
       $(document).ready(function(){
         $('.username').html(username);
       });
 
+      //Signout Function
+      function userSignOut() {
+        if (confirm('Are you sure you want to SignOut?')) {
+            // Yes
+            localStorage.removeItem("name");
+            console.log("User \""+ username + "\" deleted.");
+            location.href = "index.html";
+        } else {
+            // No
+        }
+      }
+
     </script>
 
-  </body>
+</body>
 
-  </html> 
+</html> 
