@@ -28,14 +28,14 @@
 
   <script type="text/javascript">
 
-    if (localStorage.getItem("name") !== null){
-      if (confirm("You previously logged as \""+ localStorage.getItem("name") + "\".\n"
+    if (localStorage.getItem("user") !== "null"){
+      if (confirm("You previously logged as \""+ localStorage.getItem("user").name + "\".\n"
         + "Do you want to restore your previous session?")) {
         // Yes
       location.href = "home.html";
     } else {
         // No
-        localStorage.removeItem("name");
+        localStorage.removeItem("user");
       }
     }
 
@@ -43,19 +43,30 @@
     function userLogin() {
       if (typeof(Storage) !== "undefined") {
         // Browser support local storage
-        var name = document.getElementById('username').value;
+        var tempName = document.getElementById('username').value;
 
         //Check if username is blank or already taken
-        if (name == ""){
+        if (tempName == ""){
           alert("You can't start without choosing a username!");
-        } else if (localStorage.getItem("name") !== name){
+        } else if (localStorage.getItem("user") !== "null"){
           //TODO: modify above check to check all usernames
+          //LOGIN
 
-          localStorage.setItem('name', name);
+          var user = {
+            name: tempName
+          };
+
+          localStorage.setItem('user', user.name);
+
+          // Put the object into storage
+          // localStorage.setItem('testObject', JSON.stringify(testObject));
+          // console.log('retrievedObject: ', JSON.parse(retrievedObject));
+
+
           //Redirect to home page
           location.href = "home.html";
         } else {
-          alert("The username \"" +name+ "\" is already taken! Choose another one.");
+          alert("The username \"" +tempName+ "\" is already taken! Choose another one.");
         }
       } else {
         // Sorry! No Web Storage support..

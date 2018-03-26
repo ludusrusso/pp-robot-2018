@@ -28,12 +28,14 @@
 
     <script type="text/javascript">
       // Check if username has been set
-      var username = localStorage.getItem("name");
-      if ( username == null){
+      var user = {
+        name : localStorage.getItem("user")
+      };
+      if ( user == null){
         alert("Username has not been choosen! Redirecting to login page.");
         location.href = "index.html";
       }
-      console.log("Logged as \""+ username + "\"");
+      console.log("Logged as \""+ user.name + "\"");
     </script>
 
   </head>
@@ -274,15 +276,16 @@
 
       //Spawn username in all username classes
       $(document).ready(function(){
-        $('.username').html(username);
+        $('.username').html(user.name);
       });
 
       //Signout Function
       function userSignOut() {
-        if (confirm('Are you sure you want to SignOut?')) {
+        if (confirm('Are you sure you want to Sign Out?')) {
             // Yes
-            localStorage.removeItem("name");
-            console.log("User \""+ username + "\" deleted.");
+            localStorage.removeItem("user");
+            console.log("User \""+ user.name + "\" deleted.");
+            user = null;
             location.href = "index.html";
         } else {
             // No
