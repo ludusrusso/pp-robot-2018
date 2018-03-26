@@ -1,0 +1,167 @@
+REFERENCES :
+
+    http://wiki.ros.org/rosbridge_suite
+
+rosbridge protocol is a specification for sending JSON based commands to ROS.
+The protocol covers subscribing and publishing topics, service calls, getting
+and setting params, and even compressing messages and more.
+
+The packages include:
+
+    rosbridge_library - The core rosbridge package. The rosbridge_library is responsible for taking the JSON string and sending the commands to ROS and vice versa.
+
+    rosapi - Makes certain ROS actions accessible via service calls that are normally reserved for ROS client libraries. This includes getting and setting params, getting topics list, and more.
+
+    rosbridge_server - While rosbridge_library provides the JSON<->ROS conversion,
+      it leaves the transport layer to others. Rosbridge_server provides a WebSocket
+      connection so browsers can "talk rosbridge." Roslibjs is a JavaScript
+      library for the browser that can talk to ROS via rosbridge_server.
+
+----------------------------- RUNNING ROSBRIDGE -------------------------------
+
+
+$ sudo apt-get install ros-kinetic-rosbridge-suite
+$ source /opt/ros/kinetic/setup.bash
+
+$ roslaunch rosbridge_server rosbridge_websocket.launch
+
+    This will run rosbridge and create a WebSocket on port 9090 by default.
+
+You can configure the port by setting the ~/port param in ROS. An example launch
+file that will run rosbridge on port 8080 would look like:
+
+    <launch>
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" >
+     <arg name="port" value="8080"/>
+    </include>
+    </launch>
+
+-------------- PUBLISH, SUBSCRIBE AND SERVICE CALLS WITH ROSLIBJS -------------
+
+This tutorial involves writing a single HTML file, which will contain the HTML
+and JavaScript needed to communicate with ROS over rosbridge.
+
+* Create a file simple.html containing the following code
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <meta charset="utf-8" />
+
+        // Importing JavaScript files for the application
+        <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+        <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+
+        <script type="text/javascript" type="text/javascript">
+        // Connecting to ROS
+        // -----------------
+        // Create a Ros node object to communicate with a rosbridge v2.0 server
+        // In this example we will connect to localhost 127.0.0.1 on the default 9090 port
+        var ros = new ROSLIB.Ros({
+          url : 'ws://localhost:9090'
+        });
+
+        // Adds a listener for a connection event to the ros object
+        ros.on('connection', function() {
+          console.log('Connected to websocket server.');
+        });
+
+        ros.on('error', function(error) {
+          console.log('Error connecting to websocket server: ', error);
+        });
+
+        ros.on('close', function() {
+        console.log('Connection to websocket server closed.');
+        });
+
+        // Publishing a Topic
+        // ------------------
+
+        // It corresponds to a ROS topic. Declares topic name and message type.
+        var cmdVel = new ROSLIB.Topic({
+          ros : ros,
+          name : '/cmd_vel',
+          messageType : 'geometry_msgs/Twist'
+        });
+
+        // ROSLIB message matching the message type in the ROS definition
+        var twist = new ROSLIB.Message({
+          linear : {
+            x : 0.1,
+            y : 0.2,
+            z : 0.3
+          },
+          angular : {
+            x : -0.1,
+            y : -0.2,
+            z : -0.3
+          }
+        });
+        // Publish the message in the topic
+        cmdVel.publish(twist);
+
+        // Subscribing to a Topic
+        // ----------------------
+
+        // Listener topic is created
+        var listener = new ROSLIB.Topic({
+          ros : ros,
+          name : '/listener',
+          messageType : 'std_msgs/String'
+        });
+
+        // Whenever ROS publishes a message on the listener topic, rosbridge will
+        // forward that message  to the browser and the callback function will be called with the message as argument.
+        listener.subscribe(function(message) {
+          console.log('Received message on ' + listener.name + ': ' + message.data);
+          listener.unsubscribe();
+        });
+
+        // Calling a service
+        // -----------------
+
+        // Create a service
+        var addTwoIntsClient = new ROSLIB.Service({
+          ros : ros,
+          name : '/add_two_ints',
+          serviceType : 'rospy_tutorials/AddTwoInts'
+        });
+
+        // Request
+        var request = new ROSLIB.ServiceRequest({
+          a : 1,
+          b : 2
+        });
+
+        // Function managing requests
+        addTwoIntsClient.callService(request, function(result) {
+          console.log('Result for service call on '
+          + addTwoIntsClient.name
+          + ': '
+          + result.sum);
+        });
+
+        // Getting and setting a param value
+        // ---------------------------------
+
+        ros.getParams(function(params) {
+          console.log(params);
+        });
+
+        var maxVelX = new ROSLIB.Param({
+          ros : ros,
+          name : 'max_vel_y'
+        });
+
+        maxVelX.set(0.8);
+        maxVelX.get(function(value) {
+          console.log('MAX VAL: ' + value);
+        });
+        </script>
+        </head>
+
+        <body>
+        <h1>Simple roslib Example</h1>
+        <p>Check your Web Console for output.</p>
+        </body>
+        </html>
