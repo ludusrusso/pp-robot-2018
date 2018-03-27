@@ -4,7 +4,7 @@
  * 
  * @type function
  * @usage JSON.parse(object); | JSON.stringfy(string);
- *//*
+ */
  if(!(window.JSON && window.JSON.parse)) {
    (function() {
     function g(a){var b=typeof a;if("object"==b)if(a){if(a instanceof Array)return"array";if(a instanceof Object)return b;var c=Object.prototype.toString.call(a);if("[object Window]"==c)return"object";if("[object Array]"==c||"number"==typeof a.length&&"undefined"!=typeof a.splice&&"undefined"!=typeof a.propertyIsEnumerable&&!a.propertyIsEnumerable("splice"))return"array";if("[object Function]"==c||"undefined"!=typeof a.call&&"undefined"!=typeof a.propertyIsEnumerable&&!a.propertyIsEnumerable("call"))return"function"}else return"null";
@@ -13,25 +13,17 @@
       j(a,a.a?a.a.call(b,e,d):d,c),f=","));c.push("}");break;case "function":break;default:throw Error("Unknown type: "+typeof b);}}var m={'"':'\\"',"\\":"\\\\","/":"\\/","\u0008":"\\b","\u000c":"\\f","\n":"\\n","\r":"\\r","\t":"\\t","\x0B":"\\u000b"},n=/\uffff/.test("\uffff")?/[\\\"\x00-\x1f\x7f-\uffff]/g:/[\\\"\x00-\x1f\x7f-\xff]/g;
     function l(a,b){b.push('"',a.replace(n,function(a){if(a in m)return m[a];var b=a.charCodeAt(0),d="\\u";16>b?d+="000":256>b?d+="00":4096>b&&(d+="0");return m[a]=d+b.toString(16)}),'"')};window.JSON||(window.JSON={});"function"!==typeof window.JSON.stringify&&(window.JSON.stringify=i);"function"!==typeof window.JSON.parse&&(window.JSON.parse=h);
   })();
-}*/
-
-/*
- * EXTEND WEB STORAGE FUNCTION
- * -----------------------
- * Store object in Web Storage
- *
- * @type function
- * @usage localStorage.setObject('user', userObject);
-
- window.localStorage.
- */
+}
 
 
- var users = [];
- var lines;
- var tempName;
 
- function getUsers(){
+var users = [];
+var currentUser = { 
+                    name: "",
+                    life: 100
+                  };
+
+function getUsers(){
   $.ajax({
     url: 'php/getUsers.php',
     type: 'POST',
@@ -41,8 +33,8 @@
       //console.log("read file: " + response);
 
       // Cut lines after \n
-      lines = response.match(/^.*((\r\n|\n|\r)|$)/gm);
-      console.log("logged users: " + lines);
+      var lines = response.match(/^.*((\r\n|\n|\r)|$)/gm);
+      //console.log("logged users: " + lines);
       users = [];
       // Create array of user object
 
@@ -86,7 +78,7 @@ function isUserAvailable(avalname){
 
 
 function delUser(){
-  jsonString = JSON.stringify(currentUser)+"\n";
+  jsonString = JSON.stringify(currentUser);
   $.ajax({
     url: 'php/delUser.php',
     type: 'POST',
@@ -94,8 +86,8 @@ function delUser(){
     async: false,
     data : {'jsonString':jsonString},
     dataType: "json",
-    success : function (response) {
-      delete currentUser;
+    success : function () {
+      currentUser.name="";
     }
   });
 }
@@ -103,7 +95,7 @@ function delUser(){
 function userLogin() {
   if (typeof(Storage) !== "undefined") {
     // Browser support local storage
-    tempName = document.getElementById('username').value;
+    var tempName = document.getElementById('username').value;
 
     //Check if username is blank or already taken
     if (tempName == "" || tempName.match(/^[a-z0-9]+$/i) == null){
@@ -111,10 +103,7 @@ function userLogin() {
     } else if ( isUserAvailable(tempName) == true ){
       //LOGIN
 
-      currentUser = { 
-        name: tempName,
-        otherinfo: "other"
-      };
+      currentUser.name = tempName;
 
       localStorage.setItem('user', JSON.stringify(currentUser));
       // Add user to user list file
@@ -128,5 +117,45 @@ function userLogin() {
   } else {
     // Sorry! No Web Storage support..
     alert("This browser does not support local storage!");
+  }
+}
+
+// Spawn Green circle + username in id="userListId"
+function updateLoggedUsers() {
+  getUsers();
+  var userList = "";
+
+  if (users !== ""){
+    for (var i = 0; i < users.length; i++) {
+      if (users[i].name != currentUser.name){
+        userList += '<li><a><i class="fa fa-circle text-success"></i> '
+                  + users[i].name + '</a> <span class="badge bg-red" style="float: right" >'
+                  + users[i].life + '%</span> </li>'
+                  + ' <div class="progress progress-xs" style="width:97%"> '
+                  + ' <div class="progress-bar progress-bar-primary" style="width: '
+                  + users[i].life + '%"></div> </div><br />'
+
+
+
+                    /*<progress id='" + users[i].name +
+         "_life' value='"+ users[i].life + "' max='100'></progress>";*/
+      }
+    }
+  } else {
+    userList = "No users logget yet."
+  }
+  document.getElementById('userListId').innerHTML = userList;
+}
+
+//Signout Function
+function userSignOut() {
+  if (confirm('Are you sure you want to Sign Out?')) {
+    // Yes
+    localStorage.removeItem("user");
+    console.log("User \""+ currentUser.name + "\" deleted.");
+    delUser();
+    location.href = "index.html";
+  } else {
+    // No
   }
 }
