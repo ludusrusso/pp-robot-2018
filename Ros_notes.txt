@@ -818,3 +818,54 @@ $ rosrun beginner_tutorials add_two_ints_client.py 1 3
 
         Requesting 1+3
         1 + 3 = 4
+
+------------------------- ROS ACROSS MULTIPLE MACHINES ------------------------
+
+http://wiki.ros.org/ROS/Tutorials/MultipleMachines
+http://wiki.ros.org/ROS/NetworkSetup
+
+* It explains the use of ROS_MASTER_URI to configure multiple machines to use a single master.
+
+  The basic principles to respect are :
+
+    - You only need one master. Select one machine to run it on.
+    - All nodes must be configured to use the same master, via ROS_MASTER_URI.
+    - There must be complete, bi-directional connectivity between all pairs of machines, on all ports
+    - Each machine must advertise itself by a name that all other machines can resolve
+
+Let's imagine to have two machines whose hostnames are MARVIN and HAL.
+We need to select one machine to run the master (executing roscore).
+
+1)  On MARVIN machine (Master) execute :
+
+      $ roscore
+
+      $ hostname -I
+
+          To get the IP for this machine.
+
+            i.e. : 192.168.0.14
+
+      $ export ROS_IP=192.168.0.14
+
+          For the other machines to identify it.
+
+2)  On HAL machine execute :
+
+      $ export ROS_MASTER_URI=http://192.168.0.14:1131
+
+          Set the ROS_MASTER_URI (hostname + port) to match the IP address of the
+          machine running roscore (MARVIN).
+
+      $ hostname -I
+
+          To get the IP for this machine.
+
+            i.e. : 192.168.0.15
+
+      $ export ROS_IP=192.168.0.15
+
+          For the other machines to identify it.
+
+3) At this point nodes, topics, services created by the two machines will belong
+    to the same ROS network.
