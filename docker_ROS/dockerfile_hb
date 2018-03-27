@@ -1,0 +1,10 @@
+FROM hbrobotics/ros-base:rpi3
+
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    vim \
+    tmux \
+    ros-kinetic-rosserial \
+    ros-kinetic-rosserial-arduino \
+    ros-kinetic-rosbridge-server
+
+RUN apt-get upgrade -y
