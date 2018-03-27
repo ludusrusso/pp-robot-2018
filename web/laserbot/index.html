@@ -17,7 +17,8 @@
   <link href="static/css/app.min.css" rel="stylesheet" type="text/css" />
   <!-- App Skins -->
   <link href="static/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />
-
+  <!-- JS functions -->
+  <script src="static/js/manageUsers.js" type="text/javascript"></script>
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -28,51 +29,19 @@
 
   <script type="text/javascript">
 
-    if (localStorage.getItem("user") !== "null"){
-      if (confirm("You previously logged as \""+ localStorage.getItem("user").name + "\".\n"
+    if (localStorage.getItem("user")!== null){
+      currentUser = JSON.parse(localStorage.getItem("user"));
+      if (confirm("You previously logged as \""+ currentUser.name + "\".\n"
         + "Do you want to restore your previous session?")) {
-        // Yes
-      location.href = "home.html";
-    } else {
-        // No
-        localStorage.removeItem("user");
-      }
-    }
-
-
-    function userLogin() {
-      if (typeof(Storage) !== "undefined") {
-        // Browser support local storage
-        var tempName = document.getElementById('username').value;
-
-        //Check if username is blank or already taken
-        if (tempName == ""){
-          alert("You can't start without choosing a username!");
-        } else if (localStorage.getItem("user") !== "null"){
-          //TODO: modify above check to check all usernames
-          //LOGIN
-
-          var user = {
-            name: tempName
-          };
-
-          localStorage.setItem('user', user.name);
-
-          // Put the object into storage
-          // localStorage.setItem('testObject', JSON.stringify(testObject));
-          // console.log('retrievedObject: ', JSON.parse(retrievedObject));
-
-
-          //Redirect to home page
-          location.href = "home.html";
-        } else {
-          alert("The username \"" +tempName+ "\" is already taken! Choose another one.");
-        }
+        // Yes: restore previous session
+        location.href = "home.html";
       } else {
-        // Sorry! No Web Storage support..
-        alert("This browser does not support local storage!");
+        // No: remove previous session
+        localStorage.removeItem("user");
+        delete currentUser;
       }
     }
+
   </script>
 
 </head>
@@ -103,7 +72,7 @@
           <div class="col-md-6">
             <div class="box box-info">
               <div class="box-header">
-                <h3 class="box-title">Chose a user name:</h3>
+                <h3 class="box-title">Choose a user name:</h3>
               </div>
               <div class="box-body">
                 <div class="input-group input-group-sm">

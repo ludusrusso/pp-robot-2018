@@ -17,7 +17,8 @@
   <link href="static/css/app.min.css" rel="stylesheet" type="text/css" />
   <!-- App Skins -->
   <link href="static/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />
-
+  <!-- JS functions -->
+  <script src="static/js/manageUsers.js" type="text/javascript"></script>
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -28,14 +29,13 @@
 
     <script type="text/javascript">
       // Check if username has been set
-      var user = {
-        name : localStorage.getItem("user")
-      };
-      if ( user == null){
-        alert("Username has not been choosen! Redirecting to login page.");
+      var currentUser = JSON.parse(localStorage.getItem("user"));
+
+      if ( currentUser == null){
+        alert("Username has not been choosen!\nRedirecting to login page.");
         location.href = "index.html";
       }
-      console.log("Logged as \""+ user.name + "\"");
+      console.log("Logged as \""+ currentUser.name + "\"");
     </script>
 
   </head>
@@ -276,7 +276,7 @@
 
       //Spawn username in all username classes
       $(document).ready(function(){
-        $('.username').html(user.name);
+        $('.username').html(currentUser.name);
       });
 
       //Signout Function
@@ -284,8 +284,8 @@
         if (confirm('Are you sure you want to Sign Out?')) {
             // Yes
             localStorage.removeItem("user");
-            console.log("User \""+ user.name + "\" deleted.");
-            user = null;
+            console.log("User \""+ currentUser.name + "\" deleted.");
+            delUser();
             location.href = "index.html";
         } else {
             // No
