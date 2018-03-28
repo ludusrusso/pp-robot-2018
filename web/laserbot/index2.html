@@ -63,51 +63,33 @@
       })
     });
 
-    $('form').submit(false);
-
   </script>
   
 </head>
-<body class="lockscreen">
 
-    <!-- Automatic element centering -->
-    <div class="lockscreen-wrapper">
-      <div class="lockscreen-logo">
-        <b>LaserBot</b> Battle
-      </div>
-      <!-- User name -->
-      <div class="lockscreen-name">LOGIN</div>
+<body class="login-page">
+  <div class="login-box">
+    <div class="login-logo">
+      <a><b>LaserBot</b> Battle</a>
+    </div><!-- /.login-logo -->
 
-      <!-- START LOCK SCREEN ITEM -->
-      <div class="lockscreen-item">
+    <div class="login-box-body">
+      <p class="login-box-msg">
+        <i class="fa fa-user-plus"></i> Choose a username to start playing:
+      </p>
+      <div class="input-group input-group-sm">
+        <input type="text" class="form-control" id="username">
+        <span class="input-group-btn">
+          <button class="btn btn-info btn-flat" type="button" onclick="userLogin()">Start!</button>
+        </span>
+      </div><!-- /input-group -->
+    </div><!-- /.login-box-body -->
+    <br/>
+    <div style="text-align: center;">
+      <a href="about.html"> About</a>
+    </div>
+  </div><!-- /.login-box -->
 
-        <!-- user image -->
-        <div class="lockscreen-image">
-          <img src="static/img/avatar0.png" alt="user image" 
-                title="Click to change avatar" id="userImage" onclick="changeImage()">
-        </div>
-        <!-- /.user-image -->
+</body>
 
-        <!-- user credentials (contains the form) -->
-        <div class="lockscreen-credentials">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="username" id="username">
-            <div class="input-group-btn">
-              <button class="btn" onclick="userLogin()" style="height: 20px;">
-                <i class="fa fa-arrow-right text-muted"></i>
-              </button>
-            </div>
-          </div>
-        </div><!-- /.user credentials -->
-      </div><!-- /.lockscreen-item -->
-
-      <div class='text-center'>
-        <a href="home.html"><small>Restore previous session if any</small></a>
-      </div>
-      <div class='lockscreen-footer text-center'>
-        <b><a href="about.html" class='text-black'>ABOUT</a></b>
-      </div>
-    </div><!-- /.center -->
-
-  </body>
 </html> 

@@ -1,5 +1,6 @@
-{"name":"00","life":100}
-{"name":"asd","life":100}
-{"name":"Stefano","life":100}
-{"name":"boh","life":100}
-{"name":"User1","life":100}
+{"name":"00","life":100,"imgIndex":0}
+{"name":"asd","life":100,"imgIndex":1}
+{"name":"Stefano","life":100,"imgIndex":5}
+{"name":"boh","life":100,"imgIndex":2}
+{"name":"User1","life":100,"imgIndex":3}
+{"name":"Stefano2","life":100,"imgIndex":1}

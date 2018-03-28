@@ -19,9 +19,10 @@
 
 var users = [];
 var currentUser = { 
-                    name: "",
-                    life: 100
-                  };
+  name: "",
+  life: 100,
+  imgIndex: 0
+};
 
 function getUsers(){
   $.ajax({
@@ -98,12 +99,12 @@ function userLogin() {
     var tempName = document.getElementById('username').value;
 
     // remove spaces before and after string
-    tempName = tempName.replace(/^\s+|\s+$/g, '')
+    tempName = tempName.replace(/^\s+|\s+$/g, '');
 
     //Check if username is blank or already taken
     if (tempName.match(/^[A-z0-9]+$/) == null){
       alert("Your username is not in a valid format!\n"
-            + "Username can not contain spaces and special characters.");
+        + "Username can not contain spaces and special characters.");
     } else if ( isUserAvailable(tempName) == true ){
       //LOGIN
 
@@ -124,6 +125,13 @@ function userLogin() {
   }
 }
 
+
+function changeImage() {
+  currentUser.imgIndex = (currentUser.imgIndex +1) % 6;
+  document.getElementById("userImage").src = "static/img/avatar" + currentUser.imgIndex +".png";
+}
+
+
 // Spawn Green circle + username in id="userListId"
 function updateLoggedUsers() {
   getUsers();
@@ -133,11 +141,11 @@ function updateLoggedUsers() {
     for (var i = 0; i < users.length; i++) {
       if (users[i].name != currentUser.name){
         userList += '<li><a><i class="fa fa-circle text-success"></i> '
-                  + users[i].name + '</a> <span class="badge bg-red" style="float: right" >'
-                  + users[i].life + '%</span> </li>'
-                  + ' <div class="progress progress-xs" style="width:97%"> '
-                  + ' <div class="progress-bar progress-bar-primary" style="width: '
-                  + users[i].life + '%"></div> </div><br />'
+        + users[i].name + '</a> <span class="badge bg-red" style="float: right" >'
+        + users[i].life + '%</span> </li>'
+        + ' <div class="progress progress-xs" style="width:97%"> '
+        + ' <div class="progress-bar progress-bar-primary" style="width: '
+        + users[i].life + '%"></div> </div><br />'
       }
     }
   } else {
