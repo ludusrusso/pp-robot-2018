@@ -136,23 +136,42 @@ function changeImage() {
 function updateLoggedUsers() {
   getUsers();
   var userList = "";
+  var userLife = "";
 
   if (users !== ""){
     for (var i = 0; i < users.length; i++) {
       if (users[i].name != currentUser.name){
-        userList += '<li><a><i class="fa fa-circle text-success"></i> '
-        + users[i].name + '</a> <span class="badge bg-red" style="float: right" >'
-        + users[i].life + '%</span> </li>'
-        + ' <div class="progress progress-xs" style="width:97%"> '
-        + ' <div class="progress-bar progress-bar-primary" style="width: '
-        + users[i].life + '%"></div> </div><br />'
+        //circle + username
+        userList += '<br /><li><a><b>&emsp;'+ users[i].name + '</b></a>'
+        // 
+        + ' <span class="badge" style="float: right; background-color:#3c8dbc;" >'
+        + users[i].life + '%</span> </li><br />'
+        + ' <div class="progress progress-xs" style="width:97%; background-color: #d33724"> '
+        + ' <div class="progress-bar progress-bar-success" style="width: '
+        + users[i].life + '%"></div> </div>'
+      }
+      else{
+        currentUser = users[i];
       }
     }
   } else {
     userList = "No users logget yet."
   }
+
+  userLife += '<div style="width: 500px; margin:0 auto;">'
+            + '<span class="badge" style="position:relative; top:+1.5em; margin-left: 50%;'
+            + ' background-color:transparent;" >' + currentUser.life + '%</span>'
+            + '<div class="progress progress" style="background-color: #d33724;">'
+            + '<div class="progress-bar progress-bar-success" role="progressbar"'
+            + 'aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: ' 
+            + currentUser.life + '%;"></div></div></div>';
+
   document.getElementById('userListId').innerHTML = userList;
+  document.getElementById('userLife').innerHTML = userLife;
 }
+
+
+//<li><a href="#"><i class="fa fa-circle-o text-danger"></i> Important</a></li>
 
 //Signout Function
 function userSignOut() {
