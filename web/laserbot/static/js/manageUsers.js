@@ -97,9 +97,13 @@ function userLogin() {
     // Browser support local storage
     var tempName = document.getElementById('username').value;
 
+    // remove spaces before and after string
+    tempName = tempName.replace(/^\s+|\s+$/g, '')
+
     //Check if username is blank or already taken
-    if (tempName == "" || tempName.match(/^[a-z0-9]+$/i) == null){
-      alert("You can't start without choosing an username!");
+    if (tempName.match(/^[A-z0-9]+$/) == null){
+      alert("Your username is not in a valid format!\n"
+            + "Username can not contain spaces and special characters.");
     } else if ( isUserAvailable(tempName) == true ){
       //LOGIN
 
@@ -134,11 +138,6 @@ function updateLoggedUsers() {
                   + ' <div class="progress progress-xs" style="width:97%"> '
                   + ' <div class="progress-bar progress-bar-primary" style="width: '
                   + users[i].life + '%"></div> </div><br />'
-
-
-
-                    /*<progress id='" + users[i].name +
-         "_life' value='"+ users[i].life + "' max='100'></progress>";*/
       }
     }
   } else {
