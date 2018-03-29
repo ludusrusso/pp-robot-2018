@@ -1,0 +1,142 @@
+{% extends 'layout.html' %}
+
+{% block inside_head %}
+<title>LaserBot Battle | Home</title>
+
+<script type="text/javascript">
+
+  var currentUser = JSON.parse(localStorage.getItem("user"));
+// Check if username has been set
+if ( currentUser == null){
+  // If not redirect to login page
+  alert("Username has not been choosen!\nRedirecting to login page.");
+  location.href = "/";
+}
+
+console.log("Logged as \""+ currentUser.name + "\"");
+
+
+$(document).ready(function(){
+  //Spawn username in all username classes
+  $('.username').html(currentUser.name);
+
+  //launch update users info function
+  var userUpdate = setInterval(function(){updateLoggedUsers();}, 1000);
+
+  $('.userImage img').attr("src", "static/img/avatar" + currentUser.imgIndex +".png");
+});
+
+</script>
+{% endblock %}
+
+{% block body %}
+<body class="skin-blue">
+  <div class="wrapper">
+
+    <header class="main-header">
+      <!-- Logo -->
+      <a href="" class="logo"><b>LaserBot</b> Battle</a>
+      <!-- Header Navbar: style can be found in header.less -->
+      <nav class="navbar navbar-static-top" role="navigation">
+        <!-- Sidebar toggle button-->
+        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+          <span class="sr-only">Toggle navigation</span>
+        </a>
+        <div class="navbar-custom-menu">
+          <ul class="nav navbar-nav">
+            <li class="dropdown user user-menu">
+              <a href="#" class="dropdown-toggle userImage" data-toggle="dropdown">
+                <img src="/static/img/avatar0.png" class="user-image" alt="User Image"/>
+                <span class="hidden-xs username"></span>
+              </a>
+
+              <ul class="dropdown-menu">
+                <!-- User image -->
+                <li class="user-header userImage">
+                  <img src="/static/img/avatar0.png" class="img-circle" alt="User Image"/>
+                  <p>
+                    <label class="username"></label> - <label class="robotN">Robot RED</label>
+                    <small>Logged in 2018</small>
+                  </p>
+
+                </li>
+                <!-- Menu Footer-->
+                <li class="user-footer">
+                  <div class="pull-left">
+                    <a  class="btn btn-default btn-flat">Pause game</a>
+                  </div>
+                  <div class="pull-right">
+                    <a class="btn btn-default btn-flat" onclick="userSignOut()">Sign out</a>
+                  </div>
+                </li>
+              </ul>
+
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <!-- Left side column. contains the logo and sidebar -->
+    <aside class="main-sidebar">
+      <!-- sidebar: style can be found in sidebar.less -->
+      <section class="sidebar">
+        <!-- Sidebar user panel -->
+        <div class="user-panel">
+          <div class="pull-left image userImage">
+            <img src="static/img/avatar0.png" class="img-circle" alt="User Image"/>
+          </div>
+          <div class="pull-left info">
+            <p class="username"></p>
+            <a><i class="fa fa-circle text-success"></i> Online</a>
+          </div>
+        </div>
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        <ul class="sidebar-menu">
+
+          <li class="header">Logged users:</li>
+
+          <li class="active treeview">
+            <span id="userList">
+              <a><span> Updating user list...</span></a>
+            </span>
+          </li>
+
+        </ul>
+      </section>
+      <!-- /.sidebar -->
+    </aside>
+
+    <!-- Right side column. Contains the navbar and content of the page -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <h1>
+          Home
+          <small>user space</small>
+        </h1>
+      </section>
+
+      <!-- Main content -->
+      <section class="content">
+
+        <!-- Health row -->
+        <div class="row">
+         <span id="userLife"></span>
+      </div><!-- /.row (healt row) -->
+
+      <!-- Main row -->
+      <div class="row">
+
+      </div><!-- /.row (main row) -->
+
+    </section><!-- /.content -->
+  </div><!-- /.content-wrapper -->
+  <footer class="main-footer">
+    <div class="pull-right hidden-xs">
+      <b>Version</b> 0.1
+    </div>
+    <strong>Copyright &copy; 2018 <a href="https://github.com/ludusrusso/pp-robot-2018">pp-robot-2018 group</a>.</strong> All rights reserved.
+  </footer>
+</div><!-- ./wrapper -->
+
+{% endblock %}
