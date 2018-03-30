@@ -15,80 +15,106 @@
   })();
 }
 
-
-
 var users = [];
-var currentUser = { 
-  name: "",
-  life: 100,
-  imgIndex: 0
-};
+
+var username = "";
+var robotN = 0;
+
+var imgIndex = 0;
+
+function addUser(data){
+  $.ajax({
+    url: '/signUpUser',
+    data: {'data':data},
+    type: 'POST',
+    success: function(response) {
+      //console.log("response: " + response);
+      var status = JSON.parse(response).status
+      username = JSON.parse(response).user;
+
+      if ( status == "OK" ){
+        //LOGIN
+        console.log("Logging in as: \"" + username + "\"");
+        localStorage.setItem('user', username);
+        localStorage.setItem('imgIndex', imgIndex);
+
+        //Redirect to home page*/
+        location.href = "/home";
+      } else if ( status == "UNAVAILABLE" ){
+        alert("The username \"" +username+ "\" is already taken! Choose another one.");
+      }
+      else {
+        console.warn("response: " + response);
+      }
+    },
+    error: function (xhr, ajaxOptions, thrownError) {
+      console.error("ERROR " + xhr.status + ": " + thrownError);
+    }
+  });
+
+}
+
+function delUser(data){
+  $.ajax({
+    url: '/signOutUser',
+    data: {'data':data},
+    type: 'POST',
+    success: function(response) {
+      //console.log("response: " + response);
+      var status = JSON.parse(response).status
+
+      if ( status == "OK" ){
+        //SIGN OUT
+        console.log("User \"" + username + "\" removed");
+        localStorage.removeItem('username');
+        localStorage.removeItem('imgIndex');
+        username = "";
+        location.href = "/";
+
+      } else if ( status == "UNREGISTERED" ){
+        alert("SERVER: The user \"" +username+ "\" is not logged.");
+        location.href = "/";
+      }
+      else {
+        console.warn("response: " + response);
+      }
+    },
+    error: function (xhr, ajaxOptions, thrownError) {
+      console.error("ERROR " + xhr.status + ": " + thrownError);
+    }
+  });
+}
+
+//Signout Function
+function userSignOut() {
+  if (confirm('Are you sure you want to Sign Out?')) {
+    // YES
+    delUser(username);
+  } else {
+    // No
+  }
+}
 
 function getUsers(){
   $.ajax({
-    url: 'php/getUsers.php',
+    url: '/listUsers',
     type: 'POST',
-    // blocking read
-    async: false,
-    success : function (response) {
-      //console.log("read file: " + response);
+    data: {'data':'data'},
+    success: function(response) {
+      //console.log("response: " + response);
+      var status = JSON.parse(response).status
 
-      // Cut lines after \n
-      var lines = response.match(/^.*((\r\n|\n|\r)|$)/gm);
-      //console.log("logged users: " + lines);
-      users = [];
-      // Create array of user object
-
-      if (lines[0] !==""){
-        lines.forEach(function(entry) {
-          users.push(JSON.parse(entry));
-        });
+      if ( status == "OK" ){
+        //LIST USERS
+        users = JSON.parse(response).users
+        console.log("Users : " + JSON.stringify(users));
       }
-    }/*,
-    error : //some code, 
-    complete : function (response) {
-      return JSON.parse(response);
-    }*/
-  });
-}
-
-function addUser(data){
-  jsonString = JSON.stringify(data);
-  $.ajax({
-    url: 'php/addUser.php',
-    type: 'POST',
-    // blocking write
-    async: false,
-    data : {'jsonString':jsonString},
-    dataType: "json"
-  });
-}
-
-function isUserAvailable(avalname){
-  getUsers();
-  //no users logged
-  if (users !== ""){
-    for (var i = 0; i < users.length; i++) {
-      if ( users[i].name == avalname ) {
-        return false;
+      else {
+        console.warn("response: " + response);
       }
-    }
-  }
-  return true;
-}
-
-
-function delUser(){
-  jsonString = JSON.stringify(currentUser);
-  $.ajax({
-    url: 'php/delUser.php',
-    type: 'POST',
-    // blocking write
-    async: false,
-    data : {'jsonString':jsonString},
-    dataType: "json",
-    success : function () {
-      currentUser.name="";
+    },
+    error: function (xhr, ajaxOptions, thrownError) {
+      console.error("ERROR " + xhr.status + ": " + thrownError);
     }
   });
 }
@@ -105,19 +131,36 @@ function userLogin() {
     if (tempName.match(/^[A-z0-9]+$/) == null){
       alert("Your username is not in a valid format!\n"
         + "Username can not contain spaces and special characters.");
-    } else if ( isUserAvailable(tempName) == true ){
-      //LOGIN
-
-      currentUser.name = tempName;
-
-      localStorage.setItem('user', JSON.stringify(currentUser));
-      // Add user to user list file
-      addUser(currentUser);
-
-      //Redirect to home page
-      location.href = "home.html";
     } else {
-      alert("The username \"" +tempName+ "\" is already taken! Choose another one.");
+
+      // Add user to user list file
+      $.ajax({
+        url: '/signUpUser',
+        data: {'data':tempName},
+        type: 'POST',
+        dataType: "text",
+        success: function(response) {
+          //console.log("response: " + response);
+          var status = JSON.parse(response).status
+          username = JSON.parse(response).user;
+
+          if ( status == "OK" ){
+            //LOGIN
+            console.log("Logging in as: \"" + username + "\"");
+            localStorage.setItem('user', username);
+            localStorage.setItem('imgIndex', imgIndex);
+
+            //Redirect to home page*/
+            location.href = "/home";
+          } else {
+            alert("The username \"" +username+ "\" is already taken! Choose another one.");
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          console.error("ERROR " + xhr.status + ": " + thrownError);
+        }
+      });
+
     }
   } else {
     // Sorry! No Web Storage support..
@@ -127,61 +170,71 @@ function userLogin() {
 
 
 function changeImage() {
-  currentUser.imgIndex = (currentUser.imgIndex +1) % 6;
-  document.getElementById("userImage").src = "static/img/avatar" + currentUser.imgIndex +".png";
+  imgIndex = (imgIndex +1) % 6;
+  document.getElementById("userImage").src = "static/img/avatar" + imgIndex +".png";
 }
 
 
 // Spawn Green circle + username in id="userListId"
 function updateLoggedUsers() {
-  getUsers();
-  var userList = "";
-  var userLife = "";
 
-  if (users !== ""){
-    for (var i = 0; i < users.length; i++) {
-      if (users[i].name != currentUser.name){
-        //circle + username
-        userList += '<br /><li><a><b>&emsp;'+ users[i].name + '</b></a>'
-        // 
-        + ' <span class="badge" style="float: right; background-color:#3c8dbc;" >'
-        + users[i].life + '%</span> </li><br />'
-        + ' <div class="progress progress-xs" style="width:97%; background-color: #d33724"> '
-        + ' <div class="progress-bar progress-bar-success" style="width: '
-        + users[i].life + '%"></div> </div>'
+  $.ajax({
+    url: '/listUsers',
+    type: 'POST',
+    data: {'data':'data'},
+    success: function(response) {
+      //console.log("response: " + response);
+      var status = JSON.parse(response).status
+
+      if ( status == "OK" ){
+        //LIST USERS
+        //console.log("Users : " + JSON.parse(response).users);
+
+        var userList = "";
+        var userLife = "";
+
+        if (JSON.parse(response).users !== "[]"){
+          users = JSON.parse(JSON.parse(response).users);
+          for (var i = 0; i < users.length; i++) {
+            if (users[i].name != username){
+              //circle + username
+              userList += '<br /><li><a><b>&emsp;'+ users[i].name + '</b></a>'
+              // 
+              + ' <span class="badge" style="float: right; background-color:#3c8dbc;" >'
+              + users[i].life + '%</span> </li><br />'
+              + ' <div class="progress progress-xs" style="width:97%; background-color: #d33724"> '
+              + ' <div class="progress-bar progress-bar-success" style="width: '
+              + users[i].life + '%"></div> </div>'
+            }
+            else{
+              var currentUser = users[i];
+            }
+          }
+
+          userLife += '<div style="width: 500px; margin:0 auto;">'
+          + '<span class="badge" style="position:relative; top:+1.5em; margin-left: 45%;'
+          + ' background-color:transparent;" > LIFE ' + currentUser.life + '%</span>'
+          + '<div class="progress progress" style="background-color: #d33724;">'
+          + '<div class="progress-bar progress-bar-success" role="progressbar"'
+          + 'aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: ' 
+          + currentUser.life + '%;"></div></div></div>';
+
+        } else {
+          userList = "No users logget yet."
+        }
+
+        document.getElementById('userList').innerHTML = userList;
+        document.getElementById('userLife').innerHTML = userLife;
+
       }
-      else{
-        currentUser = users[i];
+      else {
+        console.warn("response: " + response);
       }
+    },
+    error: function (xhr, ajaxOptions, thrownError) {
+      console.error("ERROR " + xhr.status + ": " + thrownError);
     }
-  } else {
-    userList = "No users logget yet."
-  }
-
-  userLife += '<div style="width: 500px; margin:0 auto;">'
-            + '<span class="badge" style="position:relative; top:+1.5em; margin-left: 50%;'
-            + ' background-color:transparent;" >' + currentUser.life + '%</span>'
-            + '<div class="progress progress" style="background-color: #d33724;">'
-            + '<div class="progress-bar progress-bar-success" role="progressbar"'
-            + 'aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: ' 
-            + currentUser.life + '%;"></div></div></div>';
-
-  document.getElementById('userListId').innerHTML = userList;
-  document.getElementById('userLife').innerHTML = userLife;
+  });
+  
 }
 
-
-//<li><a href="#"><i class="fa fa-circle-o text-danger"></i> Important</a></li>
-
-//Signout Function
-function userSignOut() {
-  if (confirm('Are you sure you want to Sign Out?')) {
-    // Yes
-    localStorage.removeItem("user");
-    console.log("User \""+ currentUser.name + "\" deleted.");
-    delUser();
-    location.href = "index.html";
-  } else {
-    // No
-  }
-}

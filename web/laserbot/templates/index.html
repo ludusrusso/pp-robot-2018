@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+
+{% block inside_head %}
+<title>LaserBot Battle | Login</title>
+
+<script type="text/javascript">
+  // Check if user was previously logged in
+  if (localStorage.getItem("username")!== null){
+    username = localStorage.getItem("username");
+    if (confirm("You previously logged as \""+ username + "\".\n"
+      + "Do you want to restore your previous session?")) {
+      // Yes: restore previous session
+    location.href = "/home";
+  } else {
+      // No: remove previous session
+      delUser();
+    }
+  }
+
+  //enable login at enter key press
+  $(document).ready(function(){
+    $("#username").on('keypress', function(event) {
+      if (event.keyCode == 13) userLogin();
+    })
+  });
+
+  $('form').submit(false);
+
+</script>
+{% endblock %}
+
+{% block body %}
+<body class="lockscreen">
+
+  <!-- Automatic element centering -->
+  <div class="lockscreen-wrapper">
+    <div class="lockscreen-logo">
+      <b>LaserBot</b> Battle
+    </div>
+    <!-- User name -->
+    <div class="lockscreen-name">LOGIN</div>
+
+    <!-- START LOCK SCREEN ITEM -->
+    <div class="lockscreen-item">
+
+      <!-- user image -->
+      <div class="lockscreen-image">
+        <img src="static/img/avatar0.png" alt="user image" 
+        title="Click to change avatar" id="userImage" onclick="changeImage()">
+      </div>
+      <!-- /.user-image -->
+
+      <!-- user credentials (contains the form) -->
+      <div class="lockscreen-credentials">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="username" id="username" required autofocus>
+          <div class="input-group-btn">
+            <button class="btn" onclick="userLogin()" title="Start!">
+              <i class="fa fa-arrow-right text-muted"></i>
+            </button>
+          </div>
+        </div>
+      </div><!-- /.user credentials -->
+    </div><!-- /.lockscreen-item -->
+
+    <div class='text-center'>
+      <a href="/home"><small>Restore previous session if any</small></a>
+    </div>
+    <div class='lockscreen-footer text-center'>
+      <b><a href="/about" class='text-black'>ABOUT</a></b>
+    </div>
+  </div><!-- /.center -->
+
+</body>
+{% endblock %}
