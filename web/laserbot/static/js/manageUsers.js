@@ -1,3 +1,4 @@
+/*! manageUsers.js */
 /*
  * INCLUDE JSON PARSE AND STRINGIFY IF NOT PRESENT
  * -----------------------
@@ -15,64 +16,44 @@
   })();
 }
 
-var users = [];
 
+/*---------------------------------------------------------------------------*/
+/*-- GLOBAL VARIABLES -------------------------------------------------------*/
+
+var users = [];
 var username = "";
 var robotN = 0;
-
 var imgIndex = 0;
 
-function addUser(data){
-  $.ajax({
-    url: '/signUpUser',
-    data: {'data':data},
-    type: 'POST',
-    success: function(response) {
-      //console.log("response: " + response);
-      var status = JSON.parse(response).status
-      username = JSON.parse(response).user;
+/*---------------------------------------------------------------------------*/
 
-      if ( status == "OK" ){
-        //LOGIN
-        console.log("Logging in as: \"" + username + "\"");
-        localStorage.setItem('user', username);
-        localStorage.setItem('imgIndex', imgIndex);
 
-        //Redirect to home page*/
-        location.href = "/home";
-      } else if ( status == "UNAVAILABLE" ){
-        alert("The username \"" +username+ "\" is already taken! Choose another one.");
-      }
-      else {
-        console.warn("response: " + response);
-      }
-    },
-    error: function (xhr, ajaxOptions, thrownError) {
-      console.error("ERROR " + xhr.status + ": " + thrownError);
-    }
-  });
-
-}
-
-function delUser(data){
+/*
+ * DELETE USER FROM USERS VAR IN PYTHON AND LOCALSTORAGE
+ * -----------------------
+ * 
+ * @type function
+ * @usage delUser(name_of_user_to_be_deleted);
+ */
+ function delUser(name){
   $.ajax({
     url: '/signOutUser',
-    data: {'data':data},
+    data: {'data': name},
     type: 'POST',
     success: function(response) {
-      //console.log("response: " + response);
+      /* console.log("response: " + response); */
       var status = JSON.parse(response).status
 
       if ( status == "OK" ){
-        //SIGN OUT
+        /* SIGN OUT */
         console.log("User \"" + username + "\" removed");
-        localStorage.removeItem('username');
+        localStorage.removeItem('user');
         localStorage.removeItem('imgIndex');
         username = "";
         location.href = "/";
 
       } else if ( status == "UNREGISTERED" ){
-        alert("SERVER: The user \"" +username+ "\" is not logged.");
+        alert("SERVER: The user \"" + username + "\" is not logged.");
         location.href = "/";
       }
       else {
@@ -85,8 +66,16 @@ function delUser(data){
   });
 }
 
-//Signout Function
-function userSignOut() {
+
+/*
+ * SIGNOUT FUNCTION:
+ *  call delUser if ok to signout
+ * -----------------------
+ * 
+ * @type function
+ * @usage userSignOut();
+ */
+ function userSignOut() {
   if (confirm('Are you sure you want to Sign Out?')) {
     // YES
     delUser(username);
@@ -95,62 +84,47 @@ function userSignOut() {
   }
 }
 
-function getUsers(){
-  $.ajax({
-    url: '/listUsers',
-    type: 'POST',
-    data: {'data':'data'},
-    success: function(response) {
-      //console.log("response: " + response);
-      var status = JSON.parse(response).status
 
-      if ( status == "OK" ){
-        //LIST USERS
-        users = JSON.parse(response).users
-        console.log("Users : " + JSON.stringify(users));
-      }
-      else {
-        console.warn("response: " + response);
-      }
-    },
-    error: function (xhr, ajaxOptions, thrownError) {
-      console.error("ERROR " + xhr.status + ": " + thrownError);
-    }
-  });
-}
-
-function userLogin() {
+/*
+ * LOGIN FUNCTION:
+ *  get usernamename from form and add user to python users
+ * -----------------------
+ * 
+ * @type function
+ * @usage userLogin();
+ */
+ function userLogin() {
+  /* Check if browser support local storage */
   if (typeof(Storage) !== "undefined") {
-    // Browser support local storage
-    var tempName = document.getElementById('username').value;
 
-    // remove spaces before and after string
+    var tempName = document.getElementById('username').value;
+    /* remove spaces before and after string */
     tempName = tempName.replace(/^\s+|\s+$/g, '');
 
-    //Check if username is blank or already taken
+    /* Check if username format is valid */
     if (tempName.match(/^[A-z0-9]+$/) == null){
       alert("Your username is not in a valid format!\n"
         + "Username can not contain spaces and special characters.");
     } else {
 
-      // Add user to user list file
+      /* Tell python to  add user to users list */
       $.ajax({
         url: '/signUpUser',
         data: {'data':tempName},
         type: 'POST',
         dataType: "text",
         success: function(response) {
-          //console.log("response: " + response);
+          /* console.log("response: " + response); */
           var status = JSON.parse(response).status
           username = JSON.parse(response).user;
 
           if ( status == "OK" ){
-            //LOGIN
+            /* LOGIN */
             console.log("Logging in as: \"" + username + "\"");
             localStorage.setItem('user', username);
             localStorage.setItem('imgIndex', imgIndex);
 
-            //Redirect to home page*/
+            /* Redirect to home page */
             location.href = "/home";
           } else {
             alert("The username \"" +username+ "\" is already taken! Choose another one.");
@@ -163,19 +137,34 @@ function userLogin() {
 
     }
   } else {
-    // Sorry! No Web Storage support..
+    /* Sorry! No Web Storage support... */
     alert("This browser does not support local storage!");
   }
 }
 
 
+/*
+ * CHANGE USER AVATAR:
+ *  increment imgIndex and cycles through avatars (6 static avatar images)
+ * -----------------------
+ * 
+ * @type function
+ * @usage changeImage();
+ */
 function changeImage() {
   imgIndex = (imgIndex +1) % 6;
   document.getElementById("userImage").src = "static/img/avatar" + imgIndex +".png";
 }
 
 
-// Spawn Green circle + username in id="userListId"
+/*
+ * UPDATE USER INFO (LIFE):
+ *  get updated users info from python and add updated html into proper location
+ * -----------------------
+ * 
+ * @type function
+ * @usage updateLoggedUsers();
+ */
 function updateLoggedUsers() {
 
   $.ajax({
@@ -183,25 +172,28 @@ function updateLoggedUsers() {
     type: 'POST',
     data: {'data':'data'},
     success: function(response) {
-      //console.log("response: " + response);
+      /* console.log("response: " + response); */
       var status = JSON.parse(response).status
 
       if ( status == "OK" ){
-        //LIST USERS
-        //console.log("Users : " + JSON.parse(response).users);
+        /* LIST USERS */
+        /* console.log("Users : " + JSON.parse(response).users); */
 
         var userList = "";
         var userLife = "";
 
         if (JSON.parse(response).users !== "[]"){
+
           users = JSON.parse(JSON.parse(response).users);
+
           for (var i = 0; i < users.length; i++) {
             if (users[i].name != username){
-              //circle + username
+              /* username */
               userList += '<br /><li><a><b>&emsp;'+ users[i].name + '</b></a>'
-              // 
+              /* life percentage badge */
               + ' <span class="badge" style="float: right; background-color:#3c8dbc;" >'
               + users[i].life + '%</span> </li><br />'
+              /* life progress bar */
               + ' <div class="progress progress-xs" style="width:97%; background-color: #d33724"> '
               + ' <div class="progress-bar progress-bar-success" style="width: '
               + users[i].life + '%"></div> </div>'
@@ -211,9 +203,11 @@ function updateLoggedUsers() {
             }
           }
 
+          /* currentuser life percentage badge */
           userLife += '<div style="width: 500px; margin:0 auto;">'
           + '<span class="badge" style="position:relative; top:+1.5em; margin-left: 45%;'
           + ' background-color:transparent;" > LIFE ' + currentUser.life + '%</span>'
+          /* current user life progress bar */
           + '<div class="progress progress" style="background-color: #d33724;">'
           + '<div class="progress-bar progress-bar-success" role="progressbar"'
           + 'aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: ' 

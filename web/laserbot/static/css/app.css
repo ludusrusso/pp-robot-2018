@@ -1,4 +1,4 @@
-@import url(//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic);
+@import url(fonts.css);
 /*
  * Core: Genral Layout Style
  * -------------------------
@@ -2659,34 +2659,34 @@ table.text-center th {
   }
 }
 /*
- * Page: Lock Screen
+ * Page: Login
  * -----------------
  */
 /* ADD THIS CLASS TO THE <BODY> TAG */
-.lockscreen {
+.login {
   background: #d2d6de;
 }
-.lockscreen-logo {
+.login-logo {
   font-size: 35px;
   text-align: center;
   margin-bottom: 25px;
   font-weight: 300;
 }
-.lockscreen-logo a {
+.login-logo a {
   color: #444;
 }
-.lockscreen-wrapper {
+.login-wrapper {
   max-width: 400px;
   margin: 0 auto;
   margin-top: 10%;
 }
 /* User name [optional] */
-.lockscreen .lockscreen-name {
+.login .login-name {
   text-align: center;
   font-weight: 600;
 }
 /* Will contain the image and the sign in form */
-.lockscreen-item {
+.login-item {
   border-radius: 4px;
   padding: 0;
   background: #fff;
@@ -2695,7 +2695,7 @@ table.text-center th {
   width: 290px;
 }
 /* User image */
-.lockscreen-image {
+.login-image {
   border-radius: 50%;
   position: absolute;
   left: -10px;
@@ -2704,30 +2704,30 @@ table.text-center th {
   padding: 5px;
   z-index: 10;
 }
-.lockscreen-image > img {
+.login-image > img {
   border-radius: 50%;
   width: 70px;
   height: 70px;
 }
 /* Contains the password input and the login button */
-.lockscreen-credentials {
+.login-credentials {
   margin-left: 70px;
 }
-.lockscreen-credentials .form-control {
+.login-credentials .form-control {
   border: 0 !important;
 }
-.lockscreen-credentials .btn {
+.login-credentials .btn {
   background-color: #fff;
   border: 0;
   padding: 0 10px;
 }
-.lockscreen-footer {
+.login-footer {
   margin-top: 10px;
 }
 /*
  * Page: Login & Register
  * ----------------------
- */
+ *//*
 .login-logo,
 .register-logo {
   font-size: 35px;
@@ -2775,7 +2775,7 @@ table.text-center th {
 }
 .social-auth-links {
   margin: 10px 0;
-}
+}*/
 /*
  * Page: 400 and 500 error pages
  * ------------------------------

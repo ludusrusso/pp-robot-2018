@@ -10,11 +10,11 @@ app.debug = True
 
 users = Users()
 
-@app.route('/', methods=['GET','POST'])
+@app.route('/')
 def index():
 	return render_template('index.html')
 
-@app.route('/home', methods=['GET','POST'])
+@app.route('/home')
 def home():
 	return render_template('home.html')
 
