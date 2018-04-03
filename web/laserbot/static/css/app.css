@@ -1849,3 +1849,65 @@ Gradient Background colors
 .skin-blue.layout-top-nav .main-header > .logo:hover {
   background: #3b8ab8;
 }
+
+
+/*
+ * Users life
+ * ----------------------
+ */
+
+/* Users list */
+
+.user-list-div {
+  width:95%;
+  margin:0 auto;
+  margin-top: 3mm;
+  margin-bottom: 5mm;
+}
+
+.user-list-badge {
+  float: right;
+  background-color: #3c8dbc;
+}
+
+.user-list-bar {
+  width:97%;
+  background-color: #d33724;
+  margin:0;
+  margin-top: 3mm;
+}
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #13437F;
+    margin: 1em 0;
+    padding: 0;
+}
+
+/* Current user life bar */
+
+.user-life-div {
+  width:600px;
+  margin:0 auto;
+}
+
+@media (max-width: 900px) {
+  .user-life-div {
+    width: 90%;
+    margin:0 auto;
+  }
+}
+
+.user-life-badge {
+  position:relative;
+  top:+1.5em;
+  left: 50%;
+  transform: translate(-50%, 0);
+  background-color:transparent;
+}
+
+.user-life-bar {
+  background-color: #d33724;
+}

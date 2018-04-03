@@ -42,7 +42,7 @@ def signUpUser():
     # if username is availabe :
     if users.isNameAvailable(name) :
         # add it to users list
-    	users.addUser(name, robotN)
+    	users.addUser(name, robotN, 100)
     	return json.dumps({'status':'OK','user':name})
     else :
         # else return UNAVAILABLE error

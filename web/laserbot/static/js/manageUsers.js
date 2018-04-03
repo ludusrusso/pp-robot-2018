@@ -115,9 +115,10 @@ const UPDATE_INTERVAL = 1000;
     tempName = tempName.replace(/^\s+|\s+$/g, '');
 
     /* Check if username format is valid */
-    if (tempName.match(/^[A-z0-9]+$/) == null){
+    if (tempName.match(/^[A-z0-9]+$/) == null || tempName.length > 16){
       alert("Your username is not in a valid format!\n"
-        + "Username can not contain spaces and special characters.");
+        + "Username can not exceed 16 char length and can not "
+        + "contain spaces and special characters.");
     }
     else {
 
@@ -205,26 +206,25 @@ const UPDATE_INTERVAL = 1000;
           for (var i = 0; i < users.length; i++) {
             if (users[i].name != username){
               /* username */
-              userList += '<br /><li><a><b>&emsp;'+ users[i].name + '</b></a>'
+              userList += '<div class="user-list-div"><li><a><b>'+ users[i].name + '</b></a>'
               /* life percentage badge */
-              + ' <span class="badge" style="float: right; background-color:#3c8dbc;" >'
-              + users[i].life + '%</span> </li><br />'
+              + ' <span class="badge user-list-badge" >'
+              + users[i].life + '%</span> </li>'
               /* life progress bar */
-              + ' <div class="progress progress-xs" style="width:97%; background-color: #d33724">'
+              + ' <div class="progress progress-xs user-list-bar">'
               + ' <div class="progress-bar progress-bar-success" style="width: '
-              + users[i].life + '%"></div> </div>'
+              + users[i].life + '%"></div></div></div><hr/>'
             }
             else{
               var currentUser = users[i];
             }
           }
 
-          /* currentuser life percentage badge */
-          userLife += '<div style="width: 500px; margin:0 auto;">'
-          + '<span class="badge" style="position:relative; top:+1.5em; margin-left: 45%;'
-          + ' background-color:transparent;" > LIFE ' + currentUser.life + '%</span>'
+          /* current user life percentage badge */
+          userLife += '<div class="user-life-div">'
+          + '<span class="badge user-life-badge">LIFE ' + currentUser.life + '%</span>'
           /* current user life progress bar */
-          + '<div class="progress progress" style="background-color: #d33724;">'
+          + '<div class="progress user-life-bar">'
           + '<div class="progress-bar progress-bar-success" role="progressbar"'
           + 'aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: ' 
           + currentUser.life + '%;"></div></div></div>';
