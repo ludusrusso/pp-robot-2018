@@ -6,35 +6,31 @@
 <script type="text/javascript">
 
   username = localStorage.getItem("user");
-// Check if username has been set
-if ( username == null){
-  // If not redirect to login page
-  alert("Username has not been choosen!\nRedirecting to login page.");
-  location.href = "/";
-}
 
-console.log("Logged as \""+ username + "\"");
-
-// get user avatar
-imgIndex = localStorage.getItem("imgIndex");
-
-
-$(document).ready(function(){
-  //Spawn username in all username classes
-  $('.username').html(username);
-
-  //launch update users info function
-  var userUpdate = setInterval(function(){updateLoggedUsers();}, 1000);
-
-  $('.userImage img').attr("src", "static/img/avatar" + imgIndex +".png");
-});
-
-window.onhashchange = function() {
-  if (! window.innerDocClick) {
-    //Browser back button was clicked
-    userSignOut()
+  /* Check if username has been set */
+  if ( username == null){
+    /* If not redirect to login page */
+    alert("Username has not been choosen!\nRedirecting to login page.");
+    location.href = "/";
   }
-}
+
+  console.log("Logged as \""+ username + "\"");
+
+  /* get user avatar */
+  imgIndex = localStorage.getItem("imgIndex");
+
+  /* when whole page is loaded */
+  $(document).ready(function(){
+
+    /* Spawn username in all username classes */
+    $('.username').html(username);
+    /* Spawn user image in all userImage classes*/
+    $('.userImage img').attr("src", "static/img/avatar" + imgIndex +".png");
+
+    /* periodically launch function to update logged users list */
+    var userUpdate = setInterval(function(){updateLoggedUsers();}, UPDATE_INTERVAL);
+    
+  });
 
 </script>
 {% endblock %}
@@ -132,16 +128,16 @@ window.onhashchange = function() {
         <!-- Health row -->
         <div class="row">
          <span id="userLife"></span>
-      </div><!-- /.row (healt row) -->
+       </div><!-- /.row (healt row) -->
 
-      <!-- Main row -->
-      <div class="row">
+       <!-- Main row -->
+       <div class="row">
 
-      </div><!-- /.row (main row) -->
+       </div><!-- /.row (main row) -->
 
-    </section><!-- /.content -->
-  </div><!-- /.content-wrapper -->
-  <footer class="main-footer">
+     </section><!-- /.content -->
+   </div><!-- /.content-wrapper -->
+   <footer class="main-footer">
     <div class="pull-right hidden-xs">
       <b>Version</b> 0.1
     </div>

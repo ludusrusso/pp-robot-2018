@@ -12,18 +12,21 @@
     if (confirm("You previously logged as \""+ username + "\".\n" + "Do you want to restore your previous session?")) {
       /* Yes: restore previous session */
       location.href = "/home";
-
-    } else {
+    }
+    else {
       /* No: remove previous session */
       delUser(username);
     }
   }
 
-  /* enable login at enter key press */
+  /* when whole page is loaded */
   $(document).ready(function(){
+
+    /* enable login at enter key press */
     $("#username").on('keypress', function(event) {
       if (event.keyCode == 13) userLogin();
     })
+    
   });
 
 </script>

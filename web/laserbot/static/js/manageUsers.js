@@ -25,7 +25,13 @@ var username = "";
 var robotN = 0;
 var imgIndex = 0;
 
+/* define interval to update user list in ms */
+const UPDATE_INTERVAL = 1000;
+
 /*---------------------------------------------------------------------------*/
+
+
+
 
 
 /*
@@ -42,23 +48,29 @@ var imgIndex = 0;
     type: 'POST',
     success: function(response) {
       /* console.log("response: " + response); */
-      var status = JSON.parse(response).status
+      var status = JSON.parse(response).status;
 
       if ( status == "OK" ){
         /* SIGN OUT */
         console.log("User \"" + username + "\" removed");
-        localStorage.removeItem('user');
-        localStorage.removeItem('imgIndex');
-        username = "";
-        location.href = "/";
-
-      } else if ( status == "UNREGISTERED" ){
+      }
+      else if ( status == "UNREGISTERED" ){
         alert("SERVER: The user \"" + username + "\" is not logged.");
-        location.href = "/";
+      }
+      else if ( status == "FAILED" ){
+        alert("SERVER: The user \"" + username + "\" can't be removed.");
+        return;
       }
       else {
         console.warn("response: " + response);
+        return;
       }
+
+      localStorage.removeItem('user');
+      localStorage.removeItem('imgIndex');
+      username = "";
+      location.href = "/";
+
     },
     error: function (xhr, ajaxOptions, thrownError) {
       console.error("ERROR " + xhr.status + ": " + thrownError);
@@ -77,10 +89,11 @@ var imgIndex = 0;
  */
  function userSignOut() {
   if (confirm('Are you sure you want to Sign Out?')) {
-    // YES
+    /* YES */
     delUser(username);
-  } else {
-    // No
+  }
+  else {
+    /* No */
   }
 }
 
@@ -105,7 +118,8 @@ var imgIndex = 0;
     if (tempName.match(/^[A-z0-9]+$/) == null){
       alert("Your username is not in a valid format!\n"
         + "Username can not contain spaces and special characters.");
-    } else {
+    }
+    else {
 
       /* Tell python to  add user to users list */
       $.ajax({
@@ -126,7 +140,8 @@ var imgIndex = 0;
 
             /* Redirect to home page */
             location.href = "/home";
-          } else {
+          }
+          else {
             alert("The username \"" +username+ "\" is already taken! Choose another one.");
           }
         },
@@ -136,7 +151,8 @@ var imgIndex = 0;
       });
 
     }
-  } else {
+  }
+  else {
     /* Sorry! No Web Storage support... */
     alert("This browser does not support local storage!");
   }
@@ -151,7 +167,7 @@ var imgIndex = 0;
  * @type function
  * @usage changeImage();
  */
-function changeImage() {
+ function changeImage() {
   imgIndex = (imgIndex +1) % 6;
   document.getElementById("userImage").src = "static/img/avatar" + imgIndex +".png";
 }
@@ -159,13 +175,13 @@ function changeImage() {
 
 /*
  * UPDATE USER INFO (LIFE):
- *  get updated users info from python and add updated html into proper location
+ *  get updated users info and add updated html into proper location
  * -----------------------
  * 
  * @type function
  * @usage updateLoggedUsers();
  */
-function updateLoggedUsers() {
+ function updateLoggedUsers() {
 
   $.ajax({
     url: '/listUsers',
@@ -194,7 +210,7 @@ function updateLoggedUsers() {
               + ' <span class="badge" style="float: right; background-color:#3c8dbc;" >'
               + users[i].life + '%</span> </li><br />'
               /* life progress bar */
-              + ' <div class="progress progress-xs" style="width:97%; background-color: #d33724"> '
+              + ' <div class="progress progress-xs" style="width:97%; background-color: #d33724">'
               + ' <div class="progress-bar progress-bar-success" style="width: '
               + users[i].life + '%"></div> </div>'
             }
@@ -213,7 +229,8 @@ function updateLoggedUsers() {
           + 'aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: ' 
           + currentUser.life + '%;"></div></div></div>';
 
-        } else {
+        }
+        else {
           userList = "No users logget yet."
         }
 

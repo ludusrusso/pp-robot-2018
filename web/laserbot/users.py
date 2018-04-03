@@ -1,10 +1,11 @@
 import json
 
-def jdefault(obj):
+def userDefault(obj):
     if isinstance(obj, set):
         return list(obj)
     return obj.__dict__
 
+# User class
 class User:
     name = ""
     life = 100
@@ -18,23 +19,29 @@ class User:
         else :
             self.life = life
 
+# list of users class
 class Users:
     users = []
 
-    def addUser(self, name, life=None, robot=None):
-        self.users.append(User(name, life, robot))
+    # add new user to list
+    def addUser(self, name, robot=None, life=None):
+        self.users.append( User(name, robot, life) )
 
+    # delete user from list
     def delUser(self, name):
         for u in self.users:
             if u.name == name :
                 self.users.remove(u)
-                return
+                return True
+        return False
 
+    # check if user with a given username is already in list
     def isNameAvailable(self, name):
         for u in self.users:
             if u.name == name :
                 return False
         return True
 
+    # return json string of users list
     def toString(self):
-        return json.dumps(self.users, default=jdefault)
+        return json.dumps(self.users, default=userDefault)
