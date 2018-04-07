@@ -16,8 +16,8 @@ def add_new_robot_client():
         # The command to generate the ros node with unique name and topics is composed here
         # TO DO (modify topic names when the real topics will be defined)
     	command = 'rosrun rosserial_python serial_node.py /dev/ttyACM0 __name:=Robot' + str(robot_ID.ID)
-    	command += ' chatter:=Robot' + str(robot_ID.ID) + '/chatter'
-    	command += ' toggle_led:=Robot' + str(robot_ID.ID) + '/toggle_led'
+    	command += ' chatter:=Robot' + str(robot_ID.ID) + '/commands'
+    	command += ' toggle_led:=Robot' + str(robot_ID.ID) + '/response'
         # The new ros node is created
     	os.system(command)
     except rospy.ServiceException, e:
