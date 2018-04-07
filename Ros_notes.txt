@@ -852,7 +852,7 @@ We need to select one machine to run the master (executing roscore).
 
 2)  On HAL machine execute :
 
-      $ export ROS_MASTER_URI=http://192.168.0.14:1131
+      $ export ROS_MASTER_URI=http://192.168.0.14:11311
 
           Set the ROS_MASTER_URI (hostname + port) to match the IP address of the
           machine running roscore (MARVIN).
