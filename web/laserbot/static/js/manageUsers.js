@@ -169,7 +169,7 @@ const UPDATE_INTERVAL = 1000;
  * @usage changeImage();
  */
  function changeImage() {
-  imgIndex = (imgIndex +1) % 6;
+  imgIndex = (imgIndex +1) % 5;
   document.getElementById("userImage").src = "static/img/avatar" + imgIndex +".png";
 }
 
