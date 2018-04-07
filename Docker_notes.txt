@@ -409,3 +409,34 @@ $ docker build [OPT ...] <build context>
 
             $ docker build -t esempio_1:v1 .
             . = build context
+
+
+------------------------------ DOCKER COMPOSE -------------------------------
+
+With Compose, you use a YAML file to configure your application’s services. 
+Then, with a single command, you create and start all the services from your configuration.
+
+Using Compose is basically a three-step process:
+    1) Define your app’s environment with a Dockerfile so it can be reproduced anywhere.
+    2) Define the services that make up your app in docker-compose.yml so they can be run 
+        together in an isolated environment.
+    3) Run docker-compose up and Compose starts and runs your entire app.
+
+In our implementation we use a docker-container running on a Raspberry to virtualize Ubuntu 16.04.
+Thi is necessary to make ROS up and running, which otherwise is not possible on Raspbian (standard Ubuntu 
+distribution for Raspberry).
+Now, we must:
+    - enable the container to accept internet communication (exploiting the Raspberry network) 
+    - make the devices (Arduino) connected to the Raspberry visible by the container.
+
+In order to do so, we created a docker-compose file:
+
+        version: '3'
+
+        services:
+        ros:
+            image: pfrancesco/rpi2:custom_pkg      #image to run when issuing ros service
+            privileged: true                       #make devices visible by the container
+            network_mode: "host"                   #share internet conncetion btw Raspberry and Arduino
+            expose:                                #accept incoming internet requests
+            - "8000"
