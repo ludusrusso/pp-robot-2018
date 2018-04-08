@@ -45,3 +45,5 @@ class Users:
     # return json string of users list
     def toString(self):
         return json.dumps(self.users, default=userDefault)
+
+users = Users()

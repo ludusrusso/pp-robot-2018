@@ -32,19 +32,27 @@
 
   console.log("Logged as \""+ username + "\"");
 
-  /* get user avatar */
+  /* get user variables */
   imgIndex = localStorage.getItem("imgIndex");
+  robotN = localStorage.getItem("robotN");
+  date = localStorage.getItem("date");
+
+  var userUpdate;
 
   /* when whole page is loaded */
   $(document).ready(function(){
 
     /* Spawn username in all username classes */
     $('.username').html(username);
+    /* Spawn robot number */
+    $('.robotN').html("Robot " + robotN);
+    /* Spawn date */
+    $('.date').html( "Logged in: " + date );
     /* Spawn user image in all userImage classes*/
     $('.userImage img').attr("src", "static/img/avatar" + imgIndex +".png");
 
     /* periodically launch function to update logged users list */
-    var userUpdate = setInterval(function(){updateLoggedUsers();}, UPDATE_INTERVAL);
+    userUpdate = setInterval(function(){updateLoggedUsers();}, UPDATE_INTERVAL);
 
     /* HELP description message */
     $("#how-to").click(function() {
@@ -66,7 +74,7 @@
 
     <header class="main-header">
       <!-- Logo -->
-      <a href="" class="logo"><b>LaserBot</b> Battle</a>
+      <a href="#" class="logo"><b>LaserBot</b> Battle</a>
       <!-- Header Navbar: style can be found in header.less -->
       <nav class="navbar navbar-static-top" role="navigation">
         <!-- Sidebar toggle button-->
@@ -86,8 +94,8 @@
                 <li class="user-header userImage">
                   <img src="/static/img/avatar0.png" class="img-circle" alt="User Image"/>
                   <p>
-                    <label class="username"></label> - <label class="robotN">Robot RED</label>
-                    <small>Logged in 2018</small>
+                    <label class="username"></label> - <label class="robotN"> - </label>
+                    <small class="date"> - </small>
                   </p>
 
                 </li>

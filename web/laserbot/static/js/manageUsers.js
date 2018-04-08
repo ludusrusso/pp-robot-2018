@@ -24,6 +24,7 @@ var users = [];
 var username = "";
 var robotN = 0;
 var imgIndex = 0;
+var date = "";
 
 /* define interval to update user list in ms */
 const UPDATE_INTERVAL = 1000;
@@ -67,10 +68,17 @@ const UPDATE_INTERVAL = 1000;
         return;
       }
 
+      /* Stop users list update */
+      window.clearInterval(userUpdate)
+
+      /* delete stored variables */
       localStorage.removeItem('user');
       localStorage.removeItem('imgIndex');
       localStorage.removeItem('robotN');
+      localStorage.removeItem('date');
       username = "";
+
+      /* redirect to login page */
       setTimeout(function(){
         location.href = "/";
       }, 1500);
@@ -149,7 +157,7 @@ const UPDATE_INTERVAL = 1000;
           type: 'POST',
           dataType: "text",
           success: function(response) {
-            /* console.log("response: " + response); */
+            console.log("response: " + response);
             var status = JSON.parse(response).status
             username = JSON.parse(response).user;
             robotN = JSON.parse(response).robot;
@@ -160,23 +168,33 @@ const UPDATE_INTERVAL = 1000;
               localStorage.setItem('user', username);
               localStorage.setItem('imgIndex', imgIndex);
               localStorage.setItem('robotN', robotN);
+              localStorage.setItem('date', (new Date()).toString().split("GMT")[0] );
 
               /* Redirect to home page */
               location.href = "/home";
             }
+            else if ( status == "NO_ROBOTS" ){
+              swal("Server error", "There are no robots available at the time!", "error");
+            }
+            else if ( status == "ROBOT_UNAVAILABLE" ){
+              swal("Server error", "The robot n." + robotN + "is unavailable!", "error");
+            }
+            else if ( status == "UNAVAILABLE" ){
+              swal({
+                title: "The username \"" +username+ "\" is already taken!",
+                text: "Please choose another one.",
+                icon: "warning",
+              });
+            }
             else {
-            //alert("The username \"" +username+ "\" is already taken! Choose another one.");
-            swal({
-              title: "The username \"" +username+ "\" is already taken!",
-              text: "Please choose another one.",
-              icon: "warning",
-            });
+              swal("Unknown error", "response: " + response, "error");
+              return;
+            }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            console.error("ERROR " + xhr.status + ": " + thrownError);
           }
-        },
-        error: function (xhr, ajaxOptions, thrownError) {
-          console.error("ERROR " + xhr.status + ": " + thrownError);
-        }
-      });
+        });
 
       }
     }
@@ -289,10 +307,10 @@ const UPDATE_INTERVAL = 1000;
  * @type function
  * @usage help();
  */
-function help() {
-      swal({
-      title: "How to play LaserBot Battle",
-      text: "Use arrow keys (or WASD) to move the robot.\n"
-            + "Press enter or spacebar to fire laser.",
-    });
+ function help() {
+  swal({
+    title: "How to play LaserBot Battle",
+    text: "Use arrow keys (or WASD) to move the robot.\n"
+    + "Press enter or spacebar to fire laser.",
+  });
 }

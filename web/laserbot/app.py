@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 from flask import Flask, render_template, request, json
-from users import Users, userDefault
+from users import Users, userDefault, users
+from robot import Robots, robots
 
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 
 # Debug mode
 app.debug = True
-
-users = Users()
-
 
 # Index Login Page
 @app.route('/')
@@ -35,9 +33,15 @@ def about():
 def signUpUser():
     name = request.form['data']
 
-    # TODO: check first available robot id
-    robotN = 0
-    #print("is ", name, " available = ", users.isNameAvailable(name))
+    # check first available robot id
+    robotN = robots.getAvailableRobot();
+    robotN = 1
+
+    if robotN == False :
+        return json.dumps({'status':'NO_ROBOTS', 'user':name})
+
+    #if not robots.addUserToRobot(robotN, name) :
+    #    return json.dumps({'status':'ROBOT_UNAVAILABLE', 'robot':robotN})
 
     # if username is availabe :
     if users.isNameAvailable(name) :
