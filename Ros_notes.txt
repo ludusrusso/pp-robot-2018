@@ -852,7 +852,7 @@ We need to select one machine to run the master (executing roscore).
 
 2)  On HAL machine execute :
 
-      $ export ROS_MASTER_URI=http://192.168.0.14:1131
+      $ export ROS_MASTER_URI=http://192.168.0.14:11311
 
           Set the ROS_MASTER_URI (hostname + port) to match the IP address of the
           machine running roscore (MARVIN).
@@ -869,3 +869,22 @@ We need to select one machine to run the master (executing roscore).
 
 3) At this point nodes, topics, services created by the two machines will belong
     to the same ROS network.
+
+VERY IMPORTANT: 
+In our implementation we use a docker-container running on a Raspberry to virtualize Ubuntu 16.04.
+Thi is necessary to make ROS up and runnign, which otherwise is not possible on Raspbian (standard Ubuntu 
+distribution for Raspberry).
+Now, we must:
+    - enable the container to accept internet comunication (exploiting the Raspberry network) 
+    - make the devices (Arduino) connected to the Raspberry visible by the container
+In order to do so, we created a docker-compose file:
+
+        version: '3'
+
+        services:
+        ros:
+            image: pfrancesco/rpi2:custom_pkg      #image to run when issuing ros service
+            privileged: true                       #make devices visible by the container
+            network_mode: "host"                   #share internet conncetion btw Raspberry and Arduino
+            expose:                                #accept incoming internet requests
+            - "8000"
