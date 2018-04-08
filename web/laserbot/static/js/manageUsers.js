@@ -282,3 +282,17 @@ const UPDATE_INTERVAL = 1000;
   
 }
 
+/*
+ * HELP MESSAGE
+ * -----------------------
+ * 
+ * @type function
+ * @usage help();
+ */
+function help() {
+      swal({
+      title: "How to play LaserBot Battle",
+      text: "Use arrow keys (or WASD) to move the robot.\n"
+            + "Press enter or spacebar to fire laser.",
+    });
+}

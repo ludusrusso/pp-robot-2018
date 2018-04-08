@@ -38,6 +38,11 @@
       if (event.keyCode == 13) userLogin();
     })
 
+    /* HELP description message */
+    $("#how-to").click(function() {
+      help();
+    });
+
   });
 
 </script>
@@ -81,6 +86,7 @@
       <a href="/home"><small>Restore previous session if any</small></a>
     </div>
     <div class='login-footer text-center'>
+      <b><a href="#" class='text-black' id="how-to" style="margin-right:4em"> HOW TO </a></b>
       <b><a href="/about" class='text-black'>ABOUT</a></b>
     </div>
   </div><!-- /.center -->

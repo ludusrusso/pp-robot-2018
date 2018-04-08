@@ -43,15 +43,13 @@
     /* Spawn user image in all userImage classes*/
     $('.userImage img').attr("src", "static/img/avatar" + imgIndex +".png");
 
-    $("#how-to").click(function() {
-      swal({
-        title: "Title",
-        text: "text.",
-      });
-    });
-
     /* periodically launch function to update logged users list */
     var userUpdate = setInterval(function(){updateLoggedUsers();}, UPDATE_INTERVAL);
+
+    /* HELP description message */
+    $("#how-to").click(function() {
+      help();
+    });
 
     /* start game */
     myGameArea.start();
