@@ -43,10 +43,10 @@ def signUpUser():
     if users.isNameAvailable(name) :
         # add it to users list
     	users.addUser(name, robotN, 100)
-    	return json.dumps({'status':'OK','user':name})
+    	return json.dumps({'status':'OK', 'user':name, 'robot':robotN})
     else :
         # else return UNAVAILABLE error
-	    return json.dumps({'status':'UNAVAILABLE','user':name})
+	    return json.dumps({'status':'UNAVAILABLE', 'user':name})
 
 
 # signOutUser function:
@@ -59,19 +59,19 @@ def signOutUser():
     if not users.isNameAvailable(name) :
         # delete from list
         if users.delUser(name) :
-            return json.dumps({'status':'OK','user':name})
+            return json.dumps({'status':'OK', 'user':name})
         else :
-            return json.dumps({'status':'FAILED','user':name})
+            return json.dumps({'status':'FAILED', 'user':name})
     else :
         # else return UNREGISTERED error
-        return json.dumps({'status':'UNREGISTERED','user':name})
+        return json.dumps({'status':'UNREGISTERED', 'user':name})
 
 
 # listUsers function:
 #   return list of logged in users (json format)
 @app.route('/listUsers', methods=['POST'])
 def listUsers():    
-    return json.dumps({'status':'OK','users':users.toString()}, default=userDefault)
+    return json.dumps({'status':'OK', 'users':users.toString()}, default=userDefault)
 
 # -----------------------------------------------------------------------------
 

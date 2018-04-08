@@ -11,7 +11,7 @@ class User:
     life = 100
     robot = 0
 
-    def __init__(self, name, robot=None, life=None):
+    def __init__(self, name, robot, life=None):
         self.name = name
         self.robot = robot
         if life == None :
@@ -24,7 +24,7 @@ class Users:
     users = []
 
     # add new user to list
-    def addUser(self, name, robot=None, life=None):
+    def addUser(self, name, robot, life=None):
         self.users.append( User(name, robot, life) )
 
     # delete user from list

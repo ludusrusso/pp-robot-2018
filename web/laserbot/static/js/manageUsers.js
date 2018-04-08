@@ -53,23 +53,28 @@ const UPDATE_INTERVAL = 1000;
       if ( status == "OK" ){
         /* SIGN OUT */
         console.log("User \"" + username + "\" removed");
+        swal("Your session has been deleted!", "Redirectiong to login page", "success");
       }
       else if ( status == "UNREGISTERED" ){
-        alert("SERVER: The user \"" + username + "\" is not logged.");
+        swal("Server error", "The user \"" + username + "\" is not logged.", "error");
       }
       else if ( status == "FAILED" ){
-        alert("SERVER: The user \"" + username + "\" can't be removed.");
+        swal("Server error", "The user \"" + username + "\" can't be removed.", "error");
         return;
       }
       else {
-        console.warn("response: " + response);
+        swal("Unknown error", "response: " + response, "error");
         return;
       }
 
       localStorage.removeItem('user');
       localStorage.removeItem('imgIndex');
+      localStorage.removeItem('robotN');
       username = "";
-      location.href = "/";
+      setTimeout(function(){
+        location.href = "/";
+      }, 1500);
+      
 
     },
     error: function (xhr, ajaxOptions, thrownError) {
@@ -88,13 +93,22 @@ const UPDATE_INTERVAL = 1000;
  * @usage userSignOut();
  */
  function userSignOut() {
-  if (confirm('Are you sure you want to Sign Out?')) {
-    /* YES */
-    delUser(username);
-  }
-  else {
-    /* No */
-  }
+
+  swal({
+    title: "Are you sure you want to Sign Out?",
+    text: "Once deleted, you will not be able to recover this session",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true
+  })
+  .then(function(isConfirm) {
+    if (isConfirm) {
+      delUser(username);
+    } else {
+      swal("Your session is safe");
+    }
+  });
+
 }
 
 
@@ -116,34 +130,47 @@ const UPDATE_INTERVAL = 1000;
 
     /* Check if username format is valid */
     if (tempName.match(/^[A-z0-9]+$/) == null || tempName.length > 16){
-      alert("Your username is not in a valid format!\n"
+      /*alert("Your username is not in a valid format!\n"
         + "Username can not exceed 16 char length and can not "
-        + "contain spaces and special characters.");
-    }
-    else {
+        + "contain spaces and special characters.");*/
+        swal({
+          title: "Your username is not in a valid format!",
+          text: "Username can not exceed 16 char length and can not "
+          + "contain spaces and special characters.",
+          icon: "warning",
+        });
+      }
+      else {
 
-      /* Tell python to  add user to users list */
-      $.ajax({
-        url: '/signUpUser',
-        data: {'data':tempName},
-        type: 'POST',
-        dataType: "text",
-        success: function(response) {
-          /* console.log("response: " + response); */
-          var status = JSON.parse(response).status
-          username = JSON.parse(response).user;
+        /* Tell python to  add user to users list */
+        $.ajax({
+          url: '/signUpUser',
+          data: {'data':tempName},
+          type: 'POST',
+          dataType: "text",
+          success: function(response) {
+            /* console.log("response: " + response); */
+            var status = JSON.parse(response).status
+            username = JSON.parse(response).user;
+            robotN = JSON.parse(response).robot;
 
-          if ( status == "OK" ){
-            /* LOGIN */
-            console.log("Logging in as: \"" + username + "\"");
-            localStorage.setItem('user', username);
-            localStorage.setItem('imgIndex', imgIndex);
+            if ( status == "OK" ){
+              /* LOGIN */
+              console.log("Logging in as: \"" + username + "\"");
+              localStorage.setItem('user', username);
+              localStorage.setItem('imgIndex', imgIndex);
+              localStorage.setItem('robotN', robotN);
 
-            /* Redirect to home page */
-            location.href = "/home";
-          }
-          else {
-            alert("The username \"" +username+ "\" is already taken! Choose another one.");
+              /* Redirect to home page */
+              location.href = "/home";
+            }
+            else {
+            //alert("The username \"" +username+ "\" is already taken! Choose another one.");
+            swal({
+              title: "The username \"" +username+ "\" is already taken!",
+              text: "Please choose another one.",
+              icon: "warning",
+            });
           }
         },
         error: function (xhr, ajaxOptions, thrownError) {
@@ -151,11 +178,17 @@ const UPDATE_INTERVAL = 1000;
         }
       });
 
+      }
     }
-  }
-  else {
-    /* Sorry! No Web Storage support... */
-    alert("This browser does not support local storage!");
+    else {
+      /* Sorry! No Web Storage support... */
+    //alert("This browser does not support local storage!");
+    swal({
+      title: "This browser does not support local storage!",
+      text: "The website can not work without local storage (Web storage)"
+      + " support. This functionality will be added later on (maybe)",
+      icon: "error",
+    });
   }
 }
 

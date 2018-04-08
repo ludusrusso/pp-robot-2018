@@ -4,29 +4,40 @@
 <title>LaserBot Battle | Login</title>
 
 <script type="text/javascript">
-  /* Check if user was previously logged in */
-  if (localStorage.getItem("user")!== null){
-
-    username = localStorage.getItem("user");
-
-    if (confirm("You previously logged as \""+ username + "\".\n" + "Do you want to restore your previous session?")) {
-      /* Yes: restore previous session */
-      location.href = "/home";
-    }
-    else {
-      /* No: remove previous session */
-      delUser(username);
-    }
-  }
 
   /* when whole page is loaded */
   $(document).ready(function(){
+
+    /* Check if user was previously logged in */
+    if (localStorage.getItem("user")!== null && localStorage.getItem("robotN")!== null){
+
+      username = localStorage.getItem("user");
+
+      swal({
+        title: "You previously logged as \""+ username + "\".\n",
+        text: "Do you want to restore your previous session?",
+        icon: "info",
+        buttons: true,
+        dangerMode: true,
+      })
+      .then(function(isConfirm) {
+        if (isConfirm) {
+          /* Yes: restore previous session */
+          imgIndex = localStorage.getItem("imgIndex");
+          robotN = localStorage.getItem("robotN");
+          location.href = "/home";
+        } else {
+          /* No: delete current user */
+          delUser(username);
+        }
+      });
+    }
 
     /* enable login at enter key press */
     $("#username").on('keypress', function(event) {
       if (event.keyCode == 13) userLogin();
     })
-    
+
   });
 
 </script>

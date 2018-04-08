@@ -3,6 +3,18 @@
 {% block inside_head %}
 <title>LaserBot Battle | Home</title>
 
+
+<!-- EventEmitter JS "http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js" -->
+<script type="text/javascript" src="{{ url_for('static', filename='js/eventemitter2.min.js') }}"></script>
+
+<!-- ROSLib JS "http://static.robotwebtools.org/roslibjs/current/roslib.min.js" -->
+<script type="text/javascript" src="{{ url_for('static', filename='js/roslib.min.js') }}"></script>
+
+<!-- gameArea ROS integration script -->
+<script type="text/javascript" src="{{ url_for('static', filename='js/gameArea.js') }}"></script>
+
+
+<!-- general page scripts -->
 <script type="text/javascript">
 
   username = localStorage.getItem("user");
@@ -10,7 +22,11 @@
   /* Check if username has been set */
   if ( username == null){
     /* If not redirect to login page */
-    alert("Username has not been choosen!\nRedirecting to login page.");
+    swal({
+      title: "The username has not been choosen!",
+      text: "Redirecting to login page.",
+      icon: "warning",
+    });
     location.href = "/";
   }
 
@@ -27,12 +43,23 @@
     /* Spawn user image in all userImage classes*/
     $('.userImage img').attr("src", "static/img/avatar" + imgIndex +".png");
 
+    $("#how-to").click(function() {
+      swal({
+        title: "Title",
+        text: "text.",
+      });
+    });
+
     /* periodically launch function to update logged users list */
     var userUpdate = setInterval(function(){updateLoggedUsers();}, UPDATE_INTERVAL);
+
+    /* start game */
+    myGameArea.start();
     
   });
 
 </script>
+
 {% endblock %}
 
 {% block body %}
@@ -69,7 +96,7 @@
                 <!-- Menu Footer-->
                 <li class="user-footer">
                   <div class="pull-left">
-                    <a  class="btn btn-default btn-flat">Pause game</a>
+                    <a class="btn btn-default btn-flat" id="how-to">Help</a>
                   </div>
                   <div class="pull-right">
                     <a class="btn btn-default btn-flat" onclick="userSignOut()">Sign out</a>
