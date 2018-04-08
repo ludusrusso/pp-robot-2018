@@ -14,6 +14,7 @@ def handle_new_robot(req):
 
 def add_new_robot_server():
     rospy.init_node('robots_server')
+	# The service add_new_robot is created and up to now can be required by a client
     s = rospy.Service('add_new_robot', AddNewRobot , handle_new_robot)
     print "Ready to add a new robot!"
     rospy.spin()
