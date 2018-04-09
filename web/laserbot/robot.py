@@ -20,7 +20,7 @@ class Robots:
     # add new robot to list (and keep it sorted by ID)
     def addRobot(self, id):
         self.robots.append( Robot(id) )
-        self.sort(key=lambda x: x.ID) 
+        self.robots.sort(key=lambda x: x.ID) 
 
 
     # get first available robot (ID) from robots list
@@ -29,6 +29,14 @@ class Robots:
             if r.name == "" :
                 return r.ID
         return False
+
+    # get number of available robots
+    def getAvailableRobotsN(self):
+        num = 0
+        for r in self.robots:
+            if r.name == "" :
+                num += 1
+        return num
 
     # get first unused ID starting from 0
     def getAvailableID(self):
@@ -45,6 +53,14 @@ class Robots:
         for r in self.robots:
             if r.ID == id and r.user == "" :
                 r.user = name
+                return True
+        return False
+
+    # de-associate user from robot
+    def removeUserFromRobot(self, name):
+        for r in self.robots:
+            if r.user == name :
+                r.user = ""
                 return True
         return False
 

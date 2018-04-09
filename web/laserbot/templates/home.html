@@ -17,39 +17,39 @@
 <!-- general page scripts -->
 <script type="text/javascript">
 
-  username = localStorage.getItem("user");
-
-  /* Check if username has been set */
-  if ( username == null){
-    /* If not redirect to login page */
-    swal({
-      title: "The username has not been choosen!",
-      text: "Redirecting to login page.",
-      icon: "warning",
-    });
-    location.href = "/";
-  }
-
-  console.log("Logged as \""+ username + "\"");
-
-  /* get user variables */
-  imgIndex = localStorage.getItem("imgIndex");
-  robotN = localStorage.getItem("robotN");
-  date = localStorage.getItem("date");
-
   var userUpdate;
 
   /* when whole page is loaded */
   $(document).ready(function(){
 
+    /* Check if username has been set */
+    if ( localStorage.getItem("user") == null){
+      /* If not redirect to login page */
+      swal({
+        title: "The username has not been choosen!",
+        text: "Redirecting to login page.",
+        icon: "warning",
+        button: false,
+        timer: 2000,
+      });
+
+      setTimeout(function(){
+        location.href = "/";
+      }, 2100);
+    }
+
+    /* get user variables */
+    user = JSON.parse(localStorage.getItem("user"));
+    console.log("Logged as \""+ user.name + "\"");
+
     /* Spawn username in all username classes */
-    $('.username').html(username);
+    $('.username').html(user.name);
     /* Spawn robot number */
-    $('.robotN').html("Robot " + robotN);
+    $('.robotN').html("Robot " + user.robotN);
     /* Spawn date */
-    $('.date').html( "Logged in: " + date );
+    $('.date').html( "Logged in: " + user.date );
     /* Spawn user image in all userImage classes*/
-    $('.userImage img').attr("src", "static/img/avatar" + imgIndex +".png");
+    $('.userImage img').attr("src", "static/img/avatar" + user.imgIndex +".png");
 
     /* periodically launch function to update logged users list */
     userUpdate = setInterval(function(){updateLoggedUsers();}, UPDATE_INTERVAL);
@@ -61,7 +61,7 @@
 
     /* start game */
     myGameArea.start();
-    
+
   });
 
 </script>

@@ -5,16 +5,18 @@
 
 <script type="text/javascript">
 
+  var robotUpdate;
+
   /* when whole page is loaded */
   $(document).ready(function(){
 
     /* Check if user was previously logged in */
-    if (localStorage.getItem("user")!== null && localStorage.getItem("robotN")!== null){
+    if (localStorage.getItem("user")!== null){
 
-      username = localStorage.getItem("user");
+      user = JSON.parse(localStorage.getItem("user"));
 
       swal({
-        title: "You previously logged as \""+ username + "\".\n",
+        title: "You previously logged as \""+ user.name + "\".\n",
         text: "Do you want to restore your previous session?",
         icon: "info",
         buttons: true,
@@ -23,12 +25,10 @@
       .then(function(isConfirm) {
         if (isConfirm) {
           /* Yes: restore previous session */
-          imgIndex = localStorage.getItem("imgIndex");
-          robotN = localStorage.getItem("robotN");
           location.href = "/home";
         } else {
           /* No: delete current user */
-          delUser(username);
+          delUser(user.name);
         }
       });
     }
@@ -42,6 +42,9 @@
     $("#how-to").click(function() {
       help();
     });
+    
+    /* periodically launch function to update logged users list */
+    robotUpdate = setInterval(function(){updateAvailableRobots();}, UPDATE_INTERVAL);
 
   });
 
@@ -84,6 +87,9 @@
 
     <div class='text-center'>
       <a href="/home"><small>Restore previous session if any</small></a>
+    </div>
+    <div class='login-footer text-center'>
+      Available Robots: <span id="availableR"></span>
     </div>
     <div class='login-footer text-center'>
       <b><a class='text-black' id="how-to" style="margin-right:4em; cursor: pointer;"> HOW TO </a></b>

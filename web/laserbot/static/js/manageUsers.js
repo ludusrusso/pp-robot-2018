@@ -4,7 +4,7 @@
  * -----------------------
  * 
  * @type function
- * @usage JSON.parse(object); | JSON.stringfy(string);
+ * @usage JSON.parse(object); | JSON.stringify(string);
  */
  if(!(window.JSON && window.JSON.parse)) {
    (function() {
@@ -20,18 +20,15 @@
 /*---------------------------------------------------------------------------*/
 /*-- GLOBAL VARIABLES -------------------------------------------------------*/
 
-var users = [];
-var username = "";
-var robotN = 0;
-var imgIndex = 0;
-var date = "";
+var user = {  "name": "",
+"robotN": undefined,
+"imgIndex": 0,
+"date": ""  };
 
 /* define interval to update user list in ms */
 const UPDATE_INTERVAL = 1000;
 
 /*---------------------------------------------------------------------------*/
-
-
 
 
 
@@ -53,14 +50,14 @@ const UPDATE_INTERVAL = 1000;
 
       if ( status == "OK" ){
         /* SIGN OUT */
-        console.log("User \"" + username + "\" removed");
+        console.log("User \"" + user.name + "\" removed");
         swal("Your session has been deleted!", "Redirectiong to login page", "success");
       }
       else if ( status == "UNREGISTERED" ){
-        swal("Server error", "The user \"" + username + "\" is not logged.", "error");
+        swal("Server error", "The user \"" + user.name + "\" is not logged.", "error");
       }
       else if ( status == "FAILED" ){
-        swal("Server error", "The user \"" + username + "\" can't be removed.", "error");
+        swal("Server error", "The user \"" + user.name + "\" can't be removed.", "error");
         return;
       }
       else {
@@ -69,14 +66,13 @@ const UPDATE_INTERVAL = 1000;
       }
 
       /* Stop users list update */
-      window.clearInterval(userUpdate)
+      if ( typeof(userUpdate) != "undefined" ){
+        window.clearInterval(userUpdate)
+      }
 
       /* delete stored variables */
       localStorage.removeItem('user');
-      localStorage.removeItem('imgIndex');
-      localStorage.removeItem('robotN');
-      localStorage.removeItem('date');
-      username = "";
+      user.name = "";
 
       /* redirect to login page */
       setTimeout(function(){
@@ -111,7 +107,7 @@ const UPDATE_INTERVAL = 1000;
   })
   .then(function(isConfirm) {
     if (isConfirm) {
-      delUser(username);
+      delUser(user.name);
     } else {
       swal("Your session is safe");
     }
@@ -122,7 +118,7 @@ const UPDATE_INTERVAL = 1000;
 
 /*
  * LOGIN FUNCTION:
- *  get usernamename from form and add user to python users
+ *  get username from form and add user to python users
  * -----------------------
  * 
  * @type function
@@ -157,33 +153,32 @@ const UPDATE_INTERVAL = 1000;
           type: 'POST',
           dataType: "text",
           success: function(response) {
-            console.log("response: " + response);
-            var status = JSON.parse(response).status
-            username = JSON.parse(response).user;
-            robotN = JSON.parse(response).robot;
+            /* console.log("response: " + response); */
+            var res = JSON.parse(response);
+            var status = res.status
+            user.name = res.user;
+            user.robotN = res.robot;
 
             if ( status == "OK" ){
               /* LOGIN */
-              console.log("Logging in as: \"" + username + "\"");
-              localStorage.setItem('user', username);
-              localStorage.setItem('imgIndex', imgIndex);
-              localStorage.setItem('robotN', robotN);
-              localStorage.setItem('date', (new Date()).toString().split("GMT")[0] );
+              console.log("Logging in as: \"" + user.name + "\"");
+              user.date = (new Date()).toString().split("GMT")[0];
+              localStorage.setItem('user', JSON.stringify(user));
 
               /* Redirect to home page */
               location.href = "/home";
             }
             else if ( status == "NO_ROBOTS" ){
-              swal("Server error", "There are no robots available at the time!", "error");
+              swal("Warning", "There are no robots available at the time!", "warning");
             }
             else if ( status == "ROBOT_UNAVAILABLE" ){
-              swal("Server error", "The robot n." + robotN + "is unavailable!", "error");
+              swal("Server error", "The robot n. " + user.robotN + " is unavailable!", "error");
             }
             else if ( status == "UNAVAILABLE" ){
               swal({
-                title: "The username \"" +username+ "\" is already taken!",
+                title: "The username \"" +user.name+ "\" is already taken!",
                 text: "Please choose another one.",
-                icon: "warning",
+                icon: "info",
               });
             }
             else {
@@ -200,15 +195,14 @@ const UPDATE_INTERVAL = 1000;
     }
     else {
       /* Sorry! No Web Storage support... */
-    //alert("This browser does not support local storage!");
-    swal({
-      title: "This browser does not support local storage!",
-      text: "The website can not work without local storage (Web storage)"
-      + " support. This functionality will be added later on (maybe)",
-      icon: "error",
-    });
+      swal({
+        title: "This browser does not support local storage!",
+        text: "The website can not work without local storage (Web storage)"
+        + " support. This functionality will be added later on (maybe)",
+        icon: "error",
+      });
+    }
   }
-}
 
 
 /*
@@ -220,8 +214,8 @@ const UPDATE_INTERVAL = 1000;
  * @usage changeImage();
  */
  function changeImage() {
-  imgIndex = (imgIndex +1) % 5;
-  document.getElementById("userImage").src = "static/img/avatar" + imgIndex +".png";
+  user.imgIndex = (user.imgIndex +1) % 5;
+  document.getElementById("userImage").src = "static/img/avatar" + user.imgIndex +".png";
 }
 
 
@@ -250,12 +244,14 @@ const UPDATE_INTERVAL = 1000;
         var userList = "";
         var userLife = "";
 
-        if (JSON.parse(response).users !== "[]"){
+        var res = JSON.parse(response)
 
-          users = JSON.parse(JSON.parse(response).users);
+        if (res.users !== "[]"){
+
+          var users = JSON.parse(res.users);
 
           for (var i = 0; i < users.length; i++) {
-            if (users[i].name != username){
+            if (users[i].name != user.name){
               /* username */
               userList += '<div class="user-list-div"><li><a><b>'+ users[i].name + '</b></a>'
               /* life percentage badge */
@@ -271,6 +267,10 @@ const UPDATE_INTERVAL = 1000;
             }
           }
 
+          if ( userList == "" ) {
+            userList = '<div class="user-list-div"><li><a>No other users logged yet</a></div>';
+          }
+
           /* current user life percentage badge */
           userLife += '<div class="user-life-div">'
           + '<span class="badge user-life-badge">LIFE ' + currentUser.life + '%</span>'
@@ -280,14 +280,42 @@ const UPDATE_INTERVAL = 1000;
           + 'aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: ' 
           + currentUser.life + '%;"></div></div></div>';
 
+          document.getElementById('userList').innerHTML = userList;
+          document.getElementById('userLife').innerHTML = userLife;
         }
-        else {
-          userList = "No users logget yet."
-        }
+      }
+      else {
+        console.warn("response: " + response);
+      }
+    },
+    error: function (xhr, ajaxOptions, thrownError) {
+      console.error("ERROR " + xhr.status + ": " + thrownError);
+    }
+  });
+  
+}
 
-        document.getElementById('userList').innerHTML = userList;
-        document.getElementById('userLife').innerHTML = userLife;
 
+/*
+ * UPDATE AVAILABLE ROBOT NUMBER:
+ *  get number of available roborts add updated html into proper location
+ * -----------------------
+ * 
+ * @type function
+ * @usage updateAvailableRobots();
+ */
+ function updateAvailableRobots() {
+
+  $.ajax({
+    url: '/getAvailableRobots',
+    type: 'POST',
+    data: {'data':''},
+    success: function(response) {
+      /* console.log("response: " + response); */
+      var status = JSON.parse(response).status
+
+      if ( status == "OK" ){
+        document.getElementById('availableR').innerHTML = JSON.parse(response).availableR;
       }
       else {
         console.warn("response: " + response);

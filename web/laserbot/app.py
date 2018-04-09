@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from flask import Flask, render_template, request, json
-from users import Users, userDefault, users
-from robot import Robots, robots
+from users import userDefault, users
+from robot import robots
 
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
@@ -35,13 +35,12 @@ def signUpUser():
 
     # check first available robot id
     robotN = robots.getAvailableRobot();
-    robotN = 1
 
     if robotN == False :
         return json.dumps({'status':'NO_ROBOTS', 'user':name})
 
-    #if not robots.addUserToRobot(robotN, name) :
-    #    return json.dumps({'status':'ROBOT_UNAVAILABLE', 'robot':robotN})
+    if not robots.addUserToRobot(robotN, name) :
+        return json.dumps({'status':'ROBOT_UNAVAILABLE', 'robot':robotN})
 
     # if username is availabe :
     if users.isNameAvailable(name) :
@@ -61,6 +60,9 @@ def signOutUser():
 
     # if user is in users list :
     if not users.isNameAvailable(name) :
+
+        robots.removeUserFromRobot(name)
+
         # delete from list
         if users.delUser(name) :
             return json.dumps({'status':'OK', 'user':name})
@@ -76,6 +78,13 @@ def signOutUser():
 @app.route('/listUsers', methods=['POST'])
 def listUsers():    
     return json.dumps({'status':'OK', 'users':users.toString()}, default=userDefault)
+
+
+# getAvailableRobots function:
+#   return number of available robots (json format)
+@app.route('/getAvailableRobots', methods=['POST'])
+def getAvailableRobots():    
+    return json.dumps({'status':'OK', 'availableR':robots.getAvailableRobotsN()})
 
 # -----------------------------------------------------------------------------
 

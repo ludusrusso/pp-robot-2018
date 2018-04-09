@@ -9,24 +9,39 @@ var ros = new ROSLIB.Ros({
   url : 'ws://localhost:9090'
 });
 
-ros.on('connection', function() {
-  console.log('Connected to websocket server.');
-});
+$(document).ready(function(){
 
-ros.on('error', function(error) {
-  console.log('Error connecting to websocket server: ', error);
-});
+  ros.on('connection', function() {
+    console.log('Connected to websocket server.');
+  });
 
-ros.on('close', function() {
-  console.log('Connection to websocket server closed.');
-});
+  ros.on('error', function(error) {
+    console.log('Error connecting to websocket server: ', error);
+    swal({
+      title: "Error connecting to ROSBridge server!",
+      text: "The game can not start without a working connection to ROSBridge websocket server",
+      icon: "error",
+      button: false,
+      timer: 5000,
+    });
+    setTimeout(function(){
+      delUser(user.name);
+      location.href = "/";
+    }, 5100);
 
+  });
+
+  ros.on('close', function() {
+    console.log('Connection to websocket server closed.');
+  });
+
+});
 
 /* Publisher */
 
 var topic = new ROSLIB.Topic({
   ros : ros,
-  name : '/Robot' + robotN + '/commands',
+  name : '/Robot' + user.robotN + '/commands',
   messageType : 'Robot_msg'
 });
 
@@ -41,7 +56,7 @@ var robot_msg = new ROSLIB.Message({
 
 var topic_listener = new ROSLIB.Topic({
   ros : ros,
-  name : '/Robot' + robotN + '/response',
+  name : '/Robot' + user.robotN + '/response',
   messageType : 'std_msgs/Empty'
 });
 
