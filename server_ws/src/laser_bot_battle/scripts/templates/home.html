@@ -1,0 +1,179 @@
+{% extends 'layout.html' %}
+
+{% block inside_head %}
+<title>LaserBot Battle | Home</title>
+
+
+<!-- EventEmitter JS "http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js" -->
+<script type="text/javascript" src="{{ url_for('static', filename='js/eventemitter2.min.js') }}"></script>
+
+<!-- ROSLib JS "http://static.robotwebtools.org/roslibjs/current/roslib.min.js" -->
+<script type="text/javascript" src="{{ url_for('static', filename='js/roslib.min.js') }}"></script>
+
+<!-- gameArea ROS integration script -->
+<script type="text/javascript" src="{{ url_for('static', filename='js/gameArea.js') }}"></script>
+
+
+<!-- general page scripts -->
+<script type="text/javascript">
+
+  var userUpdate;
+
+  /* when whole page is loaded */
+  $(document).ready(function(){
+
+    /* Check if username has been set */
+    if ( localStorage.getItem("user") == null){
+      /* If not redirect to login page */
+      swal({
+        title: "The username has not been choosen!",
+        text: "Redirecting to login page.",
+        icon: "warning",
+        button: false,
+        timer: 2000,
+      });
+
+      setTimeout(function(){
+        location.href = "/";
+      }, 2100);
+    }
+
+    /* get user variables */
+    user = JSON.parse(localStorage.getItem("user"));
+    console.log("Logged as \""+ user.name + "\"");
+
+    /* Spawn username in all username classes */
+    $('.username').html(user.name);
+    /* Spawn robot number */
+    $('.robotN').html("Robot " + user.robotN);
+    /* Spawn date */
+    $('.date').html( "Logged in: " + user.date );
+    /* Spawn user image in all userImage classes*/
+    $('.userImage img').attr("src", "static/img/avatar" + user.imgIndex +".png");
+
+    /* periodically launch function to update logged users list */
+    userUpdate = setInterval(function(){updateLoggedUsers();}, UPDATE_INTERVAL);
+
+    /* HELP description message */
+    $("#how-to").click(function() {
+      help();
+    });
+
+    /* start game */
+    myGameArea.start();
+
+  });
+
+</script>
+
+{% endblock %}
+
+{% block body %}
+<body class="skin-blue">
+  <div class="wrapper">
+
+    <header class="main-header">
+      <!-- Logo -->
+      <a href="#" class="logo"><b>LaserBot</b> Battle</a>
+      <!-- Header Navbar: style can be found in header.less -->
+      <nav class="navbar navbar-static-top" role="navigation">
+        <!-- Sidebar toggle button-->
+        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+          <span class="sr-only">Toggle navigation</span>
+        </a>
+        <div class="navbar-custom-menu">
+          <ul class="nav navbar-nav">
+            <li class="dropdown user user-menu">
+              <a href="#" class="dropdown-toggle userImage" data-toggle="dropdown">
+                <img src="/static/img/avatar0.png" class="user-image" alt="User Image"/>
+                <span class="hidden-xs username"></span>
+              </a>
+
+              <ul class="dropdown-menu">
+                <!-- User image -->
+                <li class="user-header userImage">
+                  <img src="/static/img/avatar0.png" class="img-circle" alt="User Image"/>
+                  <p>
+                    <label class="username"></label> - <label class="robotN"> - </label>
+                    <small class="date"> - </small>
+                  </p>
+
+                </li>
+                <!-- Menu Footer-->
+                <li class="user-footer">
+                  <div class="pull-left">
+                    <a class="btn btn-default btn-flat" id="how-to">Help</a>
+                  </div>
+                  <div class="pull-right">
+                    <a class="btn btn-default btn-flat" onclick="userSignOut()">Sign out</a>
+                  </div>
+                </li>
+              </ul>
+
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <!-- Left side column. contains the logo and sidebar -->
+    <aside class="main-sidebar">
+      <!-- sidebar: style can be found in sidebar.less -->
+      <section class="sidebar">
+        <!-- Sidebar user panel -->
+        <div class="user-panel">
+          <div class="pull-left image userImage">
+            <img src="static/img/avatar0.png" class="img-circle" alt="User Image"/>
+          </div>
+          <div class="pull-left info">
+            <p class="username"></p>
+            <a><i class="fa fa-circle text-success"></i> Online</a>
+          </div>
+        </div>
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        <ul class="sidebar-menu">
+          <li class="header">Logged users:</li>
+          <li class="active treeview">
+            <span id="userList">
+              <a><span> Updating user list...</span></a>
+            </span>
+          </li>
+
+        </ul>
+      </section>
+      <!-- /.sidebar -->
+    </aside>
+
+    <!-- Right side column. Contains the navbar and content of the page -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <h1>
+          Home
+          <small>user space</small>
+        </h1>
+      </section>
+
+      <!-- Main content -->
+      <section class="content">
+
+        <!-- Health row -->
+        <div class="row">
+         <span id="userLife"></span>
+       </div><!-- /.row (healt row) -->
+
+       <!-- Main row -->
+       <div class="row">
+
+       </div><!-- /.row (main row) -->
+
+     </section><!-- /.content -->
+   </div><!-- /.content-wrapper -->
+   <footer class="main-footer">
+    <div class="pull-right hidden-xs">
+      <b>Version</b> 0.1
+    </div>
+    <strong>Copyright &copy; 2018 <a href="https://github.com/ludusrusso/pp-robot-2018">pp-robot-2018 group</a>.</strong> All rights reserved.
+  </footer>
+</div><!-- ./wrapper -->
+
+{% endblock %}
