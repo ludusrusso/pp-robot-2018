@@ -2,7 +2,7 @@
 
 from laser_bot_battle.srv import *
 import rospy
-from robot import Robots, robots
+from robot import robots
 
 def handle_new_robot(req):
 	print "Request received from robot"

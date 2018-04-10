@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>laserbot_server</name>
+  <name>laser_bot_battle</name>
   <version>0.0.1</version>
   <description>The laser_bot_battle package - server</description>
 
