@@ -4,9 +4,13 @@ from users import userDefault, users
 from robot import robots
 #from ID_service_server import add_new_robot_server
 import ID_service_server
-import thread
+import threading
+import time
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
+
+timeLeft = 0
+gameStarted = False
 
 # Debug mode
 #app.debug = True
@@ -38,7 +42,6 @@ def signUpUser():
 
     # check first available robot id
     robotN = robots.getAvailableRobot();
-    print "QUI DENTRO SIGN UP USER"
     if robotN == -1 :
         return json.dumps({'status':'NO_ROBOTS', 'user':name})
 
@@ -87,9 +90,35 @@ def listUsers():
 #   return number of available robots (json format)
 @app.route('/getAvailableRobots', methods=['POST'])
 def getAvailableRobots():  
-    print robots.toString()  
-    print "num robots : ", robots.getAvailableRobotsN()
+    #print robots.toString()  
+    #print "num robots : ", robots.getAvailableRobotsN()
     return json.dumps({'status':'OK', 'availableR':robots.getAvailableRobotsN()})
+
+
+def countdown():
+    global timeLeft
+    print "countdown started"
+    while timeLeft:
+        time.sleep(1)
+        timeLeft -= 1
+        print "\r",timeLeft
+
+    print('Starting game!')
+    return
+
+# getAvailableRobots function:
+#   return number of available robots (json format)
+@app.route('/waitCountdown', methods=['POST'])
+def waitCountdown():
+    global gameStarted
+    global timeLeft
+    if (not gameStarted) and users.usersNum() > 1: 
+        gameStarted = True
+        timeLeft = 30
+        tcd = threading.Thread(target=countdown)
+        tcd.start()
+
+    return json.dumps({'status':'OK', 'timeLeft':timeLeft})
 
 def main():
 	app.run()

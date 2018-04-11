@@ -46,4 +46,14 @@ class Users:
     def toString(self):
         return json.dumps(self.users, default=userDefault)
 
+    # return num of users list
+    def usersNum(self):
+        num = 0
+        for u in self.users:
+            if u.name == "" :
+                return -1
+            num += 1
+        return num
+
+
 users = Users()

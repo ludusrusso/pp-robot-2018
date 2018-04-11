@@ -25,8 +25,11 @@ var user = {  "name": "",
 "imgIndex": 0,
 "date": ""  };
 
+var timerID = "";
+
 /* define interval to update user list in ms */
 const UPDATE_INTERVAL = 1000;
+
 
 /*---------------------------------------------------------------------------*/
 
@@ -220,6 +223,66 @@ const UPDATE_INTERVAL = 1000;
 
 
 /*
+ * START WAIT COUNTDOWN:
+ *  count down from timeLeft to 0, update countdown and start game on expire
+ * -----------------------
+ * 
+ * @type function
+ * @usage setInterval(waitCountdown, time_ms);
+ */
+ function waitCountdown() {
+  $.ajax({
+    url: '/waitCountdown',
+    type: 'POST',
+    data: {'data':'data'},
+    success: function(response) {
+      /* console.log("response: " + response); */
+      var status = JSON.parse(response).status
+
+      if ( status == "OK" ){
+        var timeLeft = JSON.parse(response).timeLeft;
+        console.log("timeLeft: " + timeLeft);
+
+        if ( timeLeft == 0 ) {
+          clearTimeout(timerID);
+          document.getElementById('game-status').innerHTML = "PLAY!";
+
+          myGameArea.start();
+        }
+        else {
+          document.getElementById('game-status').innerHTML = timeLeft + " sec to start."
+        }
+
+      }
+      else {
+        console.warn("response: " + response);
+      }
+    },
+    error: function (xhr, ajaxOptions, thrownError) {
+      console.error("ERROR " + xhr.status + ": " + thrownError);
+    }
+  });
+
+
+
+
+/*
+  if ( timeLeft == 0 ) {
+    clearTimeout(timerID);
+    document.getElementById('game-status').innerHTML = "PLAY!";
+
+    myGameArea.start();
+  }
+  else {
+    document.getElementById('game-status').innerHTML = timeLeft + " sec to start."
+    timeLeft -= 1;
+  }
+  */
+
+}
+
+
+/*
  * UPDATE USER INFO (LIFE):
  *  get updated users info and add updated html into proper location
  * -----------------------
@@ -267,8 +330,14 @@ const UPDATE_INTERVAL = 1000;
             }
           }
 
-          if ( userList == "" ) {
+          /* no other players loggged */
+          if ( users.length < 2 ) {
             userList = '<div class="user-list-div"><li><a>No other users logged yet</a></div>';
+            document.getElementById('game-status').innerHTML = 'Waiting for other players...'
+          }
+          else if ( timerID == "" ) {
+            /* if at least 2 players are logged, start countdown from game start */
+            timerID = setInterval(waitCountdown, 500);
           }
 
           /* current user life percentage badge */
@@ -311,7 +380,7 @@ const UPDATE_INTERVAL = 1000;
     type: 'POST',
     data: {'data':''},
     success: function(response) {
-      console.log("response: " + response);
+      /* console.log("response: " + response); */
       var status = JSON.parse(response).status
 
       if ( status == "OK" ){

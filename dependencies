@@ -2,6 +2,7 @@
 
 python
 python-pip
+ros-kinetic-rosserial-python
 
 # rosbridge support
 ros-kinetic-rosbridge-server
@@ -10,4 +11,9 @@ ros-kinetic-rosbridge-server
 #---To be installed with pip: pip install <package> ---------------------------
 
 flask
+
+
+#---To read from serial, add user to dialout group ----------------------------
+sudo usermod -a -G dialout $USER
+
 
