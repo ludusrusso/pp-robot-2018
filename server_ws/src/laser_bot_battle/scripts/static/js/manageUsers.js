@@ -20,12 +20,19 @@
 /*---------------------------------------------------------------------------*/
 /*-- GLOBAL VARIABLES -------------------------------------------------------*/
 
-var user = {  "name": "",
-"robotN": undefined,
-"imgIndex": 0,
-"date": ""  };
+var user = {  name: "",
+life: 100,
+robotN: undefined,
+imgIndex: 0,
+date: "",
+ready: 0,  };
 
 var timerID = "";
+
+/* global for debug */
+var users = "";
+var usersReady = 0;
+
 
 /* define interval to update user list in ms */
 const UPDATE_INTERVAL = 1000;
@@ -137,75 +144,72 @@ const UPDATE_INTERVAL = 1000;
 
     /* Check if username format is valid */
     if (tempName.match(/^[A-z0-9]+$/) == null || tempName.length > 16){
-      /*alert("Your username is not in a valid format!\n"
-        + "Username can not exceed 16 char length and can not "
-        + "contain spaces and special characters.");*/
-        swal({
-          title: "Your username is not in a valid format!",
-          text: "Username can not exceed 16 char length and can not "
-          + "contain spaces and special characters.",
-          icon: "warning",
-        });
-      }
-      else {
-
-        /* Tell python to  add user to users list */
-        $.ajax({
-          url: '/signUpUser',
-          data: {'data':tempName},
-          type: 'POST',
-          dataType: "text",
-          success: function(response) {
-            /* console.log("response: " + response); */
-            var res = JSON.parse(response);
-            var status = res.status
-            user.name = res.user;
-            user.robotN = res.robot;
-
-            if ( status == "OK" ){
-              /* LOGIN */
-              console.log("Logging in as: \"" + user.name + "\"");
-              user.date = (new Date()).toString().split("GMT")[0];
-              localStorage.setItem('user', JSON.stringify(user));
-
-              /* Redirect to home page */
-              location.href = "/home";
-            }
-            else if ( status == "NO_ROBOTS" ){
-              swal("Warning", "There are no robots available at the time!", "warning");
-            }
-            else if ( status == "ROBOT_UNAVAILABLE" ){
-              swal("Server error", "The robot n. " + user.robotN + " is unavailable!", "error");
-            }
-            else if ( status == "UNAVAILABLE" ){
-              swal({
-                title: "The username \"" +user.name+ "\" is already taken!",
-                text: "Please choose another one.",
-                icon: "info",
-              });
-            }
-            else {
-              swal("Unknown error", "response: " + response, "error");
-              return;
-            }
-          },
-          error: function (xhr, ajaxOptions, thrownError) {
-            console.error("ERROR " + xhr.status + ": " + thrownError);
-          }
-        });
-
-      }
-    }
-    else {
-      /* Sorry! No Web Storage support... */
       swal({
-        title: "This browser does not support local storage!",
-        text: "The website can not work without local storage (Web storage)"
-        + " support. This functionality will be added later on (maybe)",
-        icon: "error",
+        title: "Your username is not in a valid format!",
+        text: "Username can not exceed 16 char length and can not "
+        + "contain spaces and special characters.",
+        icon: "warning",
       });
     }
+    else {
+      console.log("ajax: "+tempName);
+
+      /* Tell python to  add user to users list */
+      $.ajax({
+        url: '/signUpUser',
+        data: {'data':tempName},
+        type: 'POST',
+        dataType: "text",
+        success: function(response) {
+          /* console.log("response: " + response); */
+          var res = JSON.parse(response);
+          var status = res.status
+
+          if ( status == "OK" ){
+            /* LOGIN */
+            user.name = res.user;
+            user.robotN = res.robot;
+            user.date = (new Date()).toString().split("GMT")[0];
+            localStorage.setItem('user', JSON.stringify(user));
+            console.log("Logging in as: \"" + user.name + "\"");
+            /* Redirect to home page */
+            location.href = "/home";
+          }
+          else if ( status == "NO_ROBOTS" ){
+            swal("Warning", "There are no robots available at the time!", "warning");
+          }
+          else if ( status == "ROBOT_UNAVAILABLE" ){
+            swal("Server error", "The robot n. " + user.robotN + " is unavailable!", "error");
+          }
+          else if ( status == "UNAVAILABLE" ){
+            swal({
+              title: "The username \"" + tempName + "\" is already taken!",
+              text: "Please choose another one.",
+              icon: "info",
+            });
+          }
+          else {
+            swal("Unknown error", "response: " + response, "error");
+            return;
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          console.error("ERROR " + xhr.status + ": " + thrownError);
+        }
+      });
+
+    }
   }
+  else {
+    /* Sorry! No Web Storage support... */
+    swal({
+      title: "This browser does not support local storage!",
+      text: "The website can not work without local storage (Web storage)"
+      + " support. This functionality will be added later on (maybe)",
+      icon: "error",
+    });
+  }
+}
 
 
 /*
@@ -241,18 +245,28 @@ const UPDATE_INTERVAL = 1000;
 
       if ( status == "OK" ){
         var timeLeft = JSON.parse(response).timeLeft;
-        console.log("timeLeft: " + timeLeft);
+        /* console.log("timeLeft: " + timeLeft); */
+
+        /* enable ready button */
+        $('#ready-btn').prop('disabled', false);
 
         if ( timeLeft == 0 ) {
+          /* START */
           clearTimeout(timerID);
+          timerID == "";
           document.getElementById('game-status').innerHTML = "PLAY!";
 
           myGameArea.start();
         }
         else {
+          /* disable ready button */
+          $('#ready-btn').prop('disabled', true);
           document.getElementById('game-status').innerHTML = timeLeft + " sec to start."
         }
 
+      }
+      else if ( status == "STARTED" ){
+        swal("Something went wrong", "The game is already started.", "warning");
       }
       else {
         console.warn("response: " + response);
@@ -262,22 +276,6 @@ const UPDATE_INTERVAL = 1000;
       console.error("ERROR " + xhr.status + ": " + thrownError);
     }
   });
-
-
-
-
-/*
-  if ( timeLeft == 0 ) {
-    clearTimeout(timerID);
-    document.getElementById('game-status').innerHTML = "PLAY!";
-
-    myGameArea.start();
-  }
-  else {
-    document.getElementById('game-status').innerHTML = timeLeft + " sec to start."
-    timeLeft -= 1;
-  }
-  */
 
 }
 
@@ -311,9 +309,16 @@ const UPDATE_INTERVAL = 1000;
 
         if (res.users !== "[]"){
 
-          var users = JSON.parse(res.users);
+          users = JSON.parse(res.users);
+          var usersN = users.length;
+          usersReady = 0;
 
-          for (var i = 0; i < users.length; i++) {
+          for (var i = 0; i < usersN; i++) {
+
+            if ( users[i].ready == 1 ) 
+              usersReady += 1; 
+
+            /* spawn users list and life */
             if (users[i].name != user.name){
               /* username */
               userList += '<div class="user-list-div"><li><a><b>'+ users[i].name + '</b></a>'
@@ -326,31 +331,46 @@ const UPDATE_INTERVAL = 1000;
               + users[i].life + '%"></div></div></div><hr/>'
             }
             else{
-              var currentUser = users[i];
+              user.life = users[i].life;
             }
           }
 
-          /* no other players loggged */
-          if ( users.length < 2 ) {
+          /* If no other players loggged */
+          if ( usersN < 2 ) {
+            /* Disable ready button */
+            $('#ready-btn').prop('disabled', true);
             userList = '<div class="user-list-div"><li><a>No other users logged yet</a></div>';
+            
             document.getElementById('game-status').innerHTML = 'Waiting for other players...'
           }
-          else if ( timerID == "" ) {
-            /* if at least 2 players are logged, start countdown from game start */
-            timerID = setInterval(waitCountdown, 500);
+          else {
+            /* Enable ready button */
+            $('#ready-btn').prop('disabled', false);
+
+            if ( timerID == "" && usersReady > 1 && user.ready ) {
+              /* if at least 2 players are logged, start countdown from game start */
+              timerID = setInterval(waitCountdown, 500);
+            }
+
+            if (user.ready == 0){
+              document.getElementById('game-status').innerHTML = 'Press ready to start!';
+            }
           }
 
           /* current user life percentage badge */
           userLife += '<div class="user-life-div">'
-          + '<span class="badge user-life-badge">LIFE ' + currentUser.life + '%</span>'
+          + '<span class="badge user-life-badge">LIFE ' + user.life + '%</span>'
           /* current user life progress bar */
           + '<div class="progress user-life-bar">'
           + '<div class="progress-bar progress-bar-success" role="progressbar"'
           + 'aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: ' 
-          + currentUser.life + '%;"></div></div></div>';
+          + user.life + '%;"></div></div></div>';
 
           document.getElementById('userList').innerHTML = userList;
           document.getElementById('userLife').innerHTML = userLife;
+        }
+        else {
+          delUser(user.name);
         }
       }
       else {
@@ -396,6 +416,54 @@ const UPDATE_INTERVAL = 1000;
   });
   
 }
+
+
+/*
+ * UPDATE READY BUTTON:
+ *  update ready status on button press
+ * -----------------------
+ * 
+ * @type function
+ * @usage on click event call updateReady();
+ */
+ function updateReady() {
+  $.ajax({
+    url: '/playerReady',
+    type: 'POST',
+    data: {'user': user.name, 'ready': user.ready==0 ? 1 : 0 },
+    success: function(response) {
+      /* console.log("response: " + response); */
+      var status = JSON.parse(response).status
+
+      if ( status == "OK" ){
+
+        var button = document.getElementById("ready-btn");
+        if ( user.ready == 1 ) {
+          button.style.backgroundColor = "#3c8dbc";
+          button.innerHTML = '<i class="fa fa-play"></i> Ready';
+          user.ready = 0;
+        }
+        else {
+          button.style.backgroundColor = "#00a65a";
+          button.innerHTML = 'Ready!';
+          user.ready = 1;
+        }
+
+      }
+      else if ( status == "STARTED" ){
+        swal("OPS", "The game is already started. Please wait for it to finish.", "info");
+      }
+      else {
+        console.warn("response: " + response);
+      }
+    },
+    error: function (xhr, ajaxOptions, thrownError) {
+      console.error("ERROR " + xhr.status + ": " + thrownError);
+    }
+  });
+
+}
+
 
 /*
  * HELP MESSAGE

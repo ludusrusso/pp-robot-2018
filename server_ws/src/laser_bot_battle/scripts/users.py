@@ -10,14 +10,19 @@ class User:
     name = ""
     life = 100
     robot = 0
+    ready = 0
 
-    def __init__(self, name, robot, life=None):
+    def __init__(self, name, robot, life=None, ready=None):
         self.name = name
         self.robot = robot
         if life == None :
             self.life = 100
         else :
             self.life = life
+        if ready == None :
+            self.ready = False
+        else :
+            self.ready = ready
 
 # list of users class
 class Users:
@@ -54,6 +59,14 @@ class Users:
                 return -1
             num += 1
         return num
+
+    # set ready status of player
+    def setReady(self, name, ready):
+        for u in self.users:
+            if u.name == name :
+                u.ready = int(ready)
+                return True
+        return False
 
 
 users = Users()

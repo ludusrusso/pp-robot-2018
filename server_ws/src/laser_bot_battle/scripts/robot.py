@@ -24,7 +24,7 @@ class Robots:
     def addRobot(self, id):
         self.robots.append( Robot(id) )
         self.robots.sort(key=lambda x: x.ID) 
-	   print "Added robot with ID", id
+        print "Added robot with ID", id
 
 
     # get first available robot (ID) from robots list

@@ -10,11 +10,7 @@ import time
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 
 timeLeft = 0
-gameStarted = False
-
-# Debug mode
-#app.debug = True
-#app.use_reloader = False
+gameStarted = 0
 
 # Index Login Page
 @app.route('/')
@@ -40,19 +36,22 @@ def about():
 def signUpUser():
     name = request.form['data']
 
-    # check first available robot id
-    robotN = robots.getAvailableRobot();
-    if robotN == -1 :
-        return json.dumps({'status':'NO_ROBOTS', 'user':name})
-
-    if not robots.addUserToRobot(robotN, name) :
-        return json.dumps({'status':'ROBOT_UNAVAILABLE', 'robot':robotN})
-
     # if username is availabe :
     if users.isNameAvailable(name) :
+
+        # check first available robot id
+        robotN = robots.getAvailableRobot();
+        if robotN == -1 :
+            return json.dumps({'status':'NO_ROBOTS', 'user':name})
+
+        # associate user to robot (check if fail)
+        if not robots.addUserToRobot(robotN, name) :
+            return json.dumps({'status':'ROBOT_UNAVAILABLE', 'robot':robotN})
+
         # add it to users list
     	users.addUser(name, robotN, 100)
     	return json.dumps({'status':'OK', 'user':name, 'robot':robotN})
+
     else :
         # else return UNAVAILABLE error
 	    return json.dumps({'status':'UNAVAILABLE', 'user':name})
@@ -95,33 +94,59 @@ def getAvailableRobots():
     return json.dumps({'status':'OK', 'availableR':robots.getAvailableRobotsN()})
 
 
+# countdown function
 def countdown():
     global timeLeft
+    global gameStarted
     print "countdown started"
-    while timeLeft:
+    while timeLeft >= 0:
         time.sleep(1)
         timeLeft -= 1
-        print "\r",timeLeft
+        print timeLeft,
 
     print('Starting game!')
+    gameStarted = 2
     return
 
-# getAvailableRobots function:
-#   return number of available robots (json format)
+
+# waitCountdown function:
+#   launch countdown if game not started, else return countdown status
 @app.route('/waitCountdown', methods=['POST'])
 def waitCountdown():
     global gameStarted
     global timeLeft
-    if (not gameStarted) and users.usersNum() > 1: 
-        gameStarted = True
+    if gameStarted == 0 and users.usersNum() > 1: 
+        gameStarted = 1
         timeLeft = 30
         tcd = threading.Thread(target=countdown)
         tcd.start()
+    elif gameStarted == 1 :
+        return json.dumps({'status':'OK', 'timeLeft':timeLeft})
+    else :
+        return json.dumps({'status':'STARTED'})
 
-    return json.dumps({'status':'OK', 'timeLeft':timeLeft})
 
+# playerReady function:
+#   update player ready status
+@app.route('/playerReady', methods=['POST'])
+def playerReady():
+    name = request.form['user']
+    ready = request.form['ready']
+
+    print "ready", ready
+
+    if gameStarted == 2 :
+        return json.dumps({'status':'STARTED'})
+
+    if users.setReady(name, ready) :
+        return json.dumps({'status':'OK','user':name})
+    else :
+        return json.dumps({'status':'ERROR','user':name})
+
+
+# main function
 def main():
-	app.run()
+	app.run(debug=True, use_reloader = False)
 	
 # -----------------------------------------------------------------------------
 

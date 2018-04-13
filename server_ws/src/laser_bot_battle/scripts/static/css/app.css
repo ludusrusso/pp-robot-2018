@@ -1911,3 +1911,7 @@ hr {
 .user-life-bar {
   background-color: #d33724;
 }
+
+.ready-btn {
+  float: right;
+}
