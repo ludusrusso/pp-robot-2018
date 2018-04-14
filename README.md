@@ -18,6 +18,10 @@
     - [Web Server](#web-server)
     - [Raspberry](#raspberry)
     - [Arduino](#arduino)
+- [High Level Architecture](#high-level-architecture)
+    - [Web Server](#web-server)
+    - [Raspberry](#raspberry)
+    - [Arduino](#arduino)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [History](#history)
@@ -37,6 +41,20 @@
 
   ### Arduino 
   TODO (  - Provide the Sketch to be loaded to Arduino Board containing the Robot application to be run)
+
+## High Level Architecture
+
+  ### Web Application
+  It is the web application for the users to log-in, command the robot and check battle status. 
+  
+  ### Web Server
+  It is the host initiating the ROS network (roscore launched here). It is used in order to receive Post requests from clients (browsers) and to forward them to robots raspberry, in the form of ROS messages and viceversa. Moreover it is in charge of updating battle status (robot life, logged users, actions to be performed in response to received commands).
+
+  ### Raspberry 
+  It generates a ROS node (robot) exchanging messages with the ROS master and the Arduino board. It is used to forward commands coming from the Server to Arduino (performing the proper actuations) and to retrieve sensors notification from Arduino to be forwarded to the Server (updating battle status).
+
+  ### Arduino 
+  It is used to drive the motors and the IR emitter, in response of Raspberry requests. It is provided with IR sensors, such that detecting and notifying when a robot is hit.
 
 ## Usage
 
