@@ -15,8 +15,6 @@
 // ROS Node
 ros::NodeHandle  nh;
 
-// Messages exchanged 
-laser_bot_battle::Robot_msg robot_msg;      // Msg containing commands for the robot (move + fire)  
 std_msgs::Empty hit;                        // Msg to notify the robot has been hit
 
 // The Robot publishes a response to notify if it has been hit or not
@@ -28,29 +26,19 @@ AccelStepper stepper_l(AccelStepper::HALF4WIRE, 8, 10, 9, 11);
 AccelStepper stepper_r(AccelStepper::HALF4WIRE, 2, 3, 4, 5);
 
 //CallBack function to manage a received msg
-void robot_cb( const laser_bot_battle::Robot_msg& cmd_msg){    
+void robot_cb( const laser_bot_battle::Robot_msg& cmd_msg){
 
   short step_l = 0;
   short step_r = 0;
 
-  switch(cmd_msg.linear_x){
-    case  1 :
-      // Move Forward
-      step_l = STEPS_PER_MOVEMENT_CCW;
-      step_r = STEPS_PER_MOVEMENT_CW;
-      break;
-    case -1 :
-      // Move Backward
-      step_l = STEPS_PER_MOVEMENT_CW;
-      step_r = STEPS_PER_MOVEMENT_CCW;
-      break;
-    default :          
-      break;
-  }   
+    // Set speed to constant speed
+    stepper_l.setSpeed(STEPPER_SPEED);
+    stepper_r.setSpeed(STEPPER_SPEED);
 
   if(cmd_msg.linear_x == 0){
+
     // Here if turning around l/r or stopping
-    switch(robot_msg.angular_z){
+    switch(cmd_msg.angular_z){
       case  1 :
         // Turn around Clockwise
         step_l = STEPS_PER_MOVEMENT_CCW;
@@ -61,8 +49,6 @@ void robot_cb( const laser_bot_battle::Robot_msg& cmd_msg){
         step_l = STEPS_PER_MOVEMENT_CW;
         step_r = STEPS_PER_MOVEMENT_CW;
         break;
-      default :          
-        break;
       /*
       default :
         // Stop the robot if both linear_x and angular_z = 0
@@ -70,27 +56,36 @@ void robot_cb( const laser_bot_battle::Robot_msg& cmd_msg){
         stepper_r.stop();
       */
     }
-  }else {
-     // Here if moving straight + turning r/l or stopping
-     switch(cmd_msg.angular_z){
-      case  1 :
+  }
+  else {
+    if(cmd_msg.linear_x == 1){
+      // Move Forward
+      step_l = STEPS_PER_MOVEMENT_CCW;
+      step_r = STEPS_PER_MOVEMENT_CW;
+    }
+    else if(cmd_msg.linear_x == -1){
+      // Move Backward
+      step_l = STEPS_PER_MOVEMENT_CW;
+      step_r = STEPS_PER_MOVEMENT_CCW;
+    }
+
+
+   // Here if moving straight + turning r/l or stopping
+    if(cmd_msg.angular_z == 1){
         // Move straight + turn right
-        step_r = step_r * 0.7;
-        break;
-      case -1 :
+        stepper_r.setSpeed(STEPPER_SPEED*SPEED_SCALER);
+    }
+    else if(cmd_msg.angular_z == -1){
         // Move straight + turn left
-        step_l = step_l * 0.7;
-        break;
-      default :          
-        break;
-     }
+        stepper_l.setSpeed(STEPPER_SPEED*SPEED_SCALER);
+    }
   }
 
   // Relative movement of the motor from current position by step_l/step_r
   stepper_l.move(step_l);
   stepper_r.move(step_r);
   
-  //pub.publish(&robot_msg); 
+  //pub.publish(&hit); 
 }
 
 // The Robot receive a Robot_msg and actuate the stepper motor and/or to the infrared driver.
@@ -113,10 +108,9 @@ void setup(){
 void loop(){
   //pub.publish(&speed_msg);
   nh.spinOnce();
-  // Set speed to constant speed
-  stepper_l.setSpeed(STEPPER_SPEED);
-  stepper_r.setSpeed(STEPPER_SPEED);
+
   // Move the motor until the target position previously by move is reached (1 step per iteration)
   stepper_l.runSpeedToPosition();
   stepper_r.runSpeedToPosition();
 }
+
