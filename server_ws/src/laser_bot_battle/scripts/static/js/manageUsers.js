@@ -248,7 +248,7 @@ const UPDATE_INTERVAL = 1000;
         /* console.log("timeLeft: " + timeLeft); */
 
         /* enable ready button */
-        $('#ready-btn').prop('disabled', false);
+        //$('#ready-btn').prop('disabled', false);
 
         if ( timeLeft == 0 ) {
           /* START */
@@ -344,12 +344,14 @@ const UPDATE_INTERVAL = 1000;
             document.getElementById('game-status').innerHTML = 'Waiting for other players...'
           }
           else {
-            /* Enable ready button */
-            $('#ready-btn').prop('disabled', false);
 
             if ( timerID == "" && usersReady > 1 && user.ready ) {
               /* if at least 2 players are logged, start countdown from game start */
               timerID = setInterval(waitCountdown, 500);
+            }
+            else {
+              /* Enable ready button */
+              $('#ready-btn').prop('disabled', false);
             }
 
             if (user.ready == 0){
