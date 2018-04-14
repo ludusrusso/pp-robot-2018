@@ -1,7 +1,7 @@
 /*! gameArea.js */
 
 const UPDATE_AREA = 25; /* ms */
-
+var wasStill = false;
 
 /* Connecting to ROS */
 
@@ -29,7 +29,7 @@ var robot_msg = new ROSLIB.Message({
 var topic_listener = new ROSLIB.Topic({
   ros : ros,
   name : '',
-  messageType : 'laser_bot_battle/Robot_msg'
+  messageType : 'std_msgs/Empty'
 });
 
 
@@ -63,24 +63,20 @@ function updateGameArea() {
 
   /* LEFT */
   if ( left && (! right) ) {
-    robot_msg.angular_z = 1;
-    console.log('< left', robot_msg.linear_x, robot_msg.angular_z);
+    robot_msg.angular_z = -1;
   }
   /* RIGHT */
   else if ( right && (! left) ) {
-    robot_msg.angular_z = -1;
-    console.log('> right', robot_msg.linear_x, robot_msg.angular_z);
+    robot_msg.angular_z = 1;
   }
 
   /* UP */
   if ( up && (! down) ) {
-    robot_msg.linear_x = 1;      
-    console.log('^ up', robot_msg.linear_x, robot_msg.angular_z);
+    robot_msg.linear_x = 1;
   }
   /* DOWN */
   else if ( down && (! up) ) {
     robot_msg.linear_x = -1;
-    console.log('v down', robot_msg.linear_x, robot_msg.angular_z);
   }
 
   /* SHOOT */
@@ -89,8 +85,13 @@ function updateGameArea() {
     console.log('* shoot', robot_msg.shoot);
   }
 
-  /* publish message */
-  topic.publish(robot_msg);
+  if (! wasStill){
+    /* publish message */
+    topic.publish(robot_msg);
+    console.log(JSON.stringify(robot_msg));
+  }
+
+  wasStill = ( robot_msg.linear_x == 0 && robot_msg.angular_z == 0 && !robot_msg.shoot );
 } 
 
 
@@ -122,9 +123,9 @@ $(document).ready(function(){
 
   topic.name='/Robot' + user.robotN + '/command';
   topic_listener.name='/Robot' + user.robotN + '/response';
- 
+
   topic_listener.subscribe(function(msg){
-    console.log('Received message: ',  msg.data);
+    console.log('Robot has been hit');
   });
 
 });
