@@ -3,13 +3,14 @@
 #include <std_msgs/Empty.h>
 #include <laser_bot_battle/Robot_msg.h>
 
+// NB : The time to complete these steps should be consistent with the rate of incoming Robot_msgs (greater)
 // Steps the motor has to perform at each Robot_msg received
-#define STEPS_PER_MOVEMENT_FW 16
-#define STEPS_PER_MOVEMENT_BW -16
-#define STEPS_PER_MOVEMENT_CW 16
-#define STEPS_PER_MOVEMENT_CCW -16
+#define STEPS_PER_MOVEMENT_CW 320
+#define STEPS_PER_MOVEMENT_CCW -320
+// Scale factor used when robot turns l/r 
+#define SPEED_SCALER 0.7
 // Default constant speed
-#define STEPPER_SPEED 100
+#define STEPPER_SPEED 1024
 
 // ROS Node
 ros::NodeHandle  nh;
@@ -19,58 +20,81 @@ laser_bot_battle::Robot_msg robot_msg;      // Msg containing commands for the r
 std_msgs::Empty hit;                        // Msg to notify the robot has been hit
 
 // The Robot publishes a response to notify if it has been hit or not
-ros::Publisher pub("response", &robot_msg);
-// The Robot receive a Robot_msg and actuate the stepper motor and/or to the infrared driver.
-ros::Subscriber<laser_bot_battle::Robot_msg> sub("command", &robot_cb);
+ros::Publisher pub("response", &hit);
 
+// Stepper motor instances
 AccelStepper stepper_l(AccelStepper::HALF4WIRE, 8, 10, 9, 11);
 // To define pin numbers for second motor
-AccelStepper stepper_r(AccelStepper::HALF4WIRE, 8, 10, 9, 11);
+AccelStepper stepper_r(AccelStepper::HALF4WIRE, 2, 3, 4, 5);
 
 //CallBack function to manage a received msg
 void robot_cb( const laser_bot_battle::Robot_msg& cmd_msg){    
-  
-  nh.loginfo("Cmd Received"); 
 
-  // Storing the incoming command
-  robot_msg.linear_x = cmd_msg.linear_x;
-  robot_msg.angular_z = cmd_msg.angular_z;
-  robot_msg.shoot = cmd_msg.shoot;
+  short step_l = 0;
+  short step_r = 0;
 
-  // Linear movement has priority over Angular one
-  switch(robot_msg.linear_x){
+  switch(cmd_msg.linear_x){
     case  1 :
       // Move Forward
-      stepper_l.move(STEPS_PER_MOVEMENT_FW);
-      stepper_r.move(STEPS_PER_MOVEMENT_FW);
+      step_l = STEPS_PER_MOVEMENT_CCW;
+      step_r = STEPS_PER_MOVEMENT_CW;
       break;
     case -1 :
       // Move Backward
-      stepper_l.move(STEPS_PER_MOVEMENT_BW);
-      stepper_r.move(STEPS_PER_MOVEMENT_BW);
-      break;          
+      step_l = STEPS_PER_MOVEMENT_CW;
+      step_r = STEPS_PER_MOVEMENT_CCW;
+      break;
+    default :          
+      break;
   }   
 
-  if(robot_msg.linear_x == 0){
+  if(cmd_msg.linear_x == 0){
+    // Here if turning around l/r or stopping
     switch(robot_msg.angular_z){
       case  1 :
-        // Move Clockwise
-        stepper_l.move(STEPS_PER_MOVEMENT_CW);
-        stepper_r.move(STEPS_PER_MOVEMENT_CCW);
+        // Turn around Clockwise
+        step_l = STEPS_PER_MOVEMENT_CCW;
+        step_r = STEPS_PER_MOVEMENT_CCW;
         break;
       case -1 :
-        // Move Counter Clockwise
-        stepper_l.move(STEPS_PER_MOVEMENT_CCW);
-        stepper_r.move(STEPS_PER_MOVEMENT_CW);
+        // Turn around Counter Clockwise
+        step_l = STEPS_PER_MOVEMENT_CW;
+        step_r = STEPS_PER_MOVEMENT_CW;
         break;
+      default :          
+        break;
+      /*
       default :
         // Stop the robot if both linear_x and angular_z = 0
         stepper_l.stop();
+        stepper_r.stop();
+      */
     }
+  }else {
+     // Here if moving straight + turning r/l or stopping
+     switch(cmd_msg.angular_z){
+      case  1 :
+        // Move straight + turn right
+        step_r = step_r * 0.7;
+        break;
+      case -1 :
+        // Move straight + turn left
+        step_l = step_l * 0.7;
+        break;
+      default :          
+        break;
+     }
   }
+
+  // Relative movement of the motor from current position by step_l/step_r
+  stepper_l.move(step_l);
+  stepper_r.move(step_r);
   
   //pub.publish(&robot_msg); 
 }
+
+// The Robot receive a Robot_msg and actuate the stepper motor and/or to the infrared driver.
+ros::Subscriber<laser_bot_battle::Robot_msg> sub("command", &robot_cb);
 
 void setup(){
   stepper_l.setMaxSpeed(STEPPER_SPEED);
@@ -95,6 +119,4 @@ void loop(){
   // Move the motor until the target position previously by move is reached (1 step per iteration)
   stepper_l.runSpeedToPosition();
   stepper_r.runSpeedToPosition();
-  // The delay should be consistent with the rate of incoming Robot_msgs (greater)
-  //delay(50);
 }
