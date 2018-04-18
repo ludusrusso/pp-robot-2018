@@ -1,0 +1,28 @@
+In order to integrate custom messages into ros_lib we have to follow these steps:
+
+    - Insert the created custom msg (Robot_msg.msg) in the target package (laser_bot_battle).
+	
+	catkin_ws/laser_bot_battle/msg/Robot_msg.msg	
+
+    - Perform catkin_make 
+
+        -> this will produce into the devel/include folder the relative header.
+		This is not the header used by Arduino.
+
+    - Into ~/Arduino/libraries remove the 'ros_lib' folder and the 'Rosserial_Arduino_Library'
+	if present.
+
+	$ rm -r ros_lib
+	
+    - Remaining into 'libraries' folder now issue the command: 
+    
+    	$ rosrun rosserial_arduino make_libraries.py .
+
+    	This will rebuild the arduino ros_lib library, resolving the new dependencies of our
+    	custom msg. This will automatically generate the header file into :
+	
+		~/Arduino/libraries/ros_lib/laser_bot_battle/Robot_msg.h
+
+    - Now we can include the custom msg into our arduino sketch :
+
+        "#include <laser_bot_battle/Robot_msg.h>"
