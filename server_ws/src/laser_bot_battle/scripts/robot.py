@@ -9,6 +9,7 @@ def userDefault(obj):
 class Robot:
     ID = 0
     user = ""
+    alive = 0
 
     def __init__(self, id, user=None):
         self.ID = id
@@ -22,12 +23,9 @@ class Robots:
 
     # add new robot to list (and keep it sorted by ID)
     def addRobot(self, id):
-        if id != 0 :
-            self.robots.append( Robot(id) )
-            self.robots.sort(key=lambda x: x.ID) 
-            print "Added robot with ID", id
-            return True
-        return False
+        self.robots.append( Robot(id) )
+        self.robots.sort(key=lambda x: x.ID) 
+        print "Added robot with ID", id
 
     # get first available robot (ID) from robots list
     def getAvailableRobot(self):
@@ -48,7 +46,7 @@ class Robots:
 
     # get first unused ID starting from 0
     def getAvailableID(self):
-        ID = 1
+        ID = 0
         for r in self.robots:
             if r.ID == ID :
                 ID += 1
@@ -80,7 +78,24 @@ class Robots:
                 return True
         return False
 
-    # return json string of users list
+    # signat that robot is alive
+    def isAlive(self, id):
+        for r in self.robots:
+            if r.ID == id :
+                r.alive += 1
+                return True
+        return False
+
+    # clear alive status of all robots
+    def clearAlive(self, id):
+        for r in self.robots:
+            r.alive =0
+
+    def returnRobotList(self):
+        return self.robots
+
+
+    # return json string of robots list
     def toString(self):
         return json.dumps(self.robots, default=userDefault)
 

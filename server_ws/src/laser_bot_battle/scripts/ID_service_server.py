@@ -6,9 +6,13 @@ from robot import robots
 
 def handle_new_robot(req):
 	print "Request received from robot"
+
+    # Get first available robot ID
 	Robot_ID = robots.getAvailableID()
 
+    # Add robot with robotID to robot list
 	robots.addRobot(Robot_ID)
+
 	# The Robot ID is returned to the robot requiring it
 	return AddNewRobotResponse(Robot_ID)
 

@@ -5,6 +5,7 @@ import os
 import rospy
 import subprocess
 from laser_bot_battle.srv import *
+from pingThread import pingThread
 
 def add_new_robot_client():
 	# Wait until the service is not activated in ID_service_server.py
@@ -21,6 +22,12 @@ def add_new_robot_client():
 		new_robot = rospy.ServiceProxy('add_new_robot', AddNewRobot)
 		# new_robot() makes the request to the server and the returned ID is saved
 		robot_ID = new_robot()
+
+		# Create and start alive ping thread
+		ping = pingThread(robot_ID)
+		ping.start()
+
+
 		print ("New robot ID = %d"%robot_ID.ID)
 		# The command to generate the ros node with unique name and topics is composed here
 		command = 'rosrun rosserial_python serial_node.py ' + str(device) + ' __name:=Robot' + str(robot_ID.ID)
@@ -30,6 +37,13 @@ def add_new_robot_client():
 
 		print "Running client application:\n", command
 		output = subprocess.check_call(command, shell=True)
+
+		print "Connection to Arduino lost"
+
+		# If here connection to raspberry is lost
+		# Stop sending alive ping
+
+		testthread.join( )
 
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e

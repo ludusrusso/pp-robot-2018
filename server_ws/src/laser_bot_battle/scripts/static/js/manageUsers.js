@@ -306,6 +306,7 @@ const UPDATE_INTERVAL = 1000;
         var userLife = "";
 
         var res = JSON.parse(response)
+        var robotDead = true;
 
         if (res.users !== "[]"){
 
@@ -332,6 +333,8 @@ const UPDATE_INTERVAL = 1000;
             }
             else{
               user.life = users[i].life;
+              robotDead = false;
+
             }
           }
 
@@ -371,9 +374,19 @@ const UPDATE_INTERVAL = 1000;
           document.getElementById('userList').innerHTML = userList;
           document.getElementById('userLife').innerHTML = userLife;
         }
-        else {
-          delUser(user.name);
+        if (robotDead) {
+          swal("OPS", "Connction to robot lost", "error");
+
+          /* delete stored variables */
+          localStorage.removeItem('user');
+          user.name = "";
+
+          /* redirect to login page */
+          setTimeout(function(){
+            location.href = "/";
+          }, 1500);
         }
+
       }
       else {
         console.warn("response: " + response);

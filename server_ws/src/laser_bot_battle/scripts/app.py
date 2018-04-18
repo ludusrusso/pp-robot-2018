@@ -27,6 +27,19 @@ def home():
 def about():
 	return render_template('about.html')
 
+# dont' cache data
+@app.after_request
+def add_header(r):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    r.headers['Cache-Control'] = 'public, max-age=0'
+    return r
+
 
 # ----- FUNCTIONS --------------------------------------------------------------
 
@@ -118,8 +131,8 @@ def waitCountdown():
     if gameStarted == 0 and users.usersNum() > 1: 
         gameStarted = 1
         timeLeft = 30
-        tcd = threading.Thread(target=countdown)
-        tcd.start()
+        threadCountDown = threading.Thread(target=countdown)
+        tHreadCountDown.start()
     elif gameStarted == 1 :
         return json.dumps({'status':'OK', 'timeLeft':timeLeft})
     else :
@@ -144,25 +157,43 @@ def playerReady():
         return json.dumps({'status':'ERROR','user':name})
 
 
-@app.after_request
-def add_header(r):
-    """
-    Add headers to both force latest IE rendering engine or Chrome Frame,
-    and also to cache the rendered page for 10 minutes.
-    """
-    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    r.headers["Pragma"] = "no-cache"
-    r.headers["Expires"] = "0"
-    r.headers['Cache-Control'] = 'public, max-age=0'
-    return r
+# Inc alive value for robot that call this function
+@app.route('/incAlive', methods=['POST'])
+def incAlive():
+    robotID = request.form['ID']
 
-# main function
+    if robotID != "":
+        robots.isAlive(robotID)
+
+# Check if all connected robots are still alive
+def checkAlive():
+    while True:
+        robotList = robots.returnRobotList();
+        # For each robot check if isalive
+        for r in robotList:
+            #print "Checking robot ", r.ID, " alive is ", r.alive
+            if r.alive == 0 :
+                 # If not delete robot and user
+                print "Robot ", r.ID, " is dead. Player ", r.user, " disconnected"
+                users.delUser(r.user)
+                robots.delRobot(r.ID)
+            else:
+                r.alive = 0 
+
+        time.sleep(2)
+
+    return
+
+
+# Main function
 def main():
-	app.run(debug=False, use_reloader = False, host='0.0.0.0')
-	
+    threadAlive = threading.Thread(target=checkAlive)
+    threadAlive.start()
+    app.run(debug=False, use_reloader = False, host='0.0.0.0')
+
 # -----------------------------------------------------------------------------
 
 if __name__ == '__main__':
-	main()
+    main()
 
 

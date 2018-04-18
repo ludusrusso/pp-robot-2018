@@ -19,10 +19,6 @@ ros::NodeHandle  nh;
 std_msgs::Empty hit;
 ros::Publisher pubHit("response", &hit);
 
-// Msg to notify to master that arduino is alive
-std_msgs::Empty alive;
-ros::Publisher pubAlive("alive", &alive);
-
 // Stepper motor instances
 AccelStepper stepper_l(5, 8, 10, 9, 11);
 //AccelStepper stepper_l(AccelStepper::HALF4WIRE, 8, 10, 9, 11);
@@ -117,7 +113,6 @@ void setup() {
 
   nh.initNode();
   nh.advertise(pubHit);
-  nh.advertise(pubAlive);
   nh.subscribe(sub);
 }
 
@@ -127,11 +122,6 @@ void loop() {
   // Move the motor until the target position previously by move is reached (1 step per iteration)
   stepper_l.runSpeedToPosition();
   stepper_r.runSpeedToPosition();
-
-  if ( millis() - actual < updateAlive ) {
-    pubAlive.publish(&alive);
-    actual = millis();
-  }
 
 }
 
