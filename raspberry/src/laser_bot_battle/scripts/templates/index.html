@@ -1,0 +1,101 @@
+{% extends 'layout.html' %}
+
+{% block inside_head %}
+<title>LaserBot Battle | Login</title>
+
+<script type="text/javascript">
+
+  var robotUpdate;
+
+  /* when whole page is loaded */
+  $(document).ready(function(){
+
+    /* Check if user was previously logged in */
+    if (localStorage.getItem("user")!== null){
+
+      user = JSON.parse(localStorage.getItem("user"));
+
+      swal({
+        title: "You previously logged as \""+ user.name + "\".\n",
+        text: "Do you want to restore your previous session?",
+        icon: "info",
+        buttons: true,
+        dangerMode: true,
+      })
+      .then(function(isConfirm) {
+        if (isConfirm) {
+          /* Yes: restore previous session */
+          location.href = "/home";
+        } else {
+          /* No: delete current user */
+          delUser(user.name);
+        }
+      });
+    }
+
+    /* enable login at enter key press */
+    $("#username").on('keypress', function(event) {
+      if (event.keyCode == 13) userLogin();
+    })
+
+    /* HELP description message */
+    $("#how-to").click(function() {
+      help();
+    });
+    
+    /* periodically launch function to update logged users list */
+    robotUpdate = setInterval(function(){updateAvailableRobots();}, UPDATE_INTERVAL);
+
+  });
+
+</script>
+{% endblock %}
+
+{% block body %}
+<body class="login">
+
+  <!-- Automatic element centering -->
+  <div class="login-wrapper">
+    <div class="login-logo">
+      <b>LaserBot</b> Battle
+    </div>
+    <!-- Login info -->
+    <div class="login-name">LOGIN</div>
+
+    <!-- START LOGIN SCREEN ITEM -->
+    <div class="login-item">
+
+      <!-- user image -->
+      <div class="login-image">
+        <img src="static/img/avatar0.png" alt="user image" 
+        title="Click to change avatar" id="userImage" onclick="changeImage()">
+      </div>
+      <!-- /.user-image -->
+
+      <!-- user credentials -->
+      <div class="login-credentials">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="username" id="username" required autofocus>
+          <div class="input-group-btn">
+            <button class="btn" onclick="userLogin()" title="Start!">
+              <i class="fa fa-arrow-right text-muted"></i>
+            </button>
+          </div>
+        </div>
+      </div><!-- /.user credentials -->
+    </div><!-- /.login-item -->
+
+    <div class='text-center'>
+      <a href="/home"><small>Restore previous session if any</small></a>
+    </div>
+    <div class='login-footer text-center'>
+      Available Robots: <span id="availableR"></span>
+    </div>
+    <div class='login-footer text-center'>
+      <b><a class='text-black' id="how-to" style="margin-right:4em; cursor: pointer;"> HOW TO </a></b>
+      <b><a href="/about" class='text-black'>ABOUT</a></b>
+    </div>
+  </div><!-- /.center -->
+
+</body>
+{% endblock %}
