@@ -6,7 +6,7 @@ var wasStill = false;
 /* Connecting to ROS */
 
 var ros = new ROSLIB.Ros({
-  url : 'ws://localhost:9090'
+  url : 'ws://192.168.0.105:9090'
 });
 
 /* Publisher */

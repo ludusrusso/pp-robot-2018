@@ -1,0 +1,28 @@
+#--- Installable via ubuntu repositories --------------------------------------
+
+python
+python-pip
+ros-kinetic
+ros-kinetic-rosserial-python
+
+# rosbridge support
+ros-kinetic-rosbridge-server
+
+
+#--- To be installed with pip: pip install <package> ---------------------------
+
+flask
+
+
+#--- Let master be visible from arduino and set hostname -----------------------
+# modify avahi config file ( /etc/avahi/avahi-daemon.conf )
+
+	host-name=laser_bot_master
+	domain-name=local
+	publish-hinfo=yes			# not necessary but recommended
+ 	publish-workstation=yes
+
+ # reboot or restart service ( service avahi-daemon restart )
+
+
+
