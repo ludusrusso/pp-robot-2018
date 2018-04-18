@@ -22,10 +22,12 @@ class Robots:
 
     # add new robot to list (and keep it sorted by ID)
     def addRobot(self, id):
-        self.robots.append( Robot(id) )
-        self.robots.sort(key=lambda x: x.ID) 
-        print "Added robot with ID", id
-
+        if id != 0 :
+            self.robots.append( Robot(id) )
+            self.robots.sort(key=lambda x: x.ID) 
+            print "Added robot with ID", id
+            return True
+        return False
 
     # get first available robot (ID) from robots list
     def getAvailableRobot(self):
@@ -46,7 +48,7 @@ class Robots:
 
     # get first unused ID starting from 0
     def getAvailableID(self):
-        ID = 0
+        ID = 1
         for r in self.robots:
             if r.ID == ID :
                 ID += 1
