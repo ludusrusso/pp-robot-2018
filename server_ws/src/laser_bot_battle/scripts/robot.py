@@ -1,4 +1,5 @@
 import json
+from users import users
 
 def userDefault(obj):
     if isinstance(obj, set):
@@ -9,11 +10,12 @@ def userDefault(obj):
 class Robot:
     ID = 0
     user = ""
-    alive = 0
+    alive = 1
 
     def __init__(self, id, user=None):
         self.ID = id
-	if user != None :
+        self.alive = 1
+        if user != None :
         	self.user = user
 
 
@@ -87,9 +89,18 @@ class Robots:
         return False
 
     # clear alive status of all robots
-    def clearAlive(self, id):
+    def clearAlive(self):
         for r in self.robots:
-            r.alive =0
+            #print "Checking robot ", r.ID, " alive is ", r.alive
+            if r.alive == 0 :
+                # If not delete robot and user
+                print "Robot ", r.ID, " is dead."
+                if r.user != "":
+                    print " Player ", r.user, " disconnected"
+                    users.delUser(r.user)
+                self.robots.remove(r)
+            else:
+                r.alive = 0 
 
     def returnRobotList(self):
         return self.robots

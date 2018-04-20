@@ -107,7 +107,8 @@ def getAvailableRobots():
     return json.dumps({'status':'OK', 'availableR':robots.getAvailableRobotsN()})
 
 
-# countdown function
+# countdown function:
+#   implement countdown to game start
 def countdown():
     global timeLeft
     global gameStarted
@@ -117,7 +118,7 @@ def countdown():
         timeLeft -= 1
         print timeLeft,
 
-    print('Starting game!')
+    print "Starting game!"
     gameStarted = 2
     return
 
@@ -146,8 +147,6 @@ def playerReady():
     name = request.form['user']
     ready = request.form['ready']
 
-    print "ready", ready
-
     if gameStarted == 2 :
         return json.dumps({'status':'STARTED'})
 
@@ -157,38 +156,38 @@ def playerReady():
         return json.dumps({'status':'ERROR','user':name})
 
 
-# Inc alive value for robot that call this function
+# incAlive function:
+#   increase alive value for robot that call this function
 @app.route('/incAlive', methods=['POST'])
 def incAlive():
-    robotID = request.form['ID']
+    robotID = int(request.form['ID'])
 
     if robotID != "":
-        robots.isAlive(robotID)
+        if robots.isAlive(robotID):
+            return json.dumps({'status':'OK'})
 
-# Check if all connected robots are still alive
+    return json.dumps({'status':'ERROR'})
+
+
+# checkAlive function:
+#   check every 2 sec if all connected robots are still alive, if not delete them
 def checkAlive():
     while True:
-        robotList = robots.returnRobotList();
-        # For each robot check if isalive
-        for r in robotList:
-            #print "Checking robot ", r.ID, " alive is ", r.alive
-            if r.alive == 0 :
-                 # If not delete robot and user
-                print "Robot ", r.ID, " is dead. Player ", r.user, " disconnected"
-                users.delUser(r.user)
-                robots.delRobot(r.ID)
-            else:
-                r.alive = 0 
+        #print "ClearAlive"
+        robots.clearAlive();
 
         time.sleep(2)
 
     return
 
 
-# Main function
+# main function:
 def main():
+    # Launch checkAlive function as a separate thread
     threadAlive = threading.Thread(target=checkAlive)
     threadAlive.start()
+
+    # Run flask web app
     app.run(debug=False, use_reloader = False, host='0.0.0.0')
 
 # -----------------------------------------------------------------------------
