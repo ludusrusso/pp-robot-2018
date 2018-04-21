@@ -3,6 +3,13 @@
 ros-kinetic-ros-base
 ros-kinetic-rosserial
 git
+python-pip
+
+
+
+#--- To be installed with pip: pip install <package> ---------------------------
+
+requests
 
 
 

@@ -12,13 +12,13 @@ def add_new_robot_client():
 	# Wait until the service is not activated in ID_service_server.py
 	rospy.wait_for_service('add_new_robot')
 	try:
-		#if os.path.isfile("/dev/ttyACM0"):
-		device = "/dev/ttyACM0"
-		#elif os.path.isfile("/dev/ttyUSB0"):
-		#	device = "/dev/ttyUSB0"
-		#else :
-		#	print "No attached ARDUINO found"
-		#	return
+		if os.path.exists("/dev/ttyACM0"):
+			device = "/dev/ttyACM0"
+		elif os.path.isfile("/dev/ttyUSB0"):
+			device = "/dev/ttyUSB0"
+		else :
+			print "No attached ARDUINO found"
+			return
 
 		new_robot = rospy.ServiceProxy('add_new_robot', AddNewRobot)
 		# new_robot() makes the request to the server and the returned ID is saved
