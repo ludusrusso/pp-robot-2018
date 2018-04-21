@@ -10,7 +10,7 @@ import time
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 
 timeLeft = 0
-gameStarted = 0
+gameStarted = int(0)
 
 # Index Login Page
 @app.route('/')

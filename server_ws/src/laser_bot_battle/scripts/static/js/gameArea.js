@@ -6,7 +6,7 @@ var wasStill = false;
 /* Connecting to ROS */
 
 var ros = new ROSLIB.Ros({
-  url : 'ws://192.168.0.105:9090'
+  url : 'ws://laser_bot_master.local:9090'
 });
 
 /* Publisher */
@@ -21,15 +21,6 @@ var robot_msg = new ROSLIB.Message({
   linear_x :  0,
   angular_z : 0,
   shoot :     false
-});
-
-
-/* Subscriber */
-
-var topic_listener = new ROSLIB.Topic({
-  ros : ros,
-  name : '',
-  messageType : 'std_msgs/Empty'
 });
 
 
@@ -122,10 +113,5 @@ $(document).ready(function(){
   });
 
   topic.name='/Robot' + user.robotN + '/command';
-  topic_listener.name='/Robot' + user.robotN + '/response';
-
-  topic_listener.subscribe(function(msg){
-    console.log('Robot has been hit');
-  });
 
 });

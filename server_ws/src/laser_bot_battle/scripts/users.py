@@ -1,6 +1,7 @@
 import json
+#from app import gameStarted
 
-HITDAMAGE = 10
+HITDAMAGE = 1
 
 
 def userDefault(obj):
@@ -34,6 +35,7 @@ class Users:
     # add new user to list
     def addUser(self, name, robot, life=None):
         self.users.append( User(name, robot, life) )
+        self.users.sort(key=lambda x: x.life) 
 
     # delete user from list
     def delUser(self, name):
@@ -73,10 +75,17 @@ class Users:
 
     #
     def hit(self, name):
-        for u in self.users :
-            if u.name == name :
-                u.life -= HITDAMAGE
-                return True
+        #print self.toString()
+        from app import gameStarted
+        if gameStarted == 2:
+		    for u in self.users :
+		        #print "u.name", u.name, " name", name, "."
+		        if u.name == name :
+		            print "User", name, "has been hit. LIFE:", int(u.life-HITDAMAGE)
+		            u.life -= HITDAMAGE
+		            if u.life < 0 :
+		                u.life = 0
+		            return True
         return False
 
 users = Users()

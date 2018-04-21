@@ -1,5 +1,6 @@
 import json
 import rospy
+import threading
 from std_msgs.msg import Empty
 from users import users
 
@@ -18,18 +19,18 @@ class Robot:
         self.ID = id
         self.alive = 1
         if user != None :
-        	self.user = user
-        self.__createSub()
+            self.user = user
+        self.threadSub = threading.Thread(target=self.__createSub)
 
     def __robotHit(self, msg):
-        print "Robot"+self.ID+" has been hit"
+        print "Robot"+str(self.ID)+" has been hit"
         users.hit(self.user)
 
     def __createSub(self):
-        print "creating node: ", "Robot"+self.ID+"_subscriber"
-        rospy.init_node("Robot"+self.ID+"_subscriber")
+        #print "creating node: ", "/Robot"+str(self.ID)+"_subscriber"
+        #rospy.init_node("Robot"+str(self.ID)+"_subscriber")
 
-        __sub = rospy.Subscriber("Robot"+self.ID+"/response", Empty, __robotHit)
+        __sub = rospy.Subscriber("/Robot"+str(self.ID)+"/response", Empty, self.__robotHit)
         print 'Node initialized'
         rospy.spin()        #wait
 
@@ -78,6 +79,7 @@ class Robots:
         for r in self.robots:
             if r.ID == id and r.user == "" :
                 r.user = name
+                r.threadSub.start()
                 return True
         return False
 

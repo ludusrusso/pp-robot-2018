@@ -313,11 +313,15 @@ const UPDATE_INTERVAL = 1000;
           users = JSON.parse(res.users);
           var usersN = users.length;
           usersReady = 0;
+          usersAlive = 0;
 
           for (var i = 0; i < usersN; i++) {
 
             if ( users[i].ready == 1 ) 
               usersReady += 1; 
+
+            if ( users[i].life >0 ) 
+              usersAlive += 1; 	
 
             /* spawn users list and life */
             if (users[i].name != user.name){
