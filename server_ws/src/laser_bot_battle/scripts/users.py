@@ -1,5 +1,8 @@
 import json
 
+HITDAMAGE = 10
+
+
 def userDefault(obj):
     if isinstance(obj, set):
         return list(obj)
@@ -68,5 +71,12 @@ class Users:
                 return True
         return False
 
+    #
+    def hit(self, name):
+        for u in self.users :
+            if u.name == name :
+                u.life -= HITDAMAGE
+                return True
+        return False
 
 users = Users()

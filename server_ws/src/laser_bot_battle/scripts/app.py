@@ -175,10 +175,7 @@ def checkAlive():
     while True:
         #print "ClearAlive"
         robots.clearAlive();
-
         time.sleep(2)
-
-    return
 
 
 # main function:

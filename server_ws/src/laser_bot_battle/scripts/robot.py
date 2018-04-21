@@ -1,4 +1,6 @@
 import json
+import rospy
+from std_msgs.msg import Empty
 from users import users
 
 def userDefault(obj):
@@ -17,17 +19,32 @@ class Robot:
         self.alive = 1
         if user != None :
         	self.user = user
+        self.__createSub()
+
+    def __robotHit(self, msg):
+        print "Robot"+self.ID+" has been hit"
+        users.hit(self.user)
+
+    def __createSub(self):
+        print "creating node: ", "Robot"+self.ID+"_subscriber"
+        rospy.init_node("Robot"+self.ID+"_subscriber")
+
+        __sub = rospy.Subscriber("Robot"+self.ID+"/response", Empty, __robotHit)
+        print 'Node initialized'
+        rospy.spin()        #wait
 
 
 # list of robots class
 class Robots:
     robots = []
 
+
     # add new robot to list (and keep it sorted by ID)
     def addRobot(self, id):
         self.robots.append( Robot(id) )
         self.robots.sort(key=lambda x: x.ID) 
         print "Added robot with ID", id
+
 
     # get first available robot (ID) from robots list
     def getAvailableRobot(self):
