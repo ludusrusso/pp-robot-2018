@@ -11,6 +11,8 @@
 #define SPEED_SCALER 0.7
 // Default constant speed
 #define STEPPER_SPEED 1024
+// Pin assigned to interrupt related to an hit of the IR sensor
+#define IR_RX_PIN 2
 
 // ROS Node
 ros::NodeHandle  nh;
@@ -20,15 +22,10 @@ std_msgs::Empty hit;
 ros::Publisher pubHit("response", &hit);
 
 // Stepper motor instances
-AccelStepper stepper_l(5, 8, 10, 9, 11);
-//AccelStepper stepper_l(AccelStepper::HALF4WIRE, 8, 10, 9, 11);
+AccelStepper stepper_l(AccelStepper::HALF4WIRE, 8, 10, 9, 11);
 
 // To define pin numbers for second motor
 AccelStepper stepper_r(AccelStepper::HALF4WIRE, 4, 6, 5, 7);
-
-// Send alive msg every 1 sec
-#define updateAlive 1000
-unsigned long actual = -updateAlive;
 
 //CallBack function to manage a received msg
 void robot_cb( const laser_bot_battle::Robot_msg& cmd_msg) {
@@ -107,7 +104,7 @@ void setup() {
   //stepper_r.moveTo(0);
 
 
-  pinMode(2, INPUT_PULLUP);
+  pinMode(IR_RX_PIN, INPUT_PULLUP);
 
   attachInterrupt(digitalPinToInterrupt(2), sendHit, FALLING);
 
