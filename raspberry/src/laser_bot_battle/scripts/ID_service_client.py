@@ -39,8 +39,7 @@ def add_new_robot_client():
 		# The command to generate the ros node with unique name and topics is composed here
 		command = 'rosrun rosserial_python serial_node.py ' + str(device) + ' __name:=Robot' + str(robot_ID.ID)
 		command += ' command:=Robot' + str(robot_ID.ID) + '/command'
-		command += ' response:=Robot' + str(robot_ID.ID) + '/response'
-		command += ' alive:=Robot' + str(robot_ID.ID) + '/alive --respawn True'
+		command += ' response:=Robot' + str(robot_ID.ID) + '/response --respawn True'
 
 		print "Running client application:\n", command
 		output = subprocess.check_call(command, shell=True)
