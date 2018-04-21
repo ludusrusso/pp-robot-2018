@@ -1,0 +1,30 @@
+#--- Installable via ubuntu repositories --------------------------------------
+
+ros-kinetic-ros-base
+ros-kinetic-rosserial
+git
+
+
+
+#--- Add to ~/.bashrc ---------------------------------------------------------
+
+#ROS PATH
+source /opt/ros/kinetic/setup.bash
+export ROS_IP=$(hostname -I | cut -d " " -f 1)
+export ROS_MASTER_URI=http://laser_bot_master.local:11311
+source /home/ros/pp-robot-2018/raspberry/devel/setup.bash
+
+
+
+#--- Let client be visible from master ----------------------------------------
+# modify avahi config file ( /etc/avahi/avahi-daemon.conf )
+
+	host-name=raspberrypi
+	domain-name=local
+	publish-hinfo=yes			# not necessary but recommended
+ 	publish-workstation=yes
+
+# reboot or restart service ( service avahi-daemon restart )
+
+
+

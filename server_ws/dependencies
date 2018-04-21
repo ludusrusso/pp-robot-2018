@@ -9,9 +9,11 @@ ros-kinetic-rosserial-python
 ros-kinetic-rosbridge-server
 
 
+
 #--- To be installed with pip: pip install <package> ---------------------------
 
 flask
+
 
 
 #--- Let master be visible from arduino and set hostname -----------------------
@@ -23,6 +25,3 @@ flask
  	publish-workstation=yes
 
  # reboot or restart service ( service avahi-daemon restart )
-
-
-

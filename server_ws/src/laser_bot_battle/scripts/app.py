@@ -12,8 +12,8 @@ app = Flask(__name__, static_folder='static', static_url_path='/static')
 timeLeft = 0
 gameStarted = int(0)
 
-threadAlive = threading.Thread(target=checkAlive)
-threadCountDown = threading.Thread(target=countdown)
+threadAlive = ""
+threadCountDown = ""
 
 # Index Login Page
 @app.route('/')
@@ -196,6 +196,8 @@ def checkAlive():
 
 # main function:
 def main():
+    threadAlive = threading.Thread(target=checkAlive)
+    threadCountDown = threading.Thread(target=countdown)
     # Launch checkAlive function as a separate thread
     threadAlive.start()
 
