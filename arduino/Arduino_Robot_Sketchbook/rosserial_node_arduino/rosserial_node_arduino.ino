@@ -1,4 +1,5 @@
 #include <AccelStepper.h>
+#include <Timer.h>
 #include <ros.h>
 #include <std_msgs/Empty.h>
 #include <laser_bot_battle/Robot_msg.h>
@@ -11,8 +12,13 @@
 #define SPEED_SCALER 0.7
 // Default constant speed
 #define STEPPER_SPEED 1024
-// Pin assigned to interrupt related to an hit of the IR sensor
+// Pins to manage infrared sensor and driver
 #define IR_RX_PIN 2
+#define IR_TX_PIN 3
+// Period of the IR ray when shooting (in millis)
+#define IR_RAY_PERIOD 500
+
+volatile bool is_ir_on = false;
 
 // ROS Node
 ros::NodeHandle  nh;
@@ -26,6 +32,9 @@ AccelStepper stepper_l(AccelStepper::HALF4WIRE, 8, 10, 9, 11);
 
 // To define pin numbers for second motor
 AccelStepper stepper_r(AccelStepper::HALF4WIRE, 4, 6, 5, 7);
+
+// Timer used to manage the duration of the IR transmission
+Timer t;
 
 //CallBack function to manage a received msg
 void robot_cb( const laser_bot_battle::Robot_msg& cmd_msg) {
@@ -87,13 +96,26 @@ void robot_cb( const laser_bot_battle::Robot_msg& cmd_msg) {
   stepper_l.move(step_l);
   stepper_r.move(step_r);
 
+  if(cmd_msg.shoot == true && is_ir_on == false){    
+    is_ir_on = true;
+    digitalWrite(IR_TX_PIN, LOW);         
+    // t.pulse(IR_TX_PIN, IR_RAY_PERIOD, HIGH);    
+    t.every(IR_RAY_PERIOD, resetIrRay, 1);       
+  }
+
 }
 
 // The Robot receive a Robot_msg and actuate the stepper motor and/or to the infrared driver.
 ros::Subscriber<laser_bot_battle::Robot_msg> sub("command", &robot_cb);
 
+// Hit interrupt handler
 void sendHit() {
   pubHit.publish(&hit);
+}
+
+void resetIrRay() {
+  digitalWrite(IR_TX_PIN, HIGH);
+  is_ir_on = false;
 }
 
 void setup() {
@@ -103,12 +125,14 @@ void setup() {
   stepper_r.setMaxSpeed(STEPPER_SPEED);
   //stepper_r.moveTo(0);
 
-
+  // Setup IR pins
   pinMode(IR_RX_PIN, INPUT_PULLUP);
-
-  attachInterrupt(digitalPinToInterrupt(2), sendHit, FALLING);
-
+  attachInterrupt(digitalPinToInterrupt(IR_RX_PIN), sendHit, FALLING);
+  pinMode(IR_TX_PIN, OUTPUT);
+  digitalWrite(IR_TX_PIN, HIGH);  
+  
   nh.initNode();
+  // Association Publisher and Subscriber
   nh.advertise(pubHit);
   nh.subscribe(sub);
 }
@@ -119,6 +143,8 @@ void loop() {
   // Move the motor until the target position previously by move is reached (1 step per iteration)
   stepper_l.runSpeedToPosition();
   stepper_r.runSpeedToPosition();
-
+  
+  // To service the pulse event associated with the timer
+  t.update();
 }
 
