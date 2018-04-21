@@ -14,7 +14,7 @@ def add_new_robot_client():
 	try:
 		if os.path.exists("/dev/ttyACM0"):
 			device = "/dev/ttyACM0"
-		elif os.path.isfile("/dev/ttyUSB0"):
+		elif os.path.exists("/dev/ttyUSB0"):
 			device = "/dev/ttyUSB0"
 		else :
 			print "No attached ARDUINO found"
