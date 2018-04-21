@@ -12,6 +12,9 @@ app = Flask(__name__, static_folder='static', static_url_path='/static')
 timeLeft = 0
 gameStarted = int(0)
 
+threadAlive = threading.Thread(target=checkAlive)
+threadCountDown = threading.Thread(target=countdown)
+
 # Index Login Page
 @app.route('/')
 def index():
@@ -112,6 +115,7 @@ def getAvailableRobots():
 def countdown():
     global timeLeft
     global gameStarted
+    gameStarted = 1
     print "countdown started"
     while timeLeft >= 0:
         time.sleep(1)
@@ -120,6 +124,13 @@ def countdown():
 
     print "Starting game!"
     gameStarted = 2
+
+    # wait for game to end
+    while users.getUsersAlive > 1 :
+        time.sleep(0.5)
+
+    gameStarted = 3
+
     return
 
 
@@ -127,17 +138,15 @@ def countdown():
 #   launch countdown if game not started, else return countdown status
 @app.route('/waitCountdown', methods=['POST'])
 def waitCountdown():
-    global gameStarted
-    global timeLeft
-    if gameStarted == 0 and users.usersNum() > 1: 
-        gameStarted = 1
-        timeLeft = 30
-        threadCountDown = threading.Thread(target=countdown)
-        tHreadCountDown.start()
+
+    if gameStarted == 0 : 
+        return json.dumps({'status':'STOPPED'})
     elif gameStarted == 1 :
         return json.dumps({'status':'OK', 'timeLeft':timeLeft})
-    else :
+    elif gameStarted == 2 :
         return json.dumps({'status':'STARTED'})
+    elif gameStarted == 3 :
+        return json.dumps({'status':'FINISHED'})
 
 
 # playerReady function:
@@ -147,10 +156,17 @@ def playerReady():
     name = request.form['user']
     ready = request.form['ready']
 
+    # Game already started
     if gameStarted == 2 :
         return json.dumps({'status':'STARTED'})
 
     if users.setReady(name, ready) :
+        # If more than 2 players are ready
+        if users.getUsersReady() > 1 :
+            users.resetUsersLife()
+            timeLeft = 30
+            # Launch countdown to game start
+            threadCountDown.start()
         return json.dumps({'status':'OK','user':name})
     else :
         return json.dumps({'status':'ERROR','user':name})
@@ -181,7 +197,6 @@ def checkAlive():
 # main function:
 def main():
     # Launch checkAlive function as a separate thread
-    threadAlive = threading.Thread(target=checkAlive)
     threadAlive.start()
 
     # Run flask web app

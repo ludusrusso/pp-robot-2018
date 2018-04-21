@@ -16,24 +16,19 @@ class User:
     robot = 0
     ready = 0
 
-    def __init__(self, name, robot, life=None, ready=None):
+    def __init__(self, name, robot):
         self.name = name
         self.robot = robot
-        if life == None :
-            self.life = 100
-        else :
-            self.life = life
-        if ready == None :
-            self.ready = False
-        else :
-            self.ready = ready
+        self.life = 100
+        self.ready = 0
+
 
 # list of users class
 class Users:
     users = []
 
     # add new user to list
-    def addUser(self, name, robot, life=None):
+    def addUser(self, name, robot):
         self.users.append( User(name, robot, life) )
         self.users.sort(key=lambda x: x.life) 
 
@@ -72,6 +67,32 @@ class Users:
                 u.ready = int(ready)
                 return True
         return False
+
+    # get number of players ready to start
+    def getUsersReady(self):
+        num = 0
+        for u in self.users:
+            if u.ready != 0 :
+                num += 1
+        return num
+
+    # get number of players still alive
+    def getUsersAlive(self):
+        num = 0
+        for u in self.users:
+            if u.life > 0 :
+                num += 1
+        return num
+
+    # clear all players ready status
+    def clearUsersReady(self):
+        for u in self.users:
+            u.ready = 0
+
+    # set (reset) all players life to 100
+    def resetUsersLife(self):
+        for u in self.users:
+            u.life = 100
 
     #
     def hit(self, name):

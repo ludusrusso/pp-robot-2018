@@ -1,2 +1,2 @@
 - setup-file:
-    local-name: /home/edospi20/System Design Project/Robot Project/pp-robot-2018/server_ws/devel/setup.sh
+    local-name: /mnt/ros/pp-robot-2018/server_ws/devel/setup.sh

@@ -14,8 +14,6 @@
 <!-- general page scripts -->
 <script type="text/javascript">
 
-  var userUpdate;
-
   /* when whole page is loaded */
   $(document).ready(function(){
 
@@ -49,7 +47,8 @@
     $('.userImage img').attr("src", "static/img/avatar" + user.imgIndex +".png");
 
     /* periodically launch function to update logged users list */
-    userUpdate = setInterval(function(){updateLoggedUsers();}, UPDATE_INTERVAL);
+    userUpdate = setInterval(function(){updateLoggedUsers();}, UPDATE_USER_INTERVAL);
+    gameUpdate = setInterval(function(){updateGameStatus();}, UPDATE_GAME_INTERVAL);
 
     /* HELP description message */
     $("#how-to").click(function() {
@@ -145,7 +144,7 @@
       <!-- Content Header (Page header) -->
       <section class="content-header">
         <h1>
-          Home
+          Game Status: 
           <small id="game-status">Updating...</small>
           <button class="btn btn-primary ready-btn" id="ready-btn"onClick="updateReady()">
             <i class="fa fa-play"></i> Ready

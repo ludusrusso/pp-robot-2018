@@ -32,11 +32,14 @@ var timerID = "";
 /* global for debug */
 var users = "";
 var usersReady = 0;
+var usersN = 0;
 
+var userUpdate;
+var gameUpdate;
 
 /* define interval to update user list in ms */
-const UPDATE_INTERVAL = 1000;
-
+const UPDATE_USER_INTERVAL = 1000;
+const UPDATE_GAME_INTERVAL = 500;
 
 /*---------------------------------------------------------------------------*/
 
@@ -227,16 +230,16 @@ const UPDATE_INTERVAL = 1000;
 
 
 /*
- * START WAIT COUNTDOWN:
+ * UPDATE GAME STATUS:
  *  count down from timeLeft to 0, update countdown and start game on expire
  * -----------------------
  * 
  * @type function
- * @usage setInterval(waitCountdown, time_ms);
+ * @usage setInterval(updateGameStatus, time_ms);
  */
- function waitCountdown() {
+ function updateGameStatus() {
   $.ajax({
-    url: '/waitCountdown',
+    url: '/updateGameStatus',
     type: 'POST',
     data: {'data':'data'},
     success: function(response) {
@@ -250,23 +253,36 @@ const UPDATE_INTERVAL = 1000;
         /* enable ready button */
         //$('#ready-btn').prop('disabled', false);
 
-        if ( timeLeft == 0 ) {
+        /* disable ready button */
+        $('#ready-btn').prop('disabled', true);
+        document.getElementById('game-status').innerHTML = timeLeft + " sec to start."
+
+      }
+      else if ( status == "STARTED" ){
+        if ( user.ready ) {
           /* START */
-          clearTimeout(timerID);
-          timerID == "";
+          //clearTimeout(timerID);
+          //timerID == "";
           document.getElementById('game-status').innerHTML = "PLAY!";
 
           myGameArea.start();
         }
-        else {
-          /* disable ready button */
-          $('#ready-btn').prop('disabled', true);
-          document.getElementById('game-status').innerHTML = timeLeft + " sec to start."
+        else{
+          document.getElementById('game-status').innerHTML = "The game is started without you";
         }
-
+        //swal("Something went wrong", "The game is started without you!", "warning");
       }
-      else if ( status == "STARTED" ){
-        swal("Something went wrong", "The game is already started.", "warning");
+      else if ( status == "STOPPED" ){
+        if (user.ready == 0){
+          document.getElementById('game-status').innerHTML = 'Press ready to start!';
+        }
+        else {
+          document.getElementById('game-status').innerHTML = 'Waiting for other players...'
+        }
+      }
+      else if ( status == "FINISHED" ){
+        $('#ready-btn').prop('disabled', false);
+        document.getElementById('game-status').innerHTML = 'Game over. Press ready to start again.'
       }
       else {
         console.warn("response: " + response);
@@ -311,7 +327,7 @@ const UPDATE_INTERVAL = 1000;
         if (res.users !== "[]"){
 
           users = JSON.parse(res.users);
-          var usersN = users.length;
+          usersN = users.length;
           usersReady = 0;
           usersAlive = 0;
 
@@ -320,13 +336,25 @@ const UPDATE_INTERVAL = 1000;
             if ( users[i].ready == 1 ) 
               usersReady += 1; 
 
-            if ( users[i].life >0 ) 
+            if ( users[i].life >  0 ) 
               usersAlive += 1; 	
 
             /* spawn users list and life */
             if (users[i].name != user.name){
+
+              userList += '<div class="user-list-div"><li><a>'
+              /* user status icon */
+              if (users[i].ready ==1){
+                if (users[i].life > 0)
+                  userList += '<i class="fas fa-play-circle"></i>'
+                else
+                  userList += '<i class="fas fa-times-circle"></i>'
+              }
+              else
+                userList += '<i class="fas fa-stop-circle"></i>'
+
               /* username */
-              userList += '<div class="user-list-div"><li><a><b>'+ users[i].name + '</b></a>'
+              userList += '<b>'+ users[i].name + '</b></a>'
               /* life percentage badge */
               + ' <span class="badge user-list-badge" >'
               + users[i].life + '%</span> </li>'
@@ -336,35 +364,15 @@ const UPDATE_INTERVAL = 1000;
               + users[i].life + '%"></div></div></div><hr/>'
             }
             else{
+              /* If I am in the list, the robot is not dead */
               user.life = users[i].life;
               robotDead = false;
 
             }
           }
-
           /* If no other players loggged */
-          if ( usersN < 2 ) {
-            /* Disable ready button */
-            $('#ready-btn').prop('disabled', true);
+          if ( usersN < 2 )
             userList = '<div class="user-list-div"><li><a>No other users logged yet</a></div>';
-            
-            document.getElementById('game-status').innerHTML = 'Waiting for other players...'
-          }
-          else {
-
-            if ( timerID == "" && usersReady > 1 && user.ready ) {
-              /* if at least 2 players are logged, start countdown from game start */
-              timerID = setInterval(waitCountdown, 500);
-            }
-            else {
-              /* Enable ready button */
-              $('#ready-btn').prop('disabled', false);
-            }
-
-            if (user.ready == 0){
-              document.getElementById('game-status').innerHTML = 'Press ready to start!';
-            }
-          }
 
           /* current user life percentage badge */
           userLife += '<div class="user-life-div">'
