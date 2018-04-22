@@ -46,9 +46,8 @@
     /* Spawn user image in all userImage classes*/
     $('.userImage img').attr("src", "static/img/avatar" + user.imgIndex +".png");
 
-    /* periodically launch function to update logged users list */
-    userUpdate = setInterval(function(){updateLoggedUsers();}, UPDATE_USER_INTERVAL);
-    gameUpdate = setInterval(function(){updateGameStatus();}, UPDATE_GAME_INTERVAL);
+    /* periodically launch function to update logged users list and game status */
+    userUpdate = setInterval(function(){updateGameStatus();}, UPDATE_INTERVAL);
 
     /* HELP description message */
     $("#how-to").click(function() {
@@ -169,7 +168,8 @@
    </div><!-- /.content-wrapper -->
    <footer class="main-footer">
     <div class="pull-right hidden-xs">
-      <b>Version</b> 0.1
+      <b>Version</b> 1.0
+      <!-- MANTAINER Stefano Cirici - stefanocirici@gmail.com -->
     </div>
     <strong>Copyright &copy; 2018 <a href="https://github.com/ludusrusso/pp-robot-2018">pp-robot-2018 group</a>.</strong> All rights reserved.
   </footer>

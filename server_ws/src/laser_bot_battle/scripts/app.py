@@ -12,23 +12,20 @@ app = Flask(__name__, static_folder='static', static_url_path='/static')
 timeLeft = 0
 gameStarted = int(0)
 
-threadAlive = ""
-threadCountDown = ""
-
 # Index Login Page
 @app.route('/')
 def index():
-	return render_template('index.html')
+    return render_template('index.html')
 
 # User home page
 @app.route('/home')
 def home():
-	return render_template('home.html')
+    return render_template('home.html')
 
 # Project about page
 @app.route('/about')
 def about():
-	return render_template('about.html')
+    return render_template('about.html')
 
 # dont' cache data
 @app.after_request
@@ -65,12 +62,12 @@ def signUpUser():
             return json.dumps({'status':'ROBOT_UNAVAILABLE', 'robot':robotN})
 
         # add it to users list
-    	users.addUser(name, robotN, 100)
-    	return json.dumps({'status':'OK', 'user':name, 'robot':robotN})
+        users.addUser(name, robotN)
+        return json.dumps({'status':'OK', 'user':name, 'robot':robotN})
 
     else :
         # else return UNAVAILABLE error
-	    return json.dumps({'status':'UNAVAILABLE', 'user':name})
+        return json.dumps({'status':'UNAVAILABLE', 'user':name})
 
 
 # signOutUser function:
@@ -94,11 +91,12 @@ def signOutUser():
         return json.dumps({'status':'UNREGISTERED', 'user':name})
 
 
-# listUsers function:
-#   return list of logged in users (json format)
-@app.route('/listUsers', methods=['POST'])
-def listUsers():    
-    return json.dumps({'status':'OK', 'users':users.toString()}, default=userDefault)
+# updateGameStatus function:
+#   return list of logged in users, game status and time to begin (json format)
+@app.route('/updateGameStatus', methods=['POST'])
+def updateGameStatus():    
+    return json.dumps({'status':'OK', 'users':users.toString(),
+     'game': gameStarted, 'timeLeft':timeLeft}, default=userDefault)
 
 
 # getAvailableRobots function:
@@ -110,14 +108,16 @@ def getAvailableRobots():
     return json.dumps({'status':'OK', 'availableR':robots.getAvailableRobotsN()})
 
 
-# countdown function:
-#   implement countdown to game start
-def countdown():
+# gameStatus function:
+#   start countdown, start game and check end of game
+def gameStatus():
     global timeLeft
     global gameStarted
     gameStarted = 1
     print "countdown started"
-    while timeLeft >= 0:
+
+    # countdown to game start
+    while timeLeft > 0:
         time.sleep(1)
         timeLeft -= 1
         print timeLeft,
@@ -125,48 +125,46 @@ def countdown():
     print "Starting game!"
     gameStarted = 2
 
-    # wait for game to end
-    while users.getUsersAlive > 1 :
+    # check for game to end (only 1 player alive)
+    while users.getUsersAlive() > 1 :
+        print "users alive:", users.getUsersAlive() 
+        users.userSort()
         time.sleep(0.5)
 
-    gameStarted = 3
+    # game finished
+    print "Game finished"
+    gameStarted = 0
+    users.clearUsersReady()
 
     return
-
-
-# waitCountdown function:
-#   launch countdown if game not started, else return countdown status
-@app.route('/waitCountdown', methods=['POST'])
-def waitCountdown():
-
-    if gameStarted == 0 : 
-        return json.dumps({'status':'STOPPED'})
-    elif gameStarted == 1 :
-        return json.dumps({'status':'OK', 'timeLeft':timeLeft})
-    elif gameStarted == 2 :
-        return json.dumps({'status':'STARTED'})
-    elif gameStarted == 3 :
-        return json.dumps({'status':'FINISHED'})
 
 
 # playerReady function:
 #   update player ready status
 @app.route('/playerReady', methods=['POST'])
 def playerReady():
+    global timeLeft
+    global gameStarted
     name = request.form['user']
     ready = request.form['ready']
+    print "name:", name, ".ready:", ready,"."
 
     # Game already started
     if gameStarted == 2 :
         return json.dumps({'status':'STARTED'})
 
+    #set user ready
     if users.setReady(name, ready) :
+        # at least one player ready again, reset game 
+
         # If more than 2 players are ready
         if users.getUsersReady() > 1 :
             users.resetUsersLife()
-            timeLeft = 30
+            timeLeft = 15
             # Launch countdown to game start
-            threadCountDown.start()
+            threadGameStatus = threading.Thread(target=gameStatus)
+            threadGameStatus.start()
+
         return json.dumps({'status':'OK','user':name})
     else :
         return json.dumps({'status':'ERROR','user':name})
@@ -197,7 +195,6 @@ def checkAlive():
 # main function:
 def main():
     threadAlive = threading.Thread(target=checkAlive)
-    threadCountDown = threading.Thread(target=countdown)
     # Launch checkAlive function as a separate thread
     threadAlive.start()
 

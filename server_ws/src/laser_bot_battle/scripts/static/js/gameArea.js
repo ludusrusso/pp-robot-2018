@@ -23,6 +23,13 @@ var robot_msg = new ROSLIB.Message({
   shoot :     false
 });
 
+function keyDown(e) {
+  myGameArea.keys = (myGameArea.keys || []);
+  myGameArea.keys[e.keyCode] = true;
+}
+function keyUp(e) {
+  myGameArea.keys[e.keyCode] = false;
+}
 
 var myGameArea = {
 
@@ -30,14 +37,17 @@ var myGameArea = {
     /* Launch updateGameArea function every UPDATE_AREA ms */
     this.interval = setInterval(updateGameArea, UPDATE_AREA);
 
-    window.addEventListener('keydown', function (e) {
-      myGameArea.keys = (myGameArea.keys || []);
-      myGameArea.keys[e.keyCode] = true;
-    })
-    window.addEventListener('keyup', function (e) {
-      myGameArea.keys[e.keyCode] = false;
-    })
+    window.addEventListener('keydown', keyDown)
+    window.addEventListener('keyup', keyUp)
+  },
+  stop : function() {
+    /* Stop updateGameArea update */
+    window.clearInterval(this.interval); 
+
+    window.removeEventListener('keydown', keyDown)
+    window.removeEventListener('keyup', keyUp)
   }
+
 };
 
 
@@ -73,7 +83,6 @@ function updateGameArea() {
   /* SHOOT */
   if ( shoot ) {
     robot_msg.shoot = true;      
-    console.log('* shoot', robot_msg.shoot);
   }
 
   if (! wasStill){
@@ -82,6 +91,7 @@ function updateGameArea() {
     console.log(JSON.stringify(robot_msg));
   }
 
+  /* if robot is still, next time don't send message (if still again)*/
   wasStill = ( robot_msg.linear_x == 0 && robot_msg.angular_z == 0 && !robot_msg.shoot );
 } 
 

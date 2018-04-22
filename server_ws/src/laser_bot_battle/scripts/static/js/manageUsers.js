@@ -27,19 +27,15 @@ imgIndex: 0,
 date: "",
 ready: 0,  };
 
-var timerID = "";
 
-/* global for debug */
-var users = "";
-var usersReady = 0;
-var usersN = 0;
+var updateGameError = 0;
+var played = false;
+var prevGame = -1;
 
 var userUpdate;
-var gameUpdate;
 
-/* define interval to update user list in ms */
-const UPDATE_USER_INTERVAL = 1000;
-const UPDATE_GAME_INTERVAL = 500;
+/* define interval to update game status in ms */
+const UPDATE_INTERVAL = 500;
 
 /*---------------------------------------------------------------------------*/
 
@@ -155,7 +151,6 @@ const UPDATE_GAME_INTERVAL = 500;
       });
     }
     else {
-      console.log("ajax: "+tempName);
 
       /* Tell python to  add user to users list */
       $.ajax({
@@ -228,16 +223,16 @@ const UPDATE_GAME_INTERVAL = 500;
   document.getElementById("userImage").src = "static/img/avatar" + user.imgIndex +".png";
 }
 
-
 /*
- * UPDATE GAME STATUS:
- *  count down from timeLeft to 0, update countdown and start game on expire
+ * MANAGE GAME STATUS:
+ *  get updated users info and add updated html into proper location
  * -----------------------
  * 
  * @type function
- * @usage setInterval(updateGameStatus, time_ms);
+ * @usage updateGameStatus();
  */
  function updateGameStatus() {
+
   $.ajax({
     url: '/updateGameStatus',
     type: 'POST',
@@ -247,97 +242,28 @@ const UPDATE_GAME_INTERVAL = 500;
       var status = JSON.parse(response).status
 
       if ( status == "OK" ){
-        var timeLeft = JSON.parse(response).timeLeft;
-        /* console.log("timeLeft: " + timeLeft); */
+        updateGameError = 0;
 
-        /* enable ready button */
-        //$('#ready-btn').prop('disabled', false);
-
-        /* disable ready button */
-        $('#ready-btn').prop('disabled', true);
-        document.getElementById('game-status').innerHTML = timeLeft + " sec to start."
-
-      }
-      else if ( status == "STARTED" ){
-        if ( user.ready ) {
-          /* START */
-          //clearTimeout(timerID);
-          //timerID == "";
-          document.getElementById('game-status').innerHTML = "PLAY!";
-
-          myGameArea.start();
-        }
-        else{
-          document.getElementById('game-status').innerHTML = "The game is started without you";
-        }
-        //swal("Something went wrong", "The game is started without you!", "warning");
-      }
-      else if ( status == "STOPPED" ){
-        if (user.ready == 0){
-          document.getElementById('game-status').innerHTML = 'Press ready to start!';
-        }
-        else {
-          document.getElementById('game-status').innerHTML = 'Waiting for other players...'
-        }
-      }
-      else if ( status == "FINISHED" ){
-        $('#ready-btn').prop('disabled', false);
-        document.getElementById('game-status').innerHTML = 'Game over. Press ready to start again.'
-      }
-      else {
-        console.warn("response: " + response);
-      }
-    },
-    error: function (xhr, ajaxOptions, thrownError) {
-      console.error("ERROR " + xhr.status + ": " + thrownError);
-    }
-  });
-
-}
-
-
-/*
- * UPDATE USER INFO (LIFE):
- *  get updated users info and add updated html into proper location
- * -----------------------
- * 
- * @type function
- * @usage updateLoggedUsers();
- */
- function updateLoggedUsers() {
-
-  $.ajax({
-    url: '/listUsers',
-    type: 'POST',
-    data: {'data':'data'},
-    success: function(response) {
-      /* console.log("response: " + response); */
-      var status = JSON.parse(response).status
-
-      if ( status == "OK" ){
-        /* LIST USERS */
-        /* console.log("Users : " + JSON.parse(response).users); */
-
-        var userList = "";
-        var userLife = "";
-
+        /* parse response from webserver */
         var res = JSON.parse(response)
+        /*console.log("Users : " + JSON.stringify(res));*/
+
+        /* assume my robot is dead */
         var robotDead = true;
+
+        var game = res.game;
 
         if (res.users !== "[]"){
 
-          users = JSON.parse(res.users);
-          usersN = users.length;
-          usersReady = 0;
-          usersAlive = 0;
+          /* clean html to be injected */
+          var userList = "";
+          var userLife = "";
 
-          for (var i = 0; i < usersN; i++) {
+          /* get all users info */
+          var users = JSON.parse(res.users);
+          var usersN = users.length;
 
-            if ( users[i].ready == 1 ) 
-              usersReady += 1; 
-
-            if ( users[i].life >  0 ) 
-              usersAlive += 1; 	
+          for (var i = 0; i < usersN; i++) { 	
 
             /* spawn users list and life */
             if (users[i].name != user.name){
@@ -345,16 +271,16 @@ const UPDATE_GAME_INTERVAL = 500;
               userList += '<div class="user-list-div"><li><a>'
               /* user status icon */
               if (users[i].ready ==1){
-                if (users[i].life > 0)
-                  userList += '<i class="fas fa-play-circle"></i>'
+                if (users[i].life > 0 || game != 2)
+                  userList += '<i class="fa fa-play-circle" style="color: #00a65a;"></i> '
                 else
-                  userList += '<i class="fas fa-times-circle"></i>'
+                  userList += '<i class="fa fa-times-circle" style="color: #d33724;"></i> '
               }
               else
-                userList += '<i class="fas fa-stop-circle"></i>'
+                userList += '<i class="fa fa-pause-circle" style="color: #f4bc42;"></i> '
 
               /* username */
-              userList += '<b>'+ users[i].name + '</b></a>'
+              userList += '<b> '+ users[i].name + '</b></a>'
               /* life percentage badge */
               + ' <span class="badge user-list-badge" >'
               + users[i].life + '%</span> </li>'
@@ -366,6 +292,7 @@ const UPDATE_GAME_INTERVAL = 500;
             else{
               /* If I am in the list, the robot is not dead */
               user.life = users[i].life;
+              user.ready = users[i].ready;
               robotDead = false;
 
             }
@@ -386,6 +313,7 @@ const UPDATE_GAME_INTERVAL = 500;
           document.getElementById('userList').innerHTML = userList;
           document.getElementById('userLife').innerHTML = userLife;
         }
+        /* check if robot is still connected */
         if (robotDead) {
           swal("OPS", "Connction to robot lost", "error");
 
@@ -399,6 +327,84 @@ const UPDATE_GAME_INTERVAL = 500;
           }, 1500);
         }
 
+        /* change ready button color */
+        var button = document.getElementById("ready-btn");
+        if ( user.ready == 0 ) {
+          button.style.backgroundColor = "#3c8dbc";
+          button.innerHTML = '<i class="fa fa-play"></i> Ready';
+        }
+        else {
+          button.style.backgroundColor = "#00a65a";
+          button.innerHTML = 'Ready!';
+        }
+
+        if (prevGame != game || game == 1){
+          /* do only once */
+          prevGame = game;
+          /*console.warn("Game status changed! Now game is: "+game);*/
+
+          /* GAME STOPPED */
+          if ( game == 0 ){
+
+            /* If first game of user */
+            if (user.ready == 0 && !played ){
+              document.getElementById('game-status').innerHTML = 'Press ready to start!';
+            }
+            /* game finished */
+            else if (played){
+              played = false;
+              /* re enable ready button */
+              $('#ready-btn').prop('disabled', false);
+              document.getElementById('game-status').innerHTML = 'Game over. Press ready to start again.'
+              myGameArea.stop();
+              var ranking = "Ranking:";
+              var position = 0;
+              for (var i = 0; i < usersN; i++) {  
+                ranking += "\n" + (i+1) +" - " + users[i].name;
+                if (users[i].name == user.name)
+                  position = i+1;
+              }
+
+              /* game ending message */
+              if (user.life > 0 && position ==1 ){
+                /* WIN */ 
+                swal("Congratulation!", ranking);
+              }
+              else {
+                /* LOST */
+
+                swal("Your arriving position is " + position, ranking);
+              }
+
+            }
+            /* I am the only player ready */
+            else {
+              document.getElementById('game-status').innerHTML = 'Waiting for other players...'
+            }
+          }
+          /* COUNTDOWN */
+          else if ( game == 1 ){
+            /* console.log("timeLeft: " + timeLeft); */
+            /* disable ready button */
+            $('#ready-btn').prop('disabled', true);
+            /* print countdown into page */
+            document.getElementById('game-status').innerHTML = res.timeLeft + " sec to start."
+          }
+          /* GAME STARTED */
+          else if ( game == 2 ){
+            if ( user.ready ) {
+              /* START */
+              played = true;
+              myGameArea.start();
+              document.getElementById('game-status').innerHTML = "PLAY!";
+            }
+            else{
+              $('#ready-btn').prop('disabled', true);
+              document.getElementById('game-status').innerHTML = "The game is started without you";
+            }
+          }
+        }
+
       }
       else {
         console.warn("response: " + response);
@@ -406,9 +412,22 @@ const UPDATE_GAME_INTERVAL = 500;
     },
     error: function (xhr, ajaxOptions, thrownError) {
       console.error("ERROR " + xhr.status + ": " + thrownError);
+      updateGameError ++;
+      if (updateGameError > 5){
+        swal("OPS", "Connction to webserver lost", "error");
+
+        /* delete stored variables */
+        localStorage.removeItem('user');
+        user.name = "";
+
+        /* redirect to login page */
+        setTimeout(function(){
+          location.href = "/";
+        }, 1500);
+      }
     }
   });
-  
+
 }
 
 
@@ -464,17 +483,7 @@ const UPDATE_GAME_INTERVAL = 500;
 
       if ( status == "OK" ){
 
-        var button = document.getElementById("ready-btn");
-        if ( user.ready == 1 ) {
-          button.style.backgroundColor = "#3c8dbc";
-          button.innerHTML = '<i class="fa fa-play"></i> Ready';
-          user.ready = 0;
-        }
-        else {
-          button.style.backgroundColor = "#00a65a";
-          button.innerHTML = 'Ready!';
-          user.ready = 1;
-        }
+        /* button behaviour changed in updateGameStatus function */
 
       }
       else if ( status == "STARTED" ){

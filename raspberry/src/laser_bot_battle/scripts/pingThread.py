@@ -19,7 +19,7 @@ class pingThread(threading.Thread):
         print "%s starts" % (self.getName(),)
 
         payload={'ID': self._ID}
-        headers={ }
+        headers={}
         url='http://laser_bot_master.local:5000/incAlive'
         #url='http://localhost:5000/incAlive'
         

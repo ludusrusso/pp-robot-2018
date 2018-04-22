@@ -50,7 +50,7 @@ class Robots:
     # get first available robot (ID) from robots list
     def getAvailableRobot(self):
         for r in self.robots:
-	    #print "id: ", r.ID , "user: ", r.user
+        #print "id: ", r.ID , "user: ", r.user
             if r.user == "" :
                 return r.ID
         return -1
@@ -59,7 +59,7 @@ class Robots:
     def getAvailableRobotsN(self):
         num = 0
         for r in self.robots:
-	    #print "id: ", r.ID , "user: ", r.user
+        #print "id: ", r.ID , "user: ", r.user
             if r.user == "" :
                 num += 1
         return num
@@ -79,7 +79,8 @@ class Robots:
         for r in self.robots:
             if r.ID == id and r.user == "" :
                 r.user = name
-                r.threadSub.start()
+                if not r.threadSub.isAlive():
+                    r.threadSub.start()
                 return True
         return False
 

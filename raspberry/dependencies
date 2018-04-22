@@ -1,7 +1,8 @@
 #--- Installable via ubuntu repositories --------------------------------------
 
-ros-kinetic-ros-base
+ros-kinetic-ros-core
 ros-kinetic-rosserial
+ros-kinetic-rosserial-arduino
 git
 python-pip
 
@@ -32,6 +33,3 @@ source /home/ros/pp-robot-2018/raspberry/devel/setup.bash
  	publish-workstation=yes
 
 # reboot or restart service ( service avahi-daemon restart )
-
-
-

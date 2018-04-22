@@ -29,8 +29,7 @@ class Users:
 
     # add new user to list
     def addUser(self, name, robot):
-        self.users.append( User(name, robot, life) )
-        self.users.sort(key=lambda x: x.life) 
+        self.users.append( User(name, robot) )
 
     # delete user from list
     def delUser(self, name):
@@ -80,7 +79,7 @@ class Users:
     def getUsersAlive(self):
         num = 0
         for u in self.users:
-            if u.life > 0 :
+            if u.life > 0 and u.ready == 1 :
                 num += 1
         return num
 
@@ -94,19 +93,29 @@ class Users:
         for u in self.users:
             u.life = 100
 
-    #
+    # reduce user life when hit
     def hit(self, name):
         #print self.toString()
         from app import gameStarted
         if gameStarted == 2:
-		    for u in self.users :
-		        #print "u.name", u.name, " name", name, "."
-		        if u.name == name :
-		            print "User", name, "has been hit. LIFE:", int(u.life-HITDAMAGE)
-		            u.life -= HITDAMAGE
-		            if u.life < 0 :
-		                u.life = 0
-		            return True
+            for u in self.users :
+                #print "u.name", u.name, " name", name, "."
+                if u.name == name :
+                    u.life -= HITDAMAGE
+                    if u.life < 0 :
+                        u.life = 0
+                    print "User", name, "has been hit. LIFE:", u.life
+                    return True
         return False
+
+    # sort key for sorting users by life (if ready)
+    def __sortKey(self,x):
+        if x.ready == 1:
+            return x.life
+        return 101
+        
+    # sort userlist
+    def userSort(self):
+        self.users.sort(key=self.__sortKey, reverse=True) 
 
 users = Users()
