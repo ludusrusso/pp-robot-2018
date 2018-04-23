@@ -1,3 +1,29 @@
+INSTALL AND REMOVE DOCKER:
+
+Automatically install docker-ce:
+
+    $ curl -fsSL get.docker.com -o get-docker.sh
+    $ sudo sh get-docker.sh
+
+If you would like to use Docker as a non-root user, you should now consider
+adding your user to the "docker" group with something like:
+
+    $ sudo usermod -aG docker your-user
+
+Remember to log out and back in for this to take effect!
+
+
+Uninstall the Docker CE package:
+
+$ sudo apt-get purge docker-ce
+Images, containers, volumes, or customized configuration files on your host are not automatically removed. To delete all images, containers, and volumes:
+
+$ sudo rm -rf /var/lib/docker
+You must delete any edited configuration files manually.
+
+[From docker documentation https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-convenience-script]
+
+
 REFERENCES:
 
     General Docker documentation:
