@@ -1,8 +1,12 @@
+<!-- This page extends layout.html page in which the following javascript
+  imports are done:
+  - app.js - contains site management javascript code
+  - manageUsers.js - contains global structures and functions for user management
+  In this way all structures related to 'user' are visible within this file. -->
 {% extends 'layout.html' %}
 
 {% block inside_head %}
 <title>LaserBot Battle | Home</title>
-
 
 <!-- EventEmitter JS "http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js" -->
 <script type="text/javascript" src="{{ url_for('static', filename='js/eventemitter2.min.js') }}"></script>
@@ -10,11 +14,10 @@
 <!-- ROSLib JS "http://static.robotwebtools.org/roslibjs/current/roslib.min.js" -->
 <script type="text/javascript" src="{{ url_for('static', filename='js/roslib.min.js') }}"></script>
 
-
 <!-- general page scripts -->
 <script type="text/javascript">
 
-  /* when whole page is loaded */
+  /* when this page is loaded */
   $(document).ready(function(){
 
     /* Check if username has been set */
@@ -143,7 +146,7 @@
       <!-- Content Header (Page header) -->
       <section class="content-header">
         <h1>
-          Game Status: 
+          Game Status:
           <small id="game-status">Updating...</small>
           <button class="btn btn-primary ready-btn" id="ready-btn"onClick="updateReady()">
             <i class="fa fa-play"></i> Ready

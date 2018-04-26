@@ -1,4 +1,5 @@
 /*! gameArea.js */
+/* This javascript is imported within home.html */
 
 // Timeout of updating area set to 25ms
 const UPDATE_AREA = 25; /* ms */
@@ -36,7 +37,12 @@ function keyUp(e) {
   myGameArea.keys[e.keyCode] = false;
 }
 
-
+/* Defining object myGameArea with 2 functions:
+  - start(): launch updateGameArea() each UPDATE_AREA ms
+              enabling event sensitivity for keyDown and keypress
+  - stop(): stop the calling to updateGameArea() and remove
+            the sensitivity to the events keyDown and keyUp
+  */
 var myGameArea = {
 
   start : function() {
@@ -112,7 +118,7 @@ function updateGameArea() {
   wasStill = ( robot_msg.linear_x == 0 && robot_msg.angular_z == 0 && !robot_msg.shoot );
 }
 
-/* When the document is ready for the first time */
+/* When the page "home.html" is loaded */
 $(document).ready(function(){
 
   ros.on('connection', function() {
@@ -140,7 +146,9 @@ $(document).ready(function(){
     console.log('Connection to websocket server closed.');
   });
 
-  /* Set up the topic name */
+  /* Set up the topic name univocally (one topic per robot).
+    Information about the robotID is retrieved from the
+    'user' structure (defined in manageUsers.js) */
   topic.name='/Robot' + user.robotN + '/command';
 
 });
