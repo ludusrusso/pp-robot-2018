@@ -5,12 +5,14 @@ ros-kinetic-rosserial
 ros-kinetic-rosserial-arduino
 git
 python-pip
+g++
 
 
 
 #--- To be installed with pip: pip install <package> ---------------------------
 
 requests
+rpi.gpio
 
 
 

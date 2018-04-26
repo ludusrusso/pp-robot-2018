@@ -10,6 +10,9 @@
 <!-- ROSLib JS "http://static.robotwebtools.org/roslibjs/current/roslib.min.js" -->
 <script type="text/javascript" src="{{ url_for('static', filename='js/roslib.min.js') }}"></script>
 
+<!-- Joystick script -->
+<script type="text/javascript" src="{{ url_for('static', filename='js/virtualjoystick.js') }}"></script>
+
 
 <!-- general page scripts -->
 <script type="text/javascript">
@@ -48,11 +51,6 @@
 
     /* periodically launch function to update logged users list and game status */
     userUpdate = setInterval(function(){updateGameStatus();}, UPDATE_INTERVAL);
-
-    /* HELP description message */
-    $("#how-to").click(function() {
-      help();
-    });
 
   });
 
@@ -97,7 +95,7 @@
                 <!-- Menu Footer-->
                 <li class="user-footer">
                   <div class="pull-left">
-                    <a class="btn btn-default btn-flat" id="how-to">Help</a>
+                    <a class="btn btn-default btn-flat" id="how-to" onclick="help()">Help</a>
                   </div>
                   <div class="pull-right">
                     <a class="btn btn-default btn-flat" onclick="userSignOut()">Sign out</a>
@@ -152,7 +150,7 @@
       </section>
 
       <!-- Main content -->
-      <section class="content">
+      <section class="content" id="content">
 
         <!-- Health row -->
         <div class="row">
@@ -162,11 +160,16 @@
        <!-- Main row -->
        <div class="row">
 
-       </div><!-- /.row (main row) -->
 
-     </section><!-- /.content -->
-   </div><!-- /.content-wrapper -->
-   <footer class="main-footer">
+        <span id="result"></span>
+
+
+
+      </div><!-- /.row (main row) -->
+
+    </section><!-- /.content -->
+  </div><!-- /.content-wrapper -->
+  <footer class="main-footer">
     <div class="pull-right hidden-xs">
       <b>Version</b> 1.0
       <!-- MANTAINER Stefano Cirici - stefanocirici@gmail.com -->

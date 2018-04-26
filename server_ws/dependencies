@@ -1,7 +1,7 @@
 #--- Installable via ubuntu repositories --------------------------------------
 
 python-pip
-ros-kinetic
+ros-kinetic-ros-core
 ros-kinetic-rosserial-python
 
 # rosbridge support

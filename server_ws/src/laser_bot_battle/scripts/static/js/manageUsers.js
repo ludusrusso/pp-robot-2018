@@ -338,7 +338,7 @@ const UPDATE_INTERVAL = 500;
           button.innerHTML = 'Ready!';
         }
 
-        if (prevGame != game || game == 1){
+        if (prevGame != game || game != 2){
           /* do only once */
           prevGame = game;
           /*console.warn("Game status changed! Now game is: "+game);*/
