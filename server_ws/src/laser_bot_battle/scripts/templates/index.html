@@ -7,14 +7,18 @@
 
   var robotUpdate;
 
-  /* when whole page is loaded */
+  /* when this page is loaded */
   $(document).ready(function(){
 
-    /* Check if user was previously logged in */
+    /* Check if user was previously logged in.
+      When the user logged in, a stringify version
+      of "user" structure is saved in the local storage. */
     if (localStorage.getItem("user")!== null){
 
+      /* Take from the local storage the user structure */
       user = JSON.parse(localStorage.getItem("user"));
 
+      /* Signal that a previous login has been done */
       swal({
         title: "You previously logged as \""+ user.name + "\".\n",
         text: "Do you want to restore your previous session?",
@@ -27,13 +31,13 @@
           /* Yes: restore previous session */
           location.href = "/home";
         } else {
-          /* No: delete current user */
+          /* No: delete current user (function delUser() described above) */
           delUser(user.name);
         }
       });
     }
 
-    /* enable login at enter key press */
+    /* Enable login at enter key press */
     $("#username").on('keypress', function(event) {
       if (event.keyCode == 13) userLogin();
     })
@@ -42,7 +46,7 @@
     $("#how-to").click(function() {
       help();
     });
-    
+
     /* periodically launch function to update logged users list */
     robotUpdate = setInterval(function(){updateAvailableRobots();}, UPDATE_INTERVAL);
 
@@ -51,6 +55,7 @@
 </script>
 {% endblock %}
 
+<!-- HTML page "index.html" definition -->
 {% block body %}
 <body class="login">
 
@@ -67,7 +72,7 @@
 
       <!-- user image -->
       <div class="login-image">
-        <img src="static/img/avatar0.png" alt="user image" 
+        <img src="static/img/avatar0.png" alt="user image"
         title="Click to change avatar" id="userImage" onclick="changeImage()">
       </div>
       <!-- /.user-image -->

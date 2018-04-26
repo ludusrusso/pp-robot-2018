@@ -1,4 +1,5 @@
 /*! gameArea.js */
+/* This javascript is imported within home.html */
 
 // Timeout of updating area set to 25ms
 const UPDATE_AREA = 25; /* ms */
@@ -36,35 +37,42 @@ var robot_msg = new ROSLIB.Message({
     myGameArea.keys[e.keyCode] = false;
   }
 
+
   var joystick;
 
-  var myGameArea = {
+/* Defining object myGameArea with 2 functions:
+  - start(): launch updateGameArea() each UPDATE_AREA ms
+              enabling event sensitivity for keyDown and keypress
+  - stop(): stop the calling to updateGameArea() and remove
+            the sensitivity to the events keyDown and keyUp
+            */
+            var myGameArea = {
 
-    start : function() {
-      /* Launch updateGameArea() function every UPDATE_AREA ms */
-      this.interval = setInterval(updateGameArea, UPDATE_AREA);
+              start : function() {
+                /* Launch updateGameArea() function every UPDATE_AREA ms */
+                this.interval = setInterval(updateGameArea, UPDATE_AREA);
 
-      /* Associating the above defined keyUp/Down() functions to the keydown/up events */
-      window.addEventListener('keydown', keyDown)
-      window.addEventListener('keyup', keyUp)
+                /* Associating the above defined keyUp/Down() functions to the keydown/up events */
+                window.addEventListener('keydown', keyDown)
+                window.addEventListener('keyup', keyUp)
 
-      console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
+                console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
 
-    },
+              },
 
-    stop : function() {
-      /* Stop updateGameArea update */
-      window.clearInterval(this.interval);
+              stop : function() {
+                /* Stop updateGameArea update */
+                window.clearInterval(this.interval);
 
-      /* Dis-associating the above defined keyUp/Down() functions to the keydown/up events */
-      window.removeEventListener('keydown', keyDown);
-      window.removeEventListener('keyup', keyUp);
+                /* Dis-associating the above defined keyUp/Down() functions to the keydown/up events */
+                window.removeEventListener('keydown', keyDown);
+                window.removeEventListener('keyup', keyUp);
 
-      joystick.removeEventListener('touchStart');
-      joystick.removeEventListener('touchEnd');
-    }
+                joystick.removeEventListener('touchStart');
+                joystick.removeEventListener('touchEnd');
+              }
 
-  };
+            };
 
 /* This function is invoked every UPDATE_AREA ms.
   It modifies the robot_msg to be sent on the topic according
@@ -158,7 +166,10 @@ var robot_msg = new ROSLIB.Message({
       console.log('Connection to websocket server closed.');
     });
 
-    /* Set up the topic name */
+
+      /* Set up the topic name univocally (one topic per robot).
+    Information about the robotID is retrieved from the
+    'user' structure (defined in manageUsers.js) */
     topic.name='/Robot' + user.robotN + '/command';
 
     joystick = new VirtualJoystick({
@@ -167,3 +178,4 @@ var robot_msg = new ROSLIB.Message({
     });
 
   });
+
