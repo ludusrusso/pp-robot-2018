@@ -1,0 +1,442 @@
+REFERENCES :
+
+    http://www.html.it/pag/63925/container-come-ambienti-isolati/
+
+
+---------------------- CONTAINERS VS VIRTUAL_MACHINES -----------------------
+
+* A CONTAINER is an abstraction at the app layer. Multiple containers can run
+    on the same machine sharing the same OS Kernel. They take less space (MBs)
+    and start almost immediately.
+
+* A VM is an abstraction of the physical hw. Bigger images since each VM includes
+    also the code of the operating system (GBs), and they are slower to boot.
+
+---------------------------- IMAGE VS CONTAINER ------------------------------
+
+* An Image is static, it is a photography of the system at a certain instant
+  (it is like a Class in an object oriented language).
+  Stack of only readable (RO) layers.
+
+* A Container is the instance of the image after having worked on it
+  (it is like an Object instantiated from that Class).
+  Same stack of layers (RO), but with a writable (RW) layer on top.
+  Surposing all these layers, the final content of the container is obtained.
+
+------------------------------- IMAGE LAYERS --------------------------------
+
+* An Image can be composed by different layers, which superposed compose the
+target image.
+Layers are immutable (cannot be modified, only readable) and can be shared by
+multiple images (if more than one image contains the same layer, the disk
+occupation will consists in the size of the single layer). Called IMAGE LAYERS
+
+* When a container is instantiated, a new single writable layer is created on
+top of all other layers. All modifications to the container are saved within
+this layer. Called CONTAINER LAYER
+
+-------------------------------- FILE SYSTEM --------------------------------
+
+* From a file system p.o.w. each container is completely isolated from the
+  main file system and the file systems of each other container.
+
+    EX : If i create a folder (mkdir dir) in a container than i put it in background
+          and i run another container, i will not able to see the 'dir' created
+          in the other container.
+
+* HOW TO SHARE FILES BETWEEN HOST AND A CONTAINER ?
+
+    The solution is to use a -- DATA VOLUME --
+    I can bridge in this way the container filesystem with the file system of
+    of the underlying operating system.
+
+    To create a data volume is necessary to pass the flag -v to the command
+    'docker run' and specifying a local path (optional, but recommended) and
+    a container path.
+
+      $ docker run -it -v /home/edospi20/Desktop/Data_Volume/:/var ubuntu /bin/bash
+
+--------------------------------- NETWORKING ---------------------------------
+
+If the container is running over a VM there is no direct way to communicate
+with the HTTP demon, which is blind within its container.
+We need so to know the ip address of the virtual machine :
+
+    $ docker-machine ip
+    192.168.99.100
+
+We cannot directly access to that address (http://192.168.99.100), but it is
+required to map to a VM port the port from which the HTTP demon answer :
+
+    $ docker run -d -p 8088:80 httpd:2.4
+
+      The web server httpd:2.4 downloaded from the repository is made run in
+      a background container and with -p option all calls done on port 8088
+      of the virtual machine (the standard 192.168.99.100) are mapped to port
+      80  of the container.
+      Now pointing to http://192.168.99.100:8088: we will have the container
+      answering correctly.
+
+-------------------------------- DOCKERFILE ----------------------------------
+
+It is a textual file used to modify the original images (templates) to create
+our customized images. Group of instructions used to define a Docker Image.
+The Docker Engine will be in charge of validating the Dockerfile and generating
+the new image starting from it.
+In general this is the file which is loaded in github such that having a compact
+way to reconstruct a customized image in a unique file.
+
+              ------------ DOCKERFILE INSTRUCTIONS -----------
+
+* FROM *
+
+    It allows to specify the Base Image from where to start to create the
+    customized one.
+    We have 3 possibilities, as if working from command line :
+
+      FROM <image_name>
+      FROM <image_name>:<tag>
+      FROM <image_name>@<hash>
+
+* ENV *
+
+    To set environmental variables valid for the whole execution context of
+    a Dockerfile.
+
+      ENV <key>=<value>
+
+    Within the Dockerfile, in order to recover the value of the variable the
+    character $ is used (i.e. $key).
+
+* RUN *
+
+    To execute commands in the image we are going to generate (i.e. install a
+    package). Two formats can be used :
+
+      # shell form (uses OS shell facilities)
+      RUN <comando> <parametro1> ... <parametroN>
+
+      # exec form (uses OS primitives only)
+      RUN ["<comando>", "<parametro1>", ... , "<parametroN>"]
+
+    NOTE_THAT : Each RUN command generate a new image layer wrapping the
+                modifications introduced by the command itself. Thus, the father
+                image remains untouched.
+
+                => It is good practice to collapse correlated commands within
+                    the same RUN instruction.
+
+* ADD and COPY *
+
+    Used to move files and directory from the build context (local host path, where
+    the Dockerfile is) to the Filesystem of the created image.
+    Two ways to use command ADD :
+
+      # shell form
+      ADD <src> <dest>
+
+      # exec form
+      ADD ["<src>", "<dest>"]
+
+    The <dest> path can be absolute or relative w.r.t. the current working
+    directory (WORKDIR). More than one <src> path can be specified and this can
+    be : file, directory or URL addresses.
+
+    COPY instruction has the same effect of ADD, but it provides no support
+    for remote files or archives. Anyway using COPY is preferable if it is
+    not required to work with remote files and archives.
+
+* ENTRYPOINT *
+
+    It allows to execute a command within the container as soon as it is started.
+    The difference w.r.t. RUN is that in this case the effects of the instruction
+    affects the container itself and not the image generating it.
+
+      # shell form
+      ENTRYPOINT <comando> <parametro_1> ... <parametro_n>
+
+      # exec form
+      ENTRYPOINT ["<comando>", "<parametro_1>", ..., "<parametro_n>"]
+
+    Using the ENTRYPOINT instruction the last part of the command 'docker run'
+    will be not a command anymore, but a parameter to pass to the command
+    expressed in the ENTRYPOINT.
+
+      EX:
+        #Dockerfile (suppose that it generate the image with name 'htmlit')
+          FROM ubuntu:precise
+          ENTRYPOINT ["ls"]
+
+        #Command line
+          $ docker run htmlit -a -l
+            => -a -l are the options passed to the command 'ls'.
+
+          $ docker run entrypoint <comand>
+            => This will overwrite the behavior of the ENTRYPOINT instruction
+                in the docker file.
+
+* CMD *
+
+    It has effect on the Container and does not modify the image, like as
+    the ENTRYPOINT instruction. It has two different behaviors if :
+
+      - ENTRYPOINT instruction is not present
+
+        It allows to execute a command within the container as soon as it is started.
+        The command specified after CMD is automatically overwritten if in
+        the command line another command is specified :
+
+            $ docker run htmlit whoami
+
+          # shell form
+          CMD <comando> <parametro_1> ... <parametro_n>
+
+          # exec form
+          CMD ["<comando>", "<parametro_1>", ..., "<parametro_n>"]
+
+      - ENTRYPOINT instruction is present
+
+          It allows to provide default parameters to the command expressed
+          in the directive ENTRYPOINT
+
+            # exec form (in this case the only possible option)
+            CMD ["<parametro_1>", ..., "<parametro_n>"]
+
+          In this way the command ENTRYPOINT will not be overwrittable anymore (unless
+          the flag 'entrypoint' is used in the command 'docker run'). All default
+          parameters specified in CMD are kept overwrittable.
+
+    One CMD instruction only is admitted in a Dockerfile => Only the last CMD
+    is taken into consideration.
+
+* WORKDIR *
+
+    To set the working directory within the Container, wherein the successive
+    instructions will have effect.
+
+        # absolute path
+        WORKDIR /path1/path2
+
+        # relative path (relative to the previous WORKDIR instruction - root is the default)
+        WORKDIR path1/path2
+
+* LABEL *
+
+    Used to add metadata to our image, not directly linked to the definition
+    of the image itself.
+
+        LABEL "<chiave>"="<valore>" ...
+
+    Can indicate a version number or an image description and stuffs like that.
+    LABEL create a new layer => Better to collapse correlated info.
+
+* EXPOSE *
+
+    To declare on which ports the Container is listening.
+
+        EXPOSE <porta_1> [<porta_n>]
+
+    When the container is started we can use the -P parameter to expose the
+    ports declared in the attribute EXPOSE on random ports. With respect to
+    -p parameter, now we have not to choose both the container and the host
+    port.
+    To know on which port the port exposed in the dockerfile has been mapped, it
+    is possible to use the instruction :
+
+        $ docker port <exposed port> <container name | container id>
+
+        EX : If in the dockerfile we have exposed 4444 port and the container
+              name is htmlit the command will be :
+
+                  $ docker port 4444 htmlit
+
+* VOLUME *
+
+    To make the Host FS communicating with the Container FS.
+    This instruction allows to specify a path within the Container FS
+
+        VOLUME ["/www"]
+
+    When the Container is started it is possible to specify which local path is
+    associated with the path '/www' defined in the container.
+
+
+------------------------------ BUILDING IMAGES -------------------------------
+
+Starting from the Dockerfile a command is used to generate the target image.
+
+    $ docker build [OPT ...] <build context>
+      Refers to the command section below for major details.
+
+Once the instruction is executed the new image can be found locally within
+the PC together with all the other ones and it is possible to see it with
+the command 'docker images' or 'docker image ls' as usual.
+
+------------------------------ USEFUL COMMANDS -------------------------------
+
+$ docker images
+
+  REPOSITORY      TAG      IMAGE ID            CREATED          SIZE
+  hello-world     latest   c54a2cc56cbb        3 months ago     1.848 kB
+
+    Show images present on our PC.
+    REPOSITORY = Container of correlated images (i.e. container of the differ-
+    ent versions of hello-world).
+    TAG = A version of the image (i.e. hello-world:latest, hello-world:ciao are
+    two different version belonging to the same image repository-cathegory)
+
+$ docker pull redis:3.0.0
+
+    3.0.0: Pulling from library/redis
+
+    193224d99eda: Pull complete
+    a3ed95caeb02: Pull complete
+    5d614b26c26f: Pull complete
+    8274a6625da0: Pull complete
+    86d9ae0920b7: Pull complete
+    f4f11f46a20e: Pull complete
+    c3192ae156a0: Pull complete
+    317cb6aa0b20: Pull complete
+    a1a961e320bc: Pull complete
+    Digest: sha256:06ce8790b8f63ad1ee9eec1aec5513c34331a350f66a370572405cb15508ecdc
+    Status: Downloaded newer image for redis:3.0.0
+
+    To download an image from the web.
+    Each Pull Complete identify a different layer composing the overall image.
+    Digest = Encrypted content identifying the image. It is a unique ID to
+    identify the image (can be substituted to the format repository:tag)
+
+      $ docker pull redis@sha256:06ce8790b8f63ad1ee...370572405cb15508ecdc
+
+    If a layer is Already Present this means that it has been downloaded when
+    pulling a previous image.
+
+$ docker ps -a
+
+    CONTAINER ID    IMAGE          COMMAND   CREATED          STATUS   PORTS   NAMES
+    c3849603f184    hello-world    "/hello"  3 weeks ago      Exited           trusting_bell
+    0017d2a0b9d1    hello-world    "/hello"  6 seconds ago    Exited           boring_turing
+
+    Shows both active and inactive (-a option) containers.
+
+    CONTAINER ID = id of the Container Layer.
+
+$ docker run --name hello_html_it hello-world
+
+    To run a container starting from image hello-world:latest (default) and
+    naming it hello_html_it. Without --name a random name is choosen.
+
+    $ docker run -d hello-world (useful for web servers)
+
+      b4ec94bf57023778c0ad191e4626f563cd86edfbb893cb701172e676462fe063
+
+      -d = Container is executed in background
+
+    $ docker logs b4ec9
+
+      To show the output produced in background by the container.
+      b4ec = starting value of the hash identifying the container.
+
+$ docker run -it ubuntu /bin/bash
+
+    root@996fc96427ff:/# ls
+    bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+
+    To run executables (/bin/bash program) from a container (Ubuntu = ContainerID = 996fc96427ff)
+
+    -it = Redirect standard channels of a container, giving the impression to
+          work within it.
+
+          $ root@996fc96427ff:/# exit
+
+            exit command will terminate the interactive mode and so the container
+            will be stopped, since no process is contained in it.
+
+          $ CTRL + P + Q
+
+            In order to terminate the interactive mode only.
+            This command does not arrest the container which can be reattached
+            with the following command:
+
+              $ docker attach 113e7c
+
+                  root@113e7c31aae9:/#
+
+$ docker run -it -v /home/edospi20/Desktop/Data_Volume/:/var ubuntu /bin/bash
+
+  root@b4afd75514bd:/# touch html_it.log
+
+  To create a data volume shared btw the container and the host.
+  In this way each file added to the path /var within the container (i.e.
+  html_it.log) will be visible in our Ubuntu at path /home/edospi20/Desktop/Data_Volume
+  and viceversa.
+
+$ docker rm 113e7c
+
+  To remove the container (Container Layer) created at the execution of the
+  command 'docker run'. All sub-Image_Layers are preserved in our hard disk.
+
+  $ docker rm --force 113e7c
+
+    To remove a container already in execution.
+
+$ docker start 113e7c31aae9
+
+    To start a previously stopped container ($ docker stop 113e7c31aae9).
+    Needs a 'docker attach' to be brought back to the interactive mode.
+
+$ docker top 113e7c31aae9
+
+    PID                USER             COMMAND
+    15635              root             /bin/bash
+
+    To check the container active processes without entering in it.
+    The PID instead of being '1' (father process) as if launching the command 'ps'
+    within the bash console run in the container, is the real PID assigned to the
+    process by the underlying OS.
+
+$ docker build [OPT ...] <build context>
+
+    <build context> = Provides the relative context to the build engine.
+                      i.e. : The COPY instruction within the Dockerfile has
+                              a mandatory relative path, so the context has to
+                              be know for the relative path to be solved.
+
+    -t = Option to assign a tag to out image
+    -f = Where to recover the Dockerfile if this is not present in the <build context>
+
+        EX :
+
+            $ docker build -t esempio_1:v1 .
+            . = build context
+
+
+------------------------------ DOCKER COMPOSE -------------------------------
+
+With Compose, you use a YAML file to configure your application’s services. 
+Then, with a single command, you create and start all the services from your configuration.
+
+Using Compose is basically a three-step process:
+    1) Define your app’s environment with a Dockerfile so it can be reproduced anywhere.
+    2) Define the services that make up your app in docker-compose.yml so they can be run 
+        together in an isolated environment.
+    3) Run docker-compose up and Compose starts and runs your entire app.
+
+In our implementation we use a docker-container running on a Raspberry to virtualize Ubuntu 16.04.
+Thi is necessary to make ROS up and running, which otherwise is not possible on Raspbian (standard Ubuntu 
+distribution for Raspberry).
+Now, we must:
+    - enable the container to accept internet communication (exploiting the Raspberry network) 
+    - make the devices (Arduino) connected to the Raspberry visible by the container.
+
+In order to do so, we created a docker-compose file:
+
+        version: '3'
+
+        services:
+        ros:
+            image: pfrancesco/rpi2:custom_pkg      #image to run when issuing ros service
+            privileged: true                       #make devices visible by the container
+            network_mode: "host"                   #share internet conncetion btw Raspberry and Arduino
+            expose:                                #accept incoming internet requests
+            - "8000"
