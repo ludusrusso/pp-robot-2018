@@ -2,15 +2,15 @@
 from flask import Flask, render_template, request, json
 from users import userDefault, users
 from robot import robots
-#from ID_service_server import add_new_robot_server
 import ID_service_server
 import threading
 import time
 
-app = Flask(__name__, static_folder='static', static_url_path='/static')
 
 timeLeft = 0
 gameStarted = int(0)
+
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 
 # Index Login Page
 @app.route('/')
@@ -128,7 +128,7 @@ def gameStatus():
     # check for game to end (only 1 player alive)
     while users.getUsersAlive() > 1 :
         print "users alive:", users.getUsersAlive() 
-        users.userSort()
+        users.usersSort()
         time.sleep(0.5)
 
     # game finished

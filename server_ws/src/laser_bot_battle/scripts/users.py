@@ -115,7 +115,7 @@ class Users:
         return 101
         
     # sort userlist
-    def userSort(self):
+    def usersSort(self):
         self.users.sort(key=self.__sortKey, reverse=True) 
 
 users = Users()
