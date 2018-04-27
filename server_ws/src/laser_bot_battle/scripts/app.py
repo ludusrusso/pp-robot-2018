@@ -155,13 +155,11 @@ def playerReady():
 
     #set user ready
     if users.setReady(name, ready) :
-        # at least one player ready again, reset game 
-
         # If more than 2 players are ready
         if users.getUsersReady() > 1 :
             users.resetUsersLife()
             timeLeft = 15
-            # Launch countdown to game start
+            # Launch countdown to game start as a new thread
             threadGameStatus = threading.Thread(target=gameStatus)
             threadGameStatus.start()
 
