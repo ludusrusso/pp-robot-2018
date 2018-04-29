@@ -417,9 +417,11 @@ const UPDATE_INTERVAL = 500;
               var ranking = "Ranking:";
               var position = 0;
               for (var i = 0; i < usersN; i++) {
-                ranking += "\n" + (i+1) +" - " + users[i].name;
-                if (users[i].name == user.name)
-                  position = i+1;
+                if(users[i].ready == 1) {
+                  ranking += "\n" + (i+1) +" - " + users[i].name;
+                  if (users[i].name == user.name)
+                    position = i+1;
+                }
               }
               /* Alert for battle end signaling arrival position*/
               /* game ending message */

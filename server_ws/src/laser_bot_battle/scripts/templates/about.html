@@ -3,18 +3,6 @@
 {% block inside_head %}
 <title>LaserBot Battle | About</title>
 
-<style type="text/css">
-
-
-div{
-    text-align: justify;
-}
-
-
-
-
-</style>
-
 {% endblock %}
 
 {% block body %}
@@ -25,108 +13,114 @@ div{
     <!-- Content Header (Page header) -->
     <div class="wrapper" style="width=0.8*device-width; overflow-y=auto;">
 
-        <!-- Login button -->
-        <button class="btn btn-primary login-btn" onClick="location.href='/'">
-            <i class="fa fa-arrow-left"></i> Login
-        </button>
+
 
         <!-- About title  -->
-    </br>
-    <div class="login-logo">
-        <br/><a><b>LaserBot</b> Battle</a>
-
-    </div><!-- about title -->
-
-
-    <!-- Main content -->
-    <section class="content">
-
-
-        <!--div class="row"-->
-        <!--div class="col-md-3"-->
-        <!--div class="row"-->
-        <!--/div--><!-- /.col -->
-        <!--/div--><!-- /.row -->
-
-        <div class="col-md-6 column_text" text-align="center">
-
-            <!-- Row containing the description of the Project -->
-            <div class="row">
-                <div>
-
-                    <b>What Laser Bot Battle is?</b>
-                    <br>
-                    The aim of this project was to propose a practical application of Robot Operating System, developed in collaboration with Politecnico of Turin. The scenario consists in a "battle"
-                    of robots remotely driven from a client browser, allowing the user interaction.
-                    <br>
-                    Through the <a href='/'>login</a> webpage, if at least one robot is available, the user can authenticate in order
-                    to gain control of the robot. Once at least another user has logged-id, the battle can begin.
-                    <br>
-                    The robot is simply composed of movement, sensors and control systems. These parts cooperate together
-                    to move the robot according to user commands once the battle begun.
-                    <br>
-                    For further details and more technical explanation, please consult the github repository:
-                    <br>
-                </br>
-                <div>
-                    <img src="/static/img/github.png" width="72px" height="24px">
-                    <a href="https://github.com/ludusrusso/pp-robot-2018/">pp-robot-2018</a>
-                </div>
-            </ul>
-        </div>
-    </div><!-- /.row -->
-
-    <!-- Row containing the description of the team -->
-    <div class="row who_are_we">
-        <div>
-            <p>
-                <br><br>
-                <b>Who are we?</b>
-                <br>
-                We are a team composed by four Computer Eng. Master students at Politecnico of Turin. Our interest and
-                technical background pushed us to undertake this challenge. In particular, we deepen topics belonging to
-                robot field and web programming. Follow us on LinkedIn.
-                <br>
-            </p>
-        </div>
-    </div>
-
-    <!-- Row containing the Linkedin profiles of the team -->
-    <div class="row">
-
         <br>
+        <br>
+        <br>
+        <div class="about-logo">
+            <a><b>LaserBot</b> Battle</a>
+        </div><!-- about title -->
 
-        <div id="row_div">
-            <div class="person">
-                <div class="zoom">
-                    <a href='https://it.linkedin.com/in/stefano-cirici?trk=profile-badge'><img title="Stefano Cirici" src="{{ url_for('static', filename='img/stefano.jpeg') }}" alt="Avatar"></a>
-                </div>
+        <!-- Main content -->
+        <section class="content">
+
+
+            <!--div class="row"-->
+            <!--div class="col-md-3"-->
+            <!--div class="row"-->
+            <!--/div--><!-- /.col -->
+            <!--/div--><!-- /.row -->
+
+            <div class="col-md-6 column_text" text-align="center">
+
+                <!-- Login button -->
+                <button class="btn btn-primary login-btn" onClick="location.href='/'">
+                    <i class="fa fa-arrow-left"></i> Login
+                </button>
+                <br>
+                <br>
+
+                <!-- Row containing the description of the Project -->
+                <div class="row">
+                    <div>
+
+                        <b>What Laser Bot Battle is?</b>
+                        <br>
+                        The aim of this project was to propose a practical application of Robot Operating System, developed in collaboration with Politecnico of Turin. The scenario consists in a "battle"
+                        of robots remotely driven from a client browser, allowing the user interaction.
+                        <br>
+                        Through the <a href='/'>login</a> webpage, if at least one robot is available, the user can authenticate in order
+                        to gain control of the robot. Once at least another user has logged-id, the battle can begin.
+                        <br>
+                        The robot is simply composed of movement, sensors and control systems. These parts cooperate together
+                        to move the robot according to user commands once the battle begun.
+                        <br>
+                        For further details and more technical explanation, please consult the github repository:
+                        <br>
+                    </br>
+                    <div>
+                        <img src="/static/img/github.png" width="70px" height="24px">
+                        <a href="https://github.com/ludusrusso/pp-robot-2018/">pp-robot-2018</a>
+                    </div>
+                </ul>
             </div>
+        </div><!-- /.row -->
 
-            <div class="person">
-                <div class="zoom">
-                    <a href='https://it.linkedin.com/in/francesco-panini-541b6015b?trk=profile-badge'><img title="Francesco Panini" src="{{ url_for('static', filename='img/francesco.jpeg') }}" alt="Avatar"></a>
-                </div>
+        <!-- Row containing the description of the team -->
+        <div class="row who_are_we">
+            <div>
+                <p>
+                    <br><br>
+                    <b>Who are we?</b>
+                    <br>
+                    We are a team composed by four Computer Eng. Master students at Politecnico of Turin. Our interest and
+                    technical background pushed us to undertake this challenge. In particular, we deepen topics belonging to
+                    robot field and web programming.
+                    <br>
+                    <br>
+                    <center><b > Follow us on<img src="/static/img/linkedin.png" height="25px"></b></center>
+                </p>
             </div>
+        </div>
 
-            <div class="person">
-                <div class="zoom">
-                    <a href='https://it.linkedin.com/in/luca-ledda?trk=profile-badge'><img title="Luca Ledda" src="{{ url_for('static', filename='img/luca.jpeg') }}" alt="Avatar"></a>
+        <!-- Row containing the Linkedin profiles of the team -->
+        <div class="row">
+
+            <br>
+
+            <div id="row_div">
+                <div class="person">
+                    <div class="zoom">
+                        <a href='https://it.linkedin.com/in/stefano-cirici?trk=profile-badge'><img title="Stefano Cirici" src="{{ url_for('static', filename='img/stefano.jpeg') }}" alt="Avatar"></a>
+                    </div>
                 </div>
-            </div>
 
-            <div class="person">
-                <div class="zoom">
-                    <a href='https://it.linkedin.com/in/edoardo-spigarelli?trk=profile-badge'><img title="Edoardo Spigarelli" src="{{ url_for('static', filename='img/edoardo.jpeg') }}" alt="Avatar"></a>
+                <div class="person">
+                    <div class="zoom">
+                        <a href='https://it.linkedin.com/in/francesco-panini-541b6015b?trk=profile-badge'><img title="Francesco Panini" src="{{ url_for('static', filename='img/francesco.jpeg') }}" alt="Avatar"></a>
+                    </div>
                 </div>
-            </div>
+
+                <div class="person">
+                    <div class="zoom">
+                        <a href='https://it.linkedin.com/in/luca-ledda?trk=profile-badge'><img title="Luca Ledda" src="{{ url_for('static', filename='img/luca.jpeg') }}" alt="Avatar"></a>
+                    </div>
+                </div>
+
+                <div class="person">
+                    <div class="zoom">
+                        <a href='https://it.linkedin.com/in/edoardo-spigarelli?trk=profile-badge'><img title="Edoardo Spigarelli" src="{{ url_for('static', filename='img/edoardo.jpeg') }}" alt="Avatar"></a>
+                    </div>
+                </div>
 
 
-        </br>
-    </div>
-    <div style="height:100px"></div>
+            </br>
+        </div>
+        <div style="height:100px"></div>
 
-</div><!-- /.col -->
+    </div><!-- /.col -->
 
 </section><!-- /.content -->
 

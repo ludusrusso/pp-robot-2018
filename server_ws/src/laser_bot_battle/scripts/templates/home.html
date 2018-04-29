@@ -14,9 +14,6 @@
 <!-- ROSLib JS "http://static.robotwebtools.org/roslibjs/current/roslib.min.js" -->
 <script type="text/javascript" src="{{ url_for('static', filename='js/roslib.min.js') }}"></script>
 
-<!-- Joystick script -->
-<script type="text/javascript" src="{{ url_for('static', filename='js/virtualjoystick.js') }}"></script>
-
 <!-- general page scripts -->
 <script type="text/javascript">
 
@@ -38,23 +35,24 @@
         location.href = "/";
       }, 2100);
     }
+    else{
 
-    /* get user variables */
-    user = JSON.parse(localStorage.getItem("user"));
-    console.log("Logged as \""+ user.name + "\"");
+      /* get user variables */
+      user = JSON.parse(localStorage.getItem("user"));
+      console.log("Logged as \""+ user.name + "\"");
 
-    /* Spawn username in all username classes */
-    $('.username').html(user.name);
-    /* Spawn robot number */
-    $('.robotN').html("Robot " + user.robotN);
-    /* Spawn date */
-    $('.date').html( "Logged in: " + user.date );
-    /* Spawn user image in all userImage classes*/
-    $('.userImage img').attr("src", "static/img/avatar" + user.imgIndex +".png");
+      /* Spawn username in all username classes */
+      $('.username').html(user.name);
+      /* Spawn robot number */
+      $('.robotN').html("Robot " + user.robotN);
+      /* Spawn date */
+      $('.date').html( "Logged in: " + user.date );
+      /* Spawn user image in all userImage classes*/
+      $('.userImage img').attr("src", "static/img/avatar" + user.imgIndex +".png");
 
-    /* periodically launch function to update logged users list and game status */
-    userUpdate = setInterval(function(){updateGameStatus();}, UPDATE_INTERVAL);
-
+      /* periodically launch function to update logged users list and game status */
+      userUpdate = setInterval(function(){updateGameStatus();}, UPDATE_INTERVAL);
+    }
   });
 
 </script>
@@ -162,11 +160,6 @@
 
        <!-- Main row -->
        <div class="row">
-
-
-        <span id="result"></span>
-
-
 
       </div><!-- /.row (main row) -->
 

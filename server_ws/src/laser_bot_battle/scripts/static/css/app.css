@@ -759,10 +759,6 @@ a:hover,a:active,a:focus {
   box-shadow: none;
 }
 
-/* Input group */
-
-/* button groups */
-
 /*
  * Component: Progress Bar
  * -----------------------
@@ -1042,11 +1038,6 @@ a:hover,a:active,a:focus {
 }
 
 /*
- * Component: Timeline
- * -------------------
- */
-
-/*
  * Component: Button
  * -----------------
  */
@@ -1162,42 +1153,6 @@ a:hover,a:active,a:focus {
   font-weight: 400;
 }
 
-/*
- * Component: Callout
- * ------------------
- */
-
-/*
- * Component: alert
- * ----------------
- */
-
-/*
- * Component: Nav
- * --------------
- */
-
-/* NAV PILLS */
-
-/* NAV STACKED */
-
-/* NAV TABS */
-
-/* Nav tabs bottom */
-
-/* PAGINATION */
-
-/*
- * Component: Products List
- * ------------------------
- */
-
-/*
- * Component: Table
- * ----------------
- */
-
-/* .text-center in tables */
 
 /*
  * Component: Label
@@ -1208,11 +1163,6 @@ a:hover,a:active,a:focus {
   background-color: #d2d6de;
   color: #444;
 }
-
-/*
- * Component: Direct Chat
- * ----------------------
- */
 
 /*
  * Component: Users List
@@ -1247,21 +1197,6 @@ a:hover,a:active,a:focus {
 .users-list-name:hover {
   color: #999;
 }
-
-/*
- * Component: Carousel
- * -------------------
- */
-
-/*
- * Component: modal
- * ----------------
- */
-
-/*
- * Page: Mailbox
- * -------------
- */
 
 /*
  * Page: Login
@@ -1347,58 +1282,6 @@ a:hover,a:active,a:focus {
   margin-top: 10px;
 }
 
-/*
- * Page: Login & Register
- * ----------------------
- */
-
-/*
-.login-logo,.register-logo {
-  font-size: 35px;
-  text-align: center;
-  margin-bottom: 25px;
-  font-weight: 300;
-}
-.login-logo a,.register-logo a {
-  color: #444;
-}
-.login-page,.register-page {
-  background: #d2d6de;
-}
-.login-box,.register-box {
-  width: 360px;
-  margin: 7% auto;
-}
-@media (max-width: 768px) {
-  .login-box,  .register-box {
-    width: 90%;
-    margin-top: 20px;
-  }
-}
-.login-box-body,.register-box-body {
-  background: #fff;
-  padding: 20px;
-  color: #444;
-  border-top: 0;
-  color: #666;
-}
-.login-box-body .form-control-feedback,.register-box-body .form-control-feedback {
-  color: #777;
-}
-.login-box-msg,.register-box-msg {
-  margin: 0;
-  text-align: center;
-  padding: 0 20px 20px 20px;
-}
-.social-auth-links {
-  margin: 10px 0;
-}*/
-
-/*
- * Page: 400 and 500 error pages
- * ------------------------------
- */
-
 .error-page {
   width: 600px;
   margin: 20px auto 0 auto;
@@ -1432,12 +1315,6 @@ a:hover,a:active,a:focus {
   }
 }
 
-/*
- * Page: Invoice
- * -------------
- */
-
-/* Enhancement for printing */
 
 /*
  * Plugin: Social Buttons
@@ -1491,10 +1368,6 @@ a:hover,a:active,a:focus {
 .margin {
   margin: 10px;
 }
-
-/* Display inline */
-
-/* Description Blocks */
 
 /* Background colors */
 
@@ -1603,12 +1476,6 @@ a:hover,a:active,a:focus {
 .flat {
   border-radius: 0 !important;
 }
-
-/* _fix for sparkline tooltip */
-
-/*
-Gradient Background colors
-*/
 
 /*
  * Skin: Blue
@@ -1846,50 +1713,22 @@ hr {
   float: right;
 }
 
-.box {
-  margin: 20px;
-  background-color: black;
-}
-
-.box > a {
-  text-align: center;
-}
-
-.box > img {
-  justify-content: center;
-  border-radius: 50%;
-  width: 100%;
-  height: 100%;
-}
-
 .zoom > a > img {
-  justify-content: center;
   border-radius: 50%;
   width: 100%;
   height: 100%;
-}
-
-.who_are_we > p {
-  text-align: center;
 }
 
 .person {
   width: 25%;
   float: left;
   height: auto;
-  padding-left: 7%;
-  padding-right: 7%;
-  padding-top: 7%;
-  padding-bottom: 7%;
-
-  margin-right: auto; margin-left: auto;
+  padding: 5%;
 }
 
 .zoom {
   background-color: transparent;
   transition: transform .3s;
-  margin-right: auto
-  margin-left: auto;
 }
 
 .zoom:hover {
@@ -1902,8 +1741,30 @@ hr {
   left: 50%;
   transform: translate(-50%, 0);
   width: 800px;
-  margin: 0 auto;
+  text-align: justify;
 }
+
+.login-btn {
+  top: -4em;
+  position: relative;
+  float: left;
+  background-color: grey;
+  margin-left: -15px;
+}
+
+.about-logo {
+  font-size: 35px;
+  text-align: center !important;;
+  margin-bottom: 25px;
+  font-weight: 300;
+  margin: auto;
+}
+
+.about-logo a {
+  color: #444;
+}
+
+
 
 @media (max-width: 991px) {
   .column_text {
@@ -1911,45 +1772,18 @@ hr {
     width: 90%;
     margin: 0 auto;
   }
-  .person {
-    width: 25%;
-    float: left;
-    height: auto;
-    padding-left: 2%;
-    padding-right: 2%;
-    padding-top: 2%;
-    padding-bottom: 2%;
 
-    margin-right: auto; margin-left: auto;
-  }
 }
 
 
-.login-btn {
-  top: +4em;
-  position: relative;
-  float: left;
-  left: 25%;
-  background-color: grey;
-}
-
-@media (max-width: 991px) {
+@media (max-width: 500px) {
   .login-btn {
-    top: +4em;
-    position: relative;
-    float: left;
-    left: 15px;
-    background-color: grey;
-  }
-}
-
-@media (max-width: 450px) {
-  .login-btn {
-    top: +2em;
-    position: relative;
-    float: center;
+    top: -7em;
     left: 50%;
+    margin: auto;
     transform: translate(-50%, 0);
-    background-color: grey;
+  }
+  .person {
+    padding: 2%;
   }
 }
