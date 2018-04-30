@@ -75,7 +75,15 @@ REFERENCES:
                                 -v: mount the ros_ws folder inside /mnt/ros_volume folder in the container
 
 BASIC COMMANDS:
-    $ docker run --rm -it pfrancesco/rpi2:updated bash
-    $ docker build -t "pfrancesco/rpi2:new_tag" .
-    $ docker rm $(docker ps -a -f status=exited -q) (to close all opened containers)
-    $ docker run --rm -it -v ~/docker_ROS/ros_ws:/mnt/ros_volume pfrancesco/rpi2:updated (to run and mount the shared folder)
+    Run a docker image:
+        $ docker run --rm -it <image>
+
+    Run an image and mount a shared folder:
+        $ docker run --rm -it -v <host_dir_path>:<guest_dir_path> <image>
+
+    Build a docker image (in the current folder a dockerfile must be present):
+        $ docker build -t "<docker_user>/<image>:<new_tag>" .
+
+    Close all opened containers:
+        $ docker rm $(docker ps -a -f status=exited -q) 
+

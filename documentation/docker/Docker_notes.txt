@@ -440,3 +440,4 @@ In order to do so, we created a docker-compose file:
             network_mode: "host"                   #share internet conncetion btw Raspberry and Arduino
             expose:                                #accept incoming internet requests
             - "8000"
+            
