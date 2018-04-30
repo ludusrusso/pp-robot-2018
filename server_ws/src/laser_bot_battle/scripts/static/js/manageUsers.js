@@ -392,7 +392,7 @@ const UPDATE_INTERVAL = 500;
           - previous status is different from the current one (something has to be updated)
           - game status is 1 (battle begin is waiting for countdown to finish)
             because countdown must be updated */
-        if (prevGame != game || game == 1){
+        if (prevGame != game || game != 2){
           /* current state becomes old state */
           prevGame = game;
 
@@ -415,23 +415,29 @@ const UPDATE_INTERVAL = 500;
               myGameArea.stop();
               /* Show ranking of the battle */
               var ranking = "Ranking:";
-              var position = 0;
-              for (var i = 0; i < usersN; i++) {
-                if(users[i].ready == 1) {
+              var position = 1;
+
+              /* First user is the winner */
+              ranking += "\n 1 - " + users[0].name;
+
+              for (var i = 1; i < usersN; i++) {
+                /*This user was playing and is dead*/
+                if(users[i].life == 0)
                   ranking += "\n" + (i+1) +" - " + users[i].name;
-                  if (users[i].name == user.name)
-                    position = i+1;
-                }
+
+                /*This is my position*/
+                if (users[i].name == user.name)
+                  position = i+1;
               }
               /* Alert for battle end signaling arrival position*/
               /* game ending message */
-              if (user.life > 0 && position ==1 ){
+              if (user.life > 0 && position == 1 ){
                 /* WIN */
-                swal("Congratulation!", ranking);
+                swal("YOU WIN!", ranking);
               }
               else {
                 /* LOST */
-                swal("Your arriving position is " + position, ranking);
+                swal("YOU LOST!\nYour arriving position is " + position, ranking);
               }
 
             }
@@ -443,7 +449,8 @@ const UPDATE_INTERVAL = 500;
           /* *** COUNTDOWN *** */
           else if ( game == 1 ){
             /* disable ready button since countdown is already started */
-            $('#ready-btn').prop('disabled', true);
+            if(user.ready == 1)
+              $('#ready-btn').prop('disabled', true);
             /* print countdown into page
               res is a variable storing the server response (requested at each
               UPDATE_INTERVAL ms). This data is updated by the server.

@@ -100,7 +100,7 @@ class Users:
         if gameStarted == 2:
             for u in self.users :
                 #print "u.name", u.name, " name", name, "."
-                if u.name == name :
+                if u.name == name and u.ready == 1 :
                     u.life -= HITDAMAGE
                     if u.life < 0 :
                         u.life = 0
@@ -112,7 +112,7 @@ class Users:
     def __sortKey(self,x):
         if x.ready == 1:
             return x.life
-        return 101
+        return -1
         
     # sort userlist
     def usersSort(self):
