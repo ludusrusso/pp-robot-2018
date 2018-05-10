@@ -103,3 +103,6 @@ ENV/
 
 # mac files
 .DS_Store
+
+# VSCode debug
+.vscode/

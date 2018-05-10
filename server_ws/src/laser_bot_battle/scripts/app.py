@@ -53,7 +53,7 @@ def signUpUser():
     if users.isNameAvailable(name) :
 
         # check first available robot id
-        robotN = robots.getAvailableRobot();
+        robotN = robots.getAvailableRobot()
         if robotN == -1 :
             return json.dumps({'status':'NO_ROBOTS', 'user':name})
 
@@ -176,7 +176,7 @@ def incAlive():
         if robots.isAlive(robotID):
             return json.dumps({'status':'OK'})
 
-            return json.dumps({'status':'ERROR'})
+    return json.dumps({'status':'ERROR'})
 
 
 # checkAlive function:
@@ -184,7 +184,7 @@ def incAlive():
 def checkAlive():
     while True:
         #print "ClearAlive"
-        robots.clearAlive();
+        robots.clearAlive()
         time.sleep(2)
 
 
@@ -201,5 +201,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
