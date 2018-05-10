@@ -87,8 +87,8 @@ def signOutUser():
         else :
             return json.dumps({'status':'FAILED', 'user':name})
     else :
-    # else return UNREGISTERED error
-    return json.dumps({'status':'UNREGISTERED', 'user':name})
+        # else return UNREGISTERED error
+        return json.dumps({'status':'UNREGISTERED', 'user':name})
 
 
 # updateGameStatus function:
