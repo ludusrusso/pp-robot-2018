@@ -4,11 +4,6 @@ import threading
 from std_msgs.msg import Empty
 from users import users
 
-def userDefault(obj):
-    if isinstance(obj, set):
-        return list(obj)
-    return obj.__dict__
-
 # Robot class
 class Robot:
     ID = 0
@@ -92,14 +87,6 @@ class Robots:
                 return True
         return False
 
-    # delete robot from list
-    def delRobot(self, id):
-        for r in self.robots:
-            if r.ID == id :
-                self.robots.remove(r)
-                return True
-        return False
-
     # signat that robot is alive
     def isAlive(self, id):
         for r in self.robots:
@@ -121,13 +108,5 @@ class Robots:
                 self.robots.remove(r)
             else:
                 r.alive = 0 
-
-    def returnRobotList(self):
-        return self.robots
-
-
-    # return json string of robots list
-    def toString(self):
-        return json.dumps(self.robots, default=userDefault)
 
 robots = Robots()

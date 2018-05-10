@@ -87,14 +87,14 @@ def signOutUser():
         else :
             return json.dumps({'status':'FAILED', 'user':name})
     else :
-        # else return UNREGISTERED error
-        return json.dumps({'status':'UNREGISTERED', 'user':name})
+    # else return UNREGISTERED error
+    return json.dumps({'status':'UNREGISTERED', 'user':name})
 
 
 # updateGameStatus function:
 #   return list of logged in users, game status and time to begin (json format)
 @app.route('/updateGameStatus', methods=['POST'])
-def updateGameStatus():    
+def updateGameStatus():
     return json.dumps({'status':'OK', 'users':users.toString(),
      'game': gameStarted, 'timeLeft':timeLeft}, default=userDefault)
 
@@ -102,9 +102,7 @@ def updateGameStatus():
 # getAvailableRobots function:
 #   return number of available robots (json format)
 @app.route('/getAvailableRobots', methods=['POST'])
-def getAvailableRobots():  
-    #print robots.toString()  
-    #print "num robots : ", robots.getAvailableRobotsN()
+def getAvailableRobots():
     return json.dumps({'status':'OK', 'availableR':robots.getAvailableRobotsN()})
 
 
@@ -122,12 +120,12 @@ def gameStatus():
         timeLeft -= 1
         print timeLeft,
 
-    print "Starting game!"
-    gameStarted = 2
+        print "Starting game!"
+        gameStarted = 2
 
     # check for game to end (only 1 player alive)
     while users.getUsersAlive() > 1 :
-        print "users alive:", users.getUsersAlive() 
+        #print "users alive:", users.getUsersAlive() 
         users.usersSort()
         time.sleep(0.5)
 
@@ -163,9 +161,9 @@ def playerReady():
             threadGameStatus = threading.Thread(target=gameStatus)
             threadGameStatus.start()
 
-        return json.dumps({'status':'OK','user':name})
-    else :
-        return json.dumps({'status':'ERROR','user':name})
+            return json.dumps({'status':'OK','user':name})
+        else :
+            return json.dumps({'status':'ERROR','user':name})
 
 
 # incAlive function:
@@ -178,7 +176,7 @@ def incAlive():
         if robots.isAlive(robotID):
             return json.dumps({'status':'OK'})
 
-    return json.dumps({'status':'ERROR'})
+            return json.dumps({'status':'ERROR'})
 
 
 # checkAlive function:
