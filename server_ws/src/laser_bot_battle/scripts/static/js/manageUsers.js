@@ -73,7 +73,7 @@ const UPDATE_INTERVAL = 500;
       if ( status == "OK" ){
         /* Signal to the user that signOut had success */
         console.log("User \"" + user.name + "\" removed");
-        swal("Your session has been deleted!", "Redirectiong to login page", "success");
+        swal("Your session has been deleted!", "Redirecting to login page", "success");
       }
       /* status "UNREGISTERED" : user is not registered */
       else if ( status == "UNREGISTERED" ){
