@@ -459,6 +459,8 @@ const UPDATE_INTERVAL = 500;
           }
           /* *** GAME STARTED *** */
           else if ( game == 2 ){
+              /* disable the ready button */
+              $('#ready-btn').prop('disabled', true);
             /* If user was ready */
             if ( user.ready ) {
               /* START */
@@ -467,8 +469,6 @@ const UPDATE_INTERVAL = 500;
               document.getElementById('game-status').innerHTML = "PLAY!";
             }
             else{
-              /* disable the ready button */
-              $('#ready-btn').prop('disabled', true);
               document.getElementById('game-status').innerHTML = "The game is started without you";
             }
           }

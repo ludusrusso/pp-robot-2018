@@ -27,18 +27,30 @@ def home():
 def about():
     return render_template('about.html')
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('errors/404.html'), 404
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+    return render_template('errors/405.html'), 405
+
+@app.errorhandler(500)
+def internal_error(e):
+    return render_template('errors/500.html'), 500
+
 # dont' cache data
-@app.after_request
-def add_header(r):
-    """
-    Add headers to both force latest IE rendering engine or Chrome Frame,
-    and also to cache the rendered page for 10 minutes.
-    """
-    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    r.headers["Pragma"] = "no-cache"
-    r.headers["Expires"] = "0"
-    r.headers['Cache-Control'] = 'public, max-age=0'
-    return r
+#@app.after_request
+#def add_header(r):
+#    """
+#    Add headers to both force latest IE rendering engine or Chrome Frame,
+#    and also to cache the rendered page for 10 minutes.
+#    """
+#    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+#    r.headers["Pragma"] = "no-cache"
+#    r.headers["Expires"] = "0"
+#    r.headers['Cache-Control'] = 'public, max-age=0'
+#    return r
 
 
 # ----- FUNCTIONS --------------------------------------------------------------
@@ -120,12 +132,11 @@ def gameStatus():
         timeLeft -= 1
         print timeLeft,
 
-        print "Starting game!"
-        gameStarted = 2
+    print "Starting game!"
+    gameStarted = 2
 
     # check for game to end (only 1 player alive)
     while users.getUsersAlive() > 1 :
-        #print "users alive:", users.getUsersAlive() 
         users.usersSort()
         time.sleep(0.5)
 
@@ -145,7 +156,6 @@ def playerReady():
     global gameStarted
     name = request.form['user']
     ready = request.form['ready']
-    print "name:", name, ".ready:", ready,"."
 
     # Game already started
     if gameStarted == 2 :
@@ -161,9 +171,9 @@ def playerReady():
             threadGameStatus = threading.Thread(target=gameStatus)
             threadGameStatus.start()
 
-            return json.dumps({'status':'OK','user':name})
-        else :
-            return json.dumps({'status':'ERROR','user':name})
+        return json.dumps({'status':'OK','user':name})
+    else :
+        return json.dumps({'status':'ERROR','user':name})
 
 
 # incAlive function:
@@ -183,9 +193,9 @@ def incAlive():
 #   check every 2 sec if all connected robots are still alive, if not delete them
 def checkAlive():
     while True:
-        #print "ClearAlive"
-        robots.clearAlive()
         time.sleep(2)
+        robots.clearAlive()
+
 
 
 # main function:
@@ -194,8 +204,17 @@ def main():
     # Launch checkAlive function as a separate thread
     threadAlive.start()
 
+    '''
+    CERTFILE = "src/laser_bot_battle/scripts/ssl/cert.pem"
+    KEYFILE = "src/laser_bot_battle/scripts/ssl/key.pem"
+    import ssl
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    context.load_cert_chain(CERTFILE, KEYFILE)
+    '''
+
     # Run flask web app
     app.run(debug=False, use_reloader = False, host='0.0.0.0')
+    #app.run(debug=False, use_reloader = False, host='0.0.0.0', ssl_context=context)
 
 # -----------------------------------------------------------------------------
 

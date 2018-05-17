@@ -305,7 +305,7 @@ a:hover,a:active,a:focus {
     position: relative;
   }
 
-  .main-header .logo,  .main-header .navbar {
+  .main-header .logo, .main-header .navbar {
     width: 100%;
     float: none;
     position: relative!important;
@@ -319,7 +319,7 @@ a:hover,a:active,a:focus {
     float: right;
   }
 
-  .main-sidebar,  .left-side {
+  .main-sidebar, .left-side {
     padding-top: 100px!important;
   }
 }
@@ -1672,6 +1672,10 @@ a:hover,a:active,a:focus {
   background-color: #d33724;
   margin: 0;
   margin-top: 3mm;
+  -webkit-transition : width 1s ease;
+  -moz-transition : width 1s ease;
+  -o-transition : width 1s ease;
+  transition : width 1s ease !important;
 }
 
 hr {
@@ -1707,6 +1711,11 @@ hr {
 
 .user-life-bar {
   background-color: #d33724;
+}
+
+.progress-bar-success {
+  box-shadow: inset 0 0.5em 0.5em rgba(0,0,0,0.05);
+  transition: all 500ms ease-in-out;
 }
 
 .ready-btn {
@@ -1745,22 +1754,22 @@ hr {
 }
 
 .login-btn {
-  top: -4em;
+  top: -6em;
   position: relative;
   float: left;
   background-color: grey;
   margin-left: -15px;
 }
 
-.about-logo {
+.laserbot-logo {
   font-size: 35px;
   text-align: center !important;;
   margin-bottom: 25px;
+  margin-top: 75px;
   font-weight: 300;
-  margin: auto;
 }
 
-.about-logo a {
+.laserbot-logo a {
   color: #444;
 }
 
@@ -1778,7 +1787,7 @@ hr {
 
 @media (max-width: 500px) {
   .login-btn {
-    top: -7em;
+    top: -9em;
     left: 50%;
     margin: auto;
     transform: translate(-50%, 0);
@@ -1786,4 +1795,22 @@ hr {
   .person {
     padding: 2%;
   }
+}
+
+.column_error {
+  position: relative;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 800px;
+  text-align: center;
+}
+
+.bg {
+  background-image: url("../img/bg.png");
+  background-color: #cccccc;
+}
+
+.bg_c {
+  background-image: url("../img/bg_c.png");
+  background-color: #f9f9f9;
 }
