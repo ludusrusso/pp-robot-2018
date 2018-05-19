@@ -1814,3 +1814,19 @@ hr {
   background-image: url("../img/bg_c.png");
   background-color: #f9f9f9;
 }
+
+.video-stream {
+  width: 98%;
+  position: relative;
+  left: 50%;
+  transform: translate(-50%, 0);
+  background-color: #d2d6de;
+}
+
+.video-stream > img {
+    width:100%;
+    height: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}

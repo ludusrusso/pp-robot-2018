@@ -40,17 +40,17 @@ def internal_error(e):
     return render_template('errors/500.html'), 500
 
 # dont' cache data
-#@app.after_request
-#def add_header(r):
-#    """
-#    Add headers to both force latest IE rendering engine or Chrome Frame,
-#    and also to cache the rendered page for 10 minutes.
-#    """
-#    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-#    r.headers["Pragma"] = "no-cache"
-#    r.headers["Expires"] = "0"
-#    r.headers['Cache-Control'] = 'public, max-age=0'
-#    return r
+@app.after_request
+def add_header(r):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    r.headers['Cache-Control'] = 'public, max-age=0'
+    return r
 
 
 # ----- FUNCTIONS --------------------------------------------------------------
