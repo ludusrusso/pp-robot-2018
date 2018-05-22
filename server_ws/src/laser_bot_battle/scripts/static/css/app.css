@@ -1212,8 +1212,14 @@ a:hover,a:active,a:focus {
 .login-logo {
   font-size: 35px;
   text-align: center;
-  margin-bottom: 25px;
   font-weight: 300;
+  margin: 10px auto 30px auto;
+  width: 290px;
+}
+
+.login-logo img {
+  margin-top: 20px;
+  width: 100%;
 }
 
 .login-logo a {
@@ -1223,7 +1229,7 @@ a:hover,a:active,a:focus {
 .login-wrapper {
   max-width: 400px;
   margin: 0 auto;
-  margin-top: 10%;
+  margin-top: 5%;
 }
 
 /* User name [optional] */
