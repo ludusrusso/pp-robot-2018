@@ -1,11 +1,8 @@
-<h1 align="center">LaserBot Battle</h1>
+![LaserBot Battle](documentation/logo/lbb_logo.png)
 
-<div align="center">
-  <strong></strong>
-</div>
-<div align="center">
+<center>
   A <a href="http://www.ros.org">ROS</a> based application for wirelessly controlling robots and let them fight with lasers.
-</div>
+</center>
 
 <br />
 
