@@ -1,11 +1,8 @@
 ![LaserBot Battle](documentation/logo/lbb_logo.png)
 
-<center>
-  A <a href="http://www.ros.org">ROS</a> based application for wirelessly controlling robots and let them fight with lasers.
-</center>
+A <a href="http://www.ros.org">ROS</a> based application for wirelessly controlling robots and let them fight with lasers.
 
-<br />
-
+---
 
 *This README is still a work in progess.*
 *Further information about installation, usage and contribution method will be introduced after initial steps of development.*
