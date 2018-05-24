@@ -278,7 +278,7 @@ const UPDATE_INTERVAL = 500;
       /* response from server is parsed and status attribute is picked up */
       var status = JSON.parse(response).status
 
-      /* if no error arised */
+      /* if no error arisen */
       if ( status == "OK" ){
         updateGameError = 0;
 
@@ -365,7 +365,7 @@ const UPDATE_INTERVAL = 500;
         /* check if robot is still connected */
         if (robotDead) {
           /* For some reasons robot has been disconnected */
-          swal("OPS", "Connction to robot lost", "error");
+          swal("OPS", "Connection to robot lost", "error");
 
           /* delete stored variables */
           localStorage.removeItem('user');
@@ -374,7 +374,7 @@ const UPDATE_INTERVAL = 500;
           /* redirect to login page */
           setTimeout(function(){
             location.href = "/";
-          }, 1500);
+          }, 2500);
         }
 
         /* change ready button color (ready = 1 - ready for the battle)*/
@@ -484,7 +484,7 @@ const UPDATE_INTERVAL = 500;
       console.error("ERROR " + xhr.status + ": " + thrownError);
       updateGameError ++;
       if (updateGameError > 5){
-        swal("OPS", "Connction to webserver lost", "error");
+        swal("OPS", "Connection to webserver lost", "error");
 
         /* delete stored variables */
         localStorage.removeItem('user');
@@ -503,7 +503,7 @@ const UPDATE_INTERVAL = 500;
 
 /*
  * UPDATE AVAILABLE ROBOT NUMBER:
- *  get number of available roborts add updated html into proper location
+ *  get number of available robots add updated html into proper location
  * -----------------------
  *
  * @type function
@@ -558,7 +558,7 @@ const UPDATE_INTERVAL = 500;
       if ( status == "OK" ){
         /* OK answer from the server means that server has update
           on its own the sent information :
-          button behaviour changed in updateGameStatus function */
+          button behavior changed in updateGameStatus function */
 
       }
       else if ( status == "STARTED" ){

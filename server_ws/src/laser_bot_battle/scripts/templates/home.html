@@ -21,10 +21,16 @@
     $(document).ready(function () {
 
       /* Check if username has been set */
-      if (localStorage.getItem("user") == null) {
-        /* If not redirect to login page */
+      try {
+        /* get user variables */
+        user = JSON.parse(localStorage.getItem("user"));
+      } catch (e) {
+        user = null;
+      }
+      /* if not return to login page */
+      if (user == null) {
         swal({
-          title: "The username has not been choosen!",
+          title: "The username has not been chosen!",
           text: "Redirecting to login page.",
           icon: "warning",
           button: false,
@@ -34,25 +40,22 @@
         setTimeout(function () {
           location.href = "/";
         }, 2100);
+        return;
       }
-      else {
 
-        /* get user variables */
-        user = JSON.parse(localStorage.getItem("user"));
-        console.log("Logged as \"" + user.name + "\"");
+      console.log("Logged as \"" + user.name + "\"");
 
-        /* Spawn username in all username classes */
-        $('.username').html(user.name);
-        /* Spawn robot number */
-        $('.robotN').html("Robot " + user.robotN);
-        /* Spawn date */
-        $('.date').html("Logged in: " + user.date);
-        /* Spawn user image in all userImage classes*/
-        $('.userImage img').attr("src", "static/img/avatar" + user.imgIndex + ".png");
+      /* Spawn username in all username classes */
+      $('.username').html(user.name);
+      /* Spawn robot number */
+      $('.robotN').html("Robot " + user.robotN);
+      /* Spawn date */
+      $('.date').html("Logged in: " + user.date);
+      /* Spawn user image in all userImage classes*/
+      $('.userImage img').attr("src", "static/img/avatar" + user.imgIndex + ".png");
 
-        /* periodically launch function to update logged users list and game status */
-        userUpdate = setInterval(function () { updateGameStatus(); }, UPDATE_INTERVAL);
-      }
+      /* periodically launch function to update logged users list and game status */
+      userUpdate = setInterval(function () { updateGameStatus(); }, UPDATE_INTERVAL);
     });
 
   </script>
@@ -71,7 +74,7 @@
         <!-- Logo -->
         <a href="#" class="logo">
           <b>LaserBot</b> Battle</a>
-        <!-- Header Navbar: style can be found in header.less -->
+        <!-- Header Navbar-->
         <nav class="navbar navbar-static-top" role="navigation">
           <!-- Sidebar toggle button-->
           <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
