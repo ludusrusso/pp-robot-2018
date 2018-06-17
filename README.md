@@ -4,37 +4,44 @@ A <a href="http://www.ros.org">ROS</a> based application for wirelessly controll
 
 ---
 
-*This README is still a work in progess.*
-*Further information about installation, usage and contribution method will be introduced after initial steps of development.*
-
 ## Table of Contents
 - [Installation](#installation)
-    - [Web Server](#web-server)
-    - [Raspberry](#raspberry)
+    - [Docker](#docker)
     - [Arduino](#arduino)
 - [High Level Architecture](#high-level-architecture)
     - [Web Server](#web-server)
     - [Raspberry](#raspberry)
     - [Arduino](#arduino)
 - [Usage](#usage)
-- [Contributing](#contributing)
+    - [Web Server](#web-server)
+    - [Raspberry](#raspberry)
+    - [Arduino](#arduino)
+- [Documentation](#documentation)
 - [History](#history)
-- [Credits](#credits)
 - [License](#license)
-
 
 ## Installation
 
-  ### Web Server
-  TODO (  - Provide to the user a Docker image with all the necessary ROS components intalled to be run by the web server, such that allowing the communication with robots.  
-          - Provide to the user the installation commands for ROS.
-          In this way the user can choose one of the two options.)
+  ### Docker
+  To automatically install docker-ce on the system
+  
+  ```bash
+  $ curl -fsSL get.docker.com | sudo sh
+  ```
 
-  ### Raspberry 
-  TODO (  - Provide the Docker image to be loaded to the raspberry containing ubuntu 16.04 and other ROS packages)
+  If you would like to use Docker as a non-root user, you should now consider adding your user to the
+  "docker" group with something like:
+  
+  ```bash
+  $ sudo usermod -aG docker $USER
+  ```
 
-  ### Arduino 
-  TODO (  - Provide the Sketch to be loaded to Arduino Board containing the Robot application to be run)
+  Remember to log out and back in for this to take effect!
+  
+  ### Arduino
+  
+  It is required to have <a href="https://www.arduino.cc/en/Main/Software">Arduino IDE</a> installed on the working PC to be able to properly flash Arduino with the proper sketch. Use the link provided to download and install it before proceeding with the following configuration.
+
 
 ## High Level Architecture
 
@@ -52,19 +59,35 @@ A <a href="http://www.ros.org">ROS</a> based application for wirelessly controll
 
 ## Usage
 
-TODO (Describe the commands to move the robots and make them fighting)
+  ### Web Server
+  
+  In order to run the Web Server docker image (and download it if not already done), run the following command on a x86 pc arch with docker installed:
+  
+  ```bash
+  $ sudo docker-compose run server
+  ```
+  
+  ### Raspberry
+  
+  In order to run the Raspberry docker image (and download it if not already done), run the following command on a Raspberry board with docker installed:
+    
+  ```bash
+  $ sudo docker-compose run robot
+  ```
+  
+  ### Arduino
+  
+  Connect the Arduino (alreaady flashed) to the Raspberry with a usb cable.
 
-## Contributing
 
-TODO
+## Documentation
+
+  An [User Manual](documentation/manual/user-manual.pdf) and a [Tech Manual](documentation/manual/tech-manual.pdf) are availeble.
 
 ## History
 
-TODO
+  - 2018/06/02 - Version 1.0 - First stable beta version release
 
-## Credits
-
-TODO
 
 ## License
 
