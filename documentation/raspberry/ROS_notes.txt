@@ -1,0 +1,871 @@
+REFERENCES :
+
+        http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment
+
+------------------------ MANAGING ROS ENVIRONMENT -----------------------------
+
+$ source /opt/ros/kinetic/setup.bash
+
+    To enable the system to be aware of the presence of ROS.
+    This command has to be executed on every opened shell or inserted into the
+    file .bashrc such that it is automatically executed every time a new shell
+    is opened.
+
+------------------------- CREATING A ROS WORKSPACE ----------------------------
+
+$ mkdir -p ~/ros_ws/src
+$ cd ~/ros_ws
+$ catkin_make
+
+    A workspace folder 'ros_ws' is created and the command catkin_make is raised
+    such that creating a CMakeLists.txt link in the 'src' folder.
+    Moreover it creates the 'build' and 'devel' folders within 'ros_ws'.
+
+    'devel' folder : It contains several setup.*sh files which if sourced will
+                      overlay this workspace on top of your environment.
+
+$ source ~/ros_ws/devel/setup.bash
+
+    To make sure your workspace is properly overlayed by the setup script, make
+    sure ROS_PACKAGE_PATH environment variable includes the directory you're in.
+
+      $ echo $ROS_PACKAGE_PATH
+        # /home/edospi20/ros_ws/src:/opt/ros/kinetic/share
+      $ printenv | grep ROS
+        # ROS_ROOT=/opt/ros/kinetic/share/ros
+        # ROS_PACKAGE_PATH=/home/edospi20/ros_ws/src:/opt/ros/kinetic/share
+        # ROS_MASTER_URI=http://localhost:11311
+        # ROSLISP_PACKAGE_DIRECTORIES=/home/edospi20/ros_ws/devel/share/common-lisp
+        # ROS_DISTRO=kinetic
+        # ROS_ETC_DIR=/opt/ros/kinetic/etc/ros
+
+        To show all ROS environment variables.
+
+
+------------------------ NAVIGATING THE ROS FILE SYSTEM -----------------------
+
+ROS PACKAGE = Container of libraries, executables, scripts or other artifacts.
+              It is the sw organization unit of ROS code.
+
+MANIFESTS (package.xml) = It is a decription of a package.
+                          It serves to define dependencies between packages and
+                          to capture meta information about the package like
+                          version, maintainer, license..
+
+$ rospack find [package_name]
+
+    # /opt/ros/kinetic/share/roscpp
+
+    It returns the package path
+
+$ roscd [locationname[/subdir]]
+
+    It allows to change the directory directly to a package directory
+    i.e. : roscd roscpp
+        Change directory to /opt/ros/kinetic/share/roscpp
+
+$ echo $ROS_PACKAGE_PATH
+
+    To see which is the actual ros package in use.
+
+$ rosls [locationname[/subdir]]
+
+    It shows the content of the target package
+
+-------------------------- CREATING A ROS PACKAGE -----------------------------
+
+Each Catkin package must have :
+
+      - 'package.xml' file
+      - 'CMakeLists.txt' file
+      - Each package must have its own folder (no nested packages)
+
+Packages are placed i the '/src' folder within the catkin workspace '/ros_ws'.
+
+      i.e. : /ros_ws/src/package_1 ............ /ros_ws/src/package_n
+
+      Each package containing its own 'package.xml' and 'CMakeLists.txt' files
+
+$ catkin_create_pkg <package_name> [depend1] [depend2] [depend3]
+
+      To create a <package_name> folder containing package.xml and
+      CMakeLists.txt plus some additional optional dependecies (i.e. libraries).
+      The command has to be launched within the src folder in the catkin
+      workspace.
+
+        i.e. : $ catkin_create_pkg beginner_tutorials std_msgs rospy roscpp
+
+      Now you need to build the packages in the catkin workspace
+
+        $ cd ~/tutorials_ros_ws
+        $ catkin_make
+
+      Add the workspace to the ROS environment
+
+        $ . ~/catkin_ws/devel/setup.bash
+
+$ rospack depends1 beginner_tutorials
+
+      To check the first-order dependecies of a package.
+
+        i.e. :
+          roscpp
+          rospy
+          std_msgs
+
+      These dependencies for a package are stored in the package.xml file.
+
+          <buildtool_depend>catkin</buildtool_depend>
+          <build_depend>roscpp</build_depend>
+          <build_depend>rospy</build_depend>
+          <build_depend>std_msgs</build_depend>
+
+$ rospack depends1 rospy
+
+    genpy
+    roscpp
+    rosgraph
+    rosgraph_msgs
+    roslib
+    std_msgs
+
+      A dependency will also have its own dependencies
+
+---------------------------- BUILDING A ROS PACKAGE ---------------------------
+
+Go to /tutorials_ros_ws :
+
+  $ catkin_make
+
+-------------------------- UNDERSTANDING ROS NODES ----------------------------
+
+* Nodes: A node is an executable that uses ROS to communicate with other nodes.
+
+* Messages: ROS data type used when subscribing or publishing to a topic.
+
+* Topics: Nodes can publish messages to a topic as well as subscribe to a topic
+          to receive messages.
+
+* Master: Name service for ROS (i.e. helps nodes find each other)
+
+* rosout: ROS equivalent of stdout/stderr
+
+* roscore: Master + rosout + parameter server (parameter server will be introduced later)
+
+$ roscore
+
+    First command to run when using ROS.
+
+$ rosnode list
+
+    To see the active nodes.
+
+$ rosnode info <node_name>
+
+    Gives info about if it is a Publisher or a Subsriber of a topic and the provided
+    Services.
+
+      Node [/rosout]
+      Publications:
+      * /rosout_agg [rosgraph_msgs/Log]
+
+      Subscriptions:
+      * /rosout [unknown type]
+
+      Services:
+      * /rosout/set_logger_level
+      * /rosout/get_loggers
+
+      contacting node http://machine_name:54614/ ...
+      Pid: 5092
+
+$ rosrun [package_name] [node_name]
+
+      Use the package name to run a node withn that package.
+
+        i.e. : $ rosrun turtlesim turtlesim_node __name:=my_turtle
+
+          In this case the turtlesim_node is launched, but it is renamed with
+          the name my_turtle
+
+$ rosnode ping my_turtle
+
+      To test if the node is up
+
+-------------------------- UNDERSTANDING ROS TOPICS ---------------------------
+
+$ rosrun turtlesim turtlesim_node
+$ rosrun turtlesim turtle_teleop_key
+
+The two activated nodes communicates with each other over a ROS topic.
+
+  turtle_teleop_key is publishing the key strokes on a topic, while turtlesim
+  subscribes to the same topic to receive the key strokes and performing the
+  proper movements.
+
+$ rqt_graph
+
+  It allows to show the ROS network composed by topics and nodes publishing and
+  subscribing over those topics.
+
+$ rostopic -h
+
+  Help option to get the available sub-commands for rostopic
+
+$ rostopic echo [topic]
+
+  It shows the data published on a topic.
+
+    i.e. : $ rostopic echo /turtle1/cmd_vel
+
+              linear:
+                x: 2.0
+                y: 0.0
+                z: 0.0
+              angular:
+                x: 0.0
+                y: 0.0
+                z: 0.0
+
+$ rostopic list -v
+
+    Displays a verbose list of topics to publish to and subscribe to and their type.
+
+      Published topics:
+      * /turtle1/color_sensor [turtlesim/Color] 1 publisher
+      * /turtle1/cmd_vel [geometry_msgs/Twist] 1 publisher
+      * /rosout [rosgraph_msgs/Log] 2 publishers
+      * /rosout_agg [rosgraph_msgs/Log] 1 publisher
+      * /turtle1/pose [turtlesim/Pose] 1 publisher
+
+      Subscribed topics:
+      * /turtle1/cmd_vel [geometry_msgs/Twist] 1 subscriber
+      * /rosout [rosgraph_msgs/Log] 1 subscriber
+
+* ROS MESSAGES
+
+  Communication on topics happens by sending ROS messages between nodes.
+  N.B. :  The publisher and subscriber must send and receive the same type of message.
+  This means that a topic type is defined by the message type published on it.
+
+$ rostopic type [topic]
+
+  To know the kind of message exchanged on that topic.
+
+    i.e.: $ rostopic type /turtle1/cmd_vel
+
+        geometry_msgs/Twist
+
+$ rosmsg show geometry_msgs/Twist
+
+  To look at the details of that kind of message.
+
+    geometry_msgs/Vector3 linear
+    float64 x
+    float64 y
+    float64 z
+    geometry_msgs/Vector3 angular
+    float64 x
+    float64 y
+    float64 z
+
+$ rostopic pub [topic] [msg_type] [args]
+
+    Publishes data on a topic.
+
+      i.e. : $ rostopic pub -1 /turtle1/cmd_vel geometry_msgs/Twist -- '[2.0, 0.0, 0.0]' '[0.0, 0.0, 1.8]'
+
+        This sends a single message to turtlesim telling it to move with an linear
+        velocity of 2.0, and an angular velocity of 1.8
+
+        -1 = publish a message and exit
+
+$ rostopic pub /turtle1/cmd_vel geometry_msgs/Twist -r 1 -- '[2.0, 0.0, 0.0]' '[0.0, 0.0, -1.8]'
+
+    -r 1 = Steady stream of commands repeated at a rate of 1 Hz
+
+$ rostopic hz [topic]
+
+  Rate at which data is published over that topic.
+
+      subscribed to [/turtle1/pose]
+      average rate: 59.354
+            min: 0.005s max: 0.027s std dev: 0.00284s window: 58
+      average rate: 59.459
+            min: 0.005s max: 0.027s std dev: 0.00271s window: 118
+      average rate: 59.539
+            min: 0.004s max: 0.030s std dev: 0.00339s window: 177
+      average rate: 59.492
+            min: 0.004s max: 0.030s std dev: 0.00380s window: 237
+      average rate: 59.463
+            min: 0.004s max: 0.030s std dev: 0.00380s window: 290
+
+------------------------- ROS SERVICES AND PARAMETERS -------------------------
+
+* SERVICES = Another way nodes ca communicate with each other. They allows nodes
+            to send a REQUEST and receive a RESPONSE.
+
+rosservice has many commands which can be used on topics :
+
+        rosservice list         print information about active services
+        rosservice call         call the service with the provided args
+        rosservice type         print service type
+        rosservice find         find services by service type
+        rosservice uri          print service ROSRPC uri
+
+$ rosservice list
+
+    Shows the services provided by the node.
+    i.e. : reset, clear, spawn, kill, turtle1/set_pen, /turtle1/teleport_absolute,
+    /turtle1/teleport_relative, turtlesim/get_loggers, and turtlesim/set_logger_level
+
+$ rosservice type [service]
+
+    It returns the service type.
+    i.e. : $ rosservice type /clear
+
+              std_srvs/Empty
+
+            This service is empty, this means when the service call is made it
+            takes no arguments. (i.e. it sends no data when making a request and
+             receives no data when receiving a response).
+
+$ rosservice call [service] [args]
+
+    It calls the service possibly passing some arguments.
+    i.e. : $ rosservice call /clear
+
+            It clears the background of the turtlesim node.
+
+    $ rosservice type /spawn | rossrv show
+
+        float32 x
+        float32 y
+        float32 theta
+        string name
+        ---
+        string name
+
+        This service let us spawn a new turtle at a given location and orientation.
+        The name field is optional, so let's not give our new turtle a name and let
+        turtlesim create one for us.
+
+        i.e. : $ rosservice call /spawn 2 2 0.2 ""
+                  The service call returns with the name of the newly created turtle
+
+                    name: turtle2
+
+* PARAMETERS = rosparam allows you to store and manipulate data on the ROS Parameter Server.
+               Nodes use this server to store and retrieve parameters at runtime.
+               The parameter server runs inside of the ROS master.
+
+rosparam has many commands that can be used on parameters, as shown below:
+
+          rosparam set            set parameter
+          rosparam get            get parameter
+          rosparam load           load parameters from file
+          rosparam dump           dump parameters to file
+          rosparam delete         delete parameter
+          rosparam list           list parameter names
+
+$ rosparam list
+
+    It show the parameters on the param server :
+    i.e. :
+      /background_b
+      /background_g
+      /background_r
+      /rosdistro
+      /roslaunch/uris/host_57aea0986fef__34309
+      /rosversion
+      /run_id
+
+$ rosparam set [param_name]
+
+    It changes one of the parameter values.
+    i.e. : $ rosparam set /background_r 150
+                To change the red channel of the background color.
+
+    This changes the parameter value, now we have to call the clear service for
+    the parameter change to take effect:
+
+        $ rosservice call /clear
+
+$ rosparam get [param_name]
+
+    Return the value of the specified parameter.
+    i.e. : $ rosparam get /
+              To return the values of all parameters.
+
+              background_b: 255
+              background_g: 86
+              background_r: 150
+              roslaunch:
+              uris: {'aqy:51932': 'http://aqy:51932/'}
+              run_id: e07ea71e-98df-11de-8875-001b21201aa8
+
+$ rosparam dump params.yaml
+
+    To write all parameters to the file params.yaml
+
+$ rosparam load params.yaml copy
+
+    To load yaml files into new namespaces (i.e. : copy)
+
+---------------------------- CREATING A ROS SERVICE ---------------------------
+
+* srv files = They are simple text files that describe a service.
+              They are composed of two parts : REQUEST and RESPONSE.
+
+                  int64 A
+                  int64 B
+                  ---
+                  int64 Sum
+
+                  The --- divides the request and the response.
+
+              They are stored in the srv directory of a package.
+
+* Let's copy a new srv in the package beginner_tutorials
+
+    $ roscd beginner_tutorials
+    $ mkdir srv
+    $ roscp rospy_tutorials AddTwoInts.srv srv/AddTwoInts.srv
+
+        To copy a service from the rospy_tutorials package.
+
+    $ roscp [package_name] [file_to_copy_path] [copy_path]
+
+* We need to make sure that the srv files are turned into source code for C++,
+  Python, or other languages.
+
+    * Open package.xml, and make sure these two lines are in it :
+
+        <build_depend>message_generation</build_depend>
+        <exec_depend>message_runtime</exec_depend>
+
+    * Open CMakeLists.txt, and add the message_generation dependency to the
+    find_package call which already exists in your CMakeLists.txt so that you
+    can generate services. You can do this by simply adding message_generation
+    to the list of COMPONENTS such that it looks like this:
+
+        # Do not just add this to your CMakeLists.txt, modify the existing text
+        # to add message_generation before the closing parenthesis
+        find_package(catkin REQUIRED COMPONENTS
+          roscpp
+          rospy
+          std_msgs
+          message_generation
+        )
+
+    * Open CMakeLists.txt. Find the following block of code :
+
+          # add_service_files(
+          #   FILES
+          #   Service1.srv
+          #   Service2.srv
+          # )
+
+      Uncomment and replace the standard msg files with the customized msg file
+      previously created.
+
+          add_service_files(
+            FILES
+            AddTwoInts.srv
+          )
+
+    * Open CMakeLists.txt. Ensure the generate_messages() function is called.
+      Find the following block of code :
+
+        # generate_messages(
+        #   DEPENDENCIES
+        #   std_msgs
+        # )
+
+      Uncomment it :
+
+        generate_messages(
+          DEPENDENCIES
+          std_msgs
+        )
+
+* Using rossrv
+
+    $ rossrv show <service type>
+
+        To show the content of a service.
+        i.e. : $ rossrv show beginner_tutorials/AddTwoInts
+
+                  int64 a
+                  int64 b
+                  ---
+                  int64 sum
+
+---------------------------- CREATING A ROS MESSAGE ---------------------------
+
+* msg files = They are simple text files that describe the fields of a ROS message.
+              Used to generate source code for messages in different languages.
+
+              They are stored in the msg directory of a package.
+
+Msgs are just simple text files with a field type and field name per line.
+The field types you can use are:
+
+      int8, int16, int32, int64 (plus uint*)
+      float32, float64
+      string
+      time, duration
+      other msg files
+      variable-length array[] and fixed-length array[C]
+
+There is also a special type in ROS: Header, the header contains a timestamp
+and coordinate frame information that are commonly used in ROS.
+
+    i.e. : msg that uses a Header, a string primitive, and two other msgs :
+
+            Header header
+            string child_frame_id
+            geometry_msgs/PoseWithCovariance pose
+            geometry_msgs/TwistWithCovariance twist
+
+  * Let's define a new msg in the package beginner_tutorials
+
+      $ roscd beginner_tutorials
+      $ mkdir msg
+      $ echo "int64 num" > msg/Num.msg
+
+      Num.msg file will contain only 1 line.
+      You can create more complex files by adding more elements, one per line.
+
+        i.e. :
+            string first_name
+            string last_name
+            uint8 age
+            uint32 score
+
+* We need to make sure that the msg files are turned into source code for C++,
+  Python, or other languages.
+
+    * Open package.xml, and make sure these two lines are in it :
+
+        <build_depend>message_generation</build_depend>
+        <exec_depend>message_runtime</exec_depend>
+
+    * Open CMakeLists.txt, and add the message_generation dependency to the
+    find_package call which already exists in your CMakeLists.txt so that you
+    can generate messages. You can do this by simply adding message_generation
+    to the list of COMPONENTS such that it looks like this:
+
+        # Do not just add this to your CMakeLists.txt, modify the existing text
+        # to add message_generation before the closing parenthesis
+        find_package(catkin REQUIRED COMPONENTS
+        roscpp
+        rospy
+        std_msgs
+        message_generation
+        )
+
+    * Open CMakeLists.txt. Also make sure you export the message runtime dependency.
+
+        catkin_package(
+        #  INCLUDE_DIRS include
+        #  LIBRARIES beginner_tutorials
+           CATKIN_DEPENDS message_runtime roscpp rospy std_msgs
+        #  DEPENDS system_lib
+        )
+
+    * Open CMakeLists.txt. Find the following block of code :
+
+        # add_message_files(
+        #   FILES
+        #   Message1.msg
+        #   Message2.msg
+        # )
+
+    Uncomment and replace the standard msg files with the customized msg file
+    previously created.
+
+        add_message_files(
+          FILES
+          Num.msg
+        )
+
+    * Open CMakeLists.txt. Ensure the generate_messages() function is called.
+      Find the following block of code :
+
+        # generate_messages(
+        #   DEPENDENCIES
+        #   std_msgs
+        # )
+
+      Uncomment it :
+
+        generate_messages(
+          DEPENDENCIES
+          std_msgs
+        )
+
+* Using rosmsg
+
+    $ rosmsg show beginner_tutorials/Num
+
+        It shows the content of the Num msg fields.
+
+    $ rosmsg show Num
+
+        This is also fine if you do not remember the package
+
+--------------------- COMMON STEPS FOR MSG AND SRV ----------------------------
+
+* Now that we have made some new messages/services we need to make our package again:
+
+    # In your catkin workspace
+    $ roscd beginner_tutorials
+    $ cd ../..
+    $ catkin_make install
+    $ cd -
+
+      This is needed such that any .msg file in the msg directory will generate
+      code for use in all supported languages.
+
+---------------------- WRITING PUBLISHERS AND SUBSCRIBERS ---------------------
+
+------ PUBLISHER ------
+
+* Move in the package folder and create a scripts folder containing all ros nodes.
+
+    $ roscd beginner_tutorials
+    $ mkdir scripts
+    $ cd scripts
+
+* Download a Publisher example and make it executable.
+
+    $ wget https://raw.github.com/ros/ros_tutorials/kinetic-devel/rospy_tutorials/001_talker_listener/talker.py
+    $ chmod +x talker.py
+
+* Analyze the file
+
+    #!/usr/bin/env python
+    # First line is to execute the script as python script
+    # We need to import raspy if writing a ROS node and those std_msgs if i will use these to publish.
+    import rospy
+    from std_msgs.msg import String
+
+    # Defines the interface to the rest of ROS
+    def talker():
+        # The node is publishing to the chatter topic using String messages.
+        # queue_size limits the amount of queued messages if any subscriber is not receiving them fast enough
+        pub = rospy.Publisher('chatter', String, queue_size=10)
+        # This tells the name of the node. anonymous=True ensures the node has
+        # a unique name by adding random numbers to the end of it.
+        rospy.init_node('talker', anonymous=True)
+        # To loop at the desired rate. In this case it loops 10 times per second.
+        rate = rospy.Rate(10) # 10hz
+        # This is the body of the program which is executed until it is not exit.
+        while not rospy.is_shutdown():
+            hello_str = "hello world %s" % rospy.get_time()
+            rospy.loginfo(hello_str)
+            # hello_str is published to chatter topic
+            pub.publish(hello_str)
+            # sleep  just long enough to maintain the desired rate.
+            rate.sleep()
+
+    if __name__ == '__main__':
+        # This catches a rospy.ROSInterruptException exception.
+        # To avoid accidentally continue executing code after the sleep().
+        try:
+            talker()
+        except rospy.ROSInterruptException:
+            pass
+
+------ SUBSCRIBER ------
+
+* Move in the scripts folder, download a subscriber Example and make it executable
+
+    $ roscd beginner_tutorials/scripts/
+    $ wget https://raw.github.com/ros/ros_tutorials/kinetic-devel/rospy_tutorials/001_talker_listener/listener.py
+    $ chmod +x listener.py
+
+* Analyze the file
+
+    #!/usr/bin/env python
+    import rospy
+    from std_msgs.msg import String
+
+    # This is the function which is invoked when messages are received from chatter topic
+    def callback(data):
+        rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data.data)
+
+    def listener():
+        rospy.init_node('listener', anonymous=True)
+
+        rospy.Subscriber('chatter', String, callback)
+
+        # spin() simply keeps python from exiting until this node is stopped.
+        rospy.spin()
+
+    if __name__ == '__main__':
+        listener()
+
+------ BUILDING YOUR NODES ------
+
+to make sure that the autogenerated Python code for messages is created we need
+to build the system even for python nodes.
+
+    $ cd ~/tutorials_ros_ws
+    $ catkin_make
+
+------ RUNNING PUBLISHER AND SUBSCRIBER ------
+
+$ roscore
+$ rosrun beginner_tutorials talker.py
+$ rosrun beginner_tutorials listener.py
+
+------ REMAPPING ARGUMENTS ------
+
+http://wiki.ros.org/Remapping%20Arguments
+
+Any ROS name within a node can be remapped when it is launched at the command-line.
+This is a powerful feature of ROS that lets you launch the same node under multiple
+configurations from the command-line.
+
+    i.e. : rosrun beginners_tutorials talker chatter:=chatter1
+
+      Each instance of the same nome can be linked to different topics and
+      have different names.
+
+------------------------ WRITING A SERVICE AND CLIENT -------------------------
+
+We will create the service "add_two_ints_server" node which will receive two
+ints and return the sum.
+
+* Create the scripts/add_two_ints_server.py file within the beginner_tutorials
+  package, paste the following inside it and make it executable:
+
+      #!/usr/bin/env python
+
+      from beginner_tutorials.srv import *
+      import rospy
+
+      # Called when a AddTwoIntsRequest is raised
+      def handle_add_two_ints(req):
+        print "Returning [%s + %s = %s]"%(req.a, req.b, (req.a + req.b))
+        # Returns instances of AddTwoIntsResponse
+        return AddTwoIntsResponse(req.a + req.b)
+
+      def add_two_ints_server():
+        rospy.init_node('add_two_ints_server')
+        # Declares a new service named add_two_ints with the AddTwoInts service type
+        # All  requests are passed to handle_add_two_ints function.
+        s = rospy.Service('add_two_ints', AddTwoInts, handle_add_two_ints)
+        print "Ready to add two ints."
+        rospy.spin()
+
+      if __name__ == "__main__":
+        add_two_ints_server()
+
+  $ chmod +x scripts/add_two_ints_server.py
+
+  * Create the scripts/add_two_ints_client.py file within the beginner_tutorials
+    package and paste the following inside it and make it executable(CLIENT NODE):
+
+        #!/usr/bin/env python
+
+        import sys
+        import rospy
+        from beginner_tutorials.srv import *
+
+        def add_two_ints_client(x, y):
+          # This is a convenience method that blocks until the service named add_two_ints is available
+          rospy.wait_for_service('add_two_ints')
+          try:
+              # Create a handle for calling the service.
+              add_two_ints = rospy.ServiceProxy('add_two_ints', AddTwoInts)
+              # We can use this handle just like a normal function.
+              # The AddTwoIntsRequest object is automatically created and the AddTwoIntsResponse
+              # is the returned value
+              resp1 = add_two_ints(x, y)
+              return resp1.sum
+          except rospy.ServiceException, e:
+              print "Service call failed: %s"%e
+
+        def usage():
+          return "%s [x y]"%sys.argv[0]
+
+        if __name__ == "__main__":
+          if len(sys.argv) == 3:
+              x = int(sys.argv[1])
+              y = int(sys.argv[2])
+          else:
+              print usage()
+              sys.exit(1)
+          print "Requesting %s+%s"%(x, y)
+          print "%s + %s = %s"%(x, y, add_two_ints_client(x, y))
+
+------ BUILDING YOUR NODES ------
+
+to make sure that the autogenerated Python code for messages is created we need
+to build the system even for python nodes.
+
+    $ cd ~/tutorials_ros_ws
+    $ catkin_make
+
+------ RUNNING SERVICE AND CLIENT ------
+
+$ roscore
+$ rosrun beginner_tutorials add_two_ints_server.py
+$ rosrun beginner_tutorials add_two_ints_client.py 1 3
+
+        Requesting 1+3
+        1 + 3 = 4
+
+------------------------- ROS ACROSS MULTIPLE MACHINES ------------------------
+
+http://wiki.ros.org/ROS/Tutorials/MultipleMachines
+http://wiki.ros.org/ROS/NetworkSetup
+
+* It explains the use of ROS_MASTER_URI to configure multiple machines to use a single master.
+
+  The basic principles to respect are :
+
+    - You only need one master. Select one machine to run it on.
+    - All nodes must be configured to use the same master, via ROS_MASTER_URI.
+    - There must be complete, bi-directional connectivity between all pairs of machines, on all ports
+    - Each machine must advertise itself by a name that all other machines can resolve
+
+Let's imagine to have two machines whose hostnames are MARVIN and HAL.
+We need to select one machine to run the master (executing roscore).
+
+1)  On MARVIN machine (Master) execute :
+
+      $ roscore
+
+      $ hostname -I
+
+          To get the IP for this machine.
+
+            i.e. : 192.168.0.14
+
+      $ export ROS_IP=192.168.0.14
+
+          For the other machines to identify it.
+
+2)  On HAL machine execute :
+
+      $ export ROS_MASTER_URI=http://192.168.0.14:11311
+
+          Set the ROS_MASTER_URI (hostname + port) to match the IP address of the
+          machine running roscore (MARVIN).
+
+      $ hostname -I
+
+          To get the IP for this machine.
+
+            i.e. : 192.168.0.15
+
+      $ export ROS_IP=192.168.0.15
+
+          For the other machines to identify it.
+
+3) At this point nodes, topics, services created by the two machines will belong
+    to the same ROS network.

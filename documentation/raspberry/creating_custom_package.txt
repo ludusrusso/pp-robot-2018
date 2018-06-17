@@ -1,0 +1,17 @@
+cd ros_ws/src/
+
+catckin_create_pkg laser_bot_battle std_msgs rospy
+
+cd ..
+
+catckin_make
+
+source devel/setup.bash
+
+create srv and msg folders to contain custom services and messages respectively
+
+declare custom .srv file and custom .msg file in the respective folders 
+
+modify the package.xml and CMake.txt files as stated is Ros_notes.txt guide to include new svr and msg
+
+redo catckin_make in the  ros_ws/ folder

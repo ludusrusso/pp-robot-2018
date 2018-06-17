@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  server:
+    image: stefanocirici/laserbotbattle:server
+    container_name: server
+    privileged: true
+    network_mode: "host"
+    expose:
+      - "5000"
+      - "8000"
+      - "9090"
+      - "11311"
+    volumes:
+       - /var/run/dbus:/var/run/dbus
+  
+  robot:
+    image: stefanocirici/laserbotbattle:rosberry
+    container_name: rosberry
+    privileged: true
+    network_mode: "host"
+    expose:
+      - "5000"
+      - "8000"
+      - "9090"
+      - "11311"
+    volumes:
+       - /var/run/dbus:/var/run/dbus

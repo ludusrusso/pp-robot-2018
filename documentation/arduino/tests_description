@@ -1,0 +1,33 @@
+(*) stepper_test:
+ it contains a code which makes turning the motor at a certain speed.
+ In order to change this speed, a change on the setSpeed() function
+ argument has to be done.
+ Note that: the experienced max speed is around 1023.
+
+(*) rosserial_test:
+ it contains a subscriber node to be deployed into arduino.
+ The purpose of this code is to create a ros serial communication between 
+ arduino and the host PC. In order to do this, the following steps have to
+ be followed:
+
+  1) Open a terminal to run: roscore
+  2) Open rosserial_test.ino from the arduino IDE
+  3) Compile and deploy that code into arduino. At this point the subscriber
+     is waiting for messages on the topic "motor_speed_topic"
+  4) Open a terminal to run: "rosrun rosserial_python serial_node.py /dev/ttyACM0"
+     note that: ttyACM0 can be different. It is the serial port at which arduino
+                has been connected.
+  5) Open a new terminal to run: 
+	rostopic pub motor_speed_topic std_msgs/Int16 "data: 1023" --once
+     With this command the host PC (publisher) has published on the topic and the 
+     motor should turn at that speed (in the example above 1023).
+
+ Issue: setSpeed() function (inside motor_run_Cb() function) can not receive a
+	variable parameter at the moment.
+
+ Next goal: Create a new msg type for the topic that involves more than one info as:
+	- speed
+	- direction of rotation
+	- # of rotations
+	- ...
+
