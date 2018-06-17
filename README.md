@@ -69,7 +69,7 @@ A <a href="http://www.ros.org">ROS</a> based application for wirelessly controll
   
   ### Raspberry
   
-  In order to run the Raspberry docker image (and download it if not already done), run the following command on a Raspberry board with docker installed:
+  In order to run the Raspberry docker image (and download it if not already done), run the following command on a Raspberry board with docker installed and Arduino board already connected:
     
   ```bash
   $ sudo docker-compose run robot
@@ -77,12 +77,12 @@ A <a href="http://www.ros.org">ROS</a> based application for wirelessly controll
   
   ### Arduino
   
-  Connect the Arduino (alreaady flashed) to the Raspberry with a usb cable.
+  Connect the Arduino (already flashed) to the Raspberry with a usb cable.
 
 
 ## Documentation
 
-  An [User Manual](documentation/manual/user-manual.pdf) and a [Tech Manual](documentation/manual/tech-manual.pdf) are availeble.
+  An [User Manual](documentation/manual/user-manual.pdf) and a [Tech Manual](documentation/manual/tech-manual.pdf) are available.
 
 ## History
 
